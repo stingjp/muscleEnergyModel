@@ -1,0 +1,1 @@
+This repository will contain all the code and structure for the development of a muscle level energy expenditure model. Data will be stored seperately from the code for processing and evaluation of the model. 
