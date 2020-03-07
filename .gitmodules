@@ -1,0 +1,6 @@
+[submodule "osimpipeline"]
+	path = osimpipeline
+	url = https://github.com/stanfordnmbl/osimpipeline.git
+[submodule "optctrlmuscle"]
+	path = optctrlmuscle
+	url = https://github.com/stanfordnmbl/optctrlmuscle.git
