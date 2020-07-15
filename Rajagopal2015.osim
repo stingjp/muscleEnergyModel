@@ -143,8 +143,8 @@
 				<limit>0</limit>
 			</CMC_Joint>
 		</defaults>
-		<credits>Rajagopal, A, Dembia, C.L., DeMers, M.S., Delp, D.D., Hicks, J.L., and Delp, S.L.</credits>
-		<publications> Rajagopal, Apoorva, et al. "Full-Body Musculoskeletal Model for Muscle-Driven Simulation of Human Gait." IEEE Transactions on Biomedical Engineering 63.10 (2016): 2068-2079. (2016) </publications>
+		<credits>Arnold, E.M., Hamner, S.R., Ward, S.R., Lieber, R. L., and Delp, S.L.</credits>
+		<publications />
 		<length_units>meters</length_units>
 		<force_units>N</force_units>
 		<!--Acceleration due to gravity.-->
@@ -284,7 +284,7 @@
 										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
 										<motion_type>translational</motion_type>
 										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
-										<default_value>0.94</default_value>
+										<default_value>0.93</default_value>
 										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
 										<default_speed_value>0</default_speed_value>
 										<!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
@@ -1181,7 +1181,7 @@
 										<!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
 										<range>0 2.0944</range>
 										<!--Flag indicating whether or not the values of the coordinates should be limited to the range, above.-->
-										<clamped>true</clamped>
+										<clamped>false</clamped>
 										<!--Flag indicating whether or not the values of the coordinates should be constrained to the current (e.g. default) value, above.-->
 										<locked>false</locked>
 										<!--If specified, the coordinate can be prescribed by a function of time. It can be any OpenSim Function with valid second order derivatives.-->
@@ -1508,7 +1508,7 @@
 								<objects>
 									<Coordinate name="knee_angle_r_beta">
 										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
-										<motion_type>Coupled</motion_type>
+										<motion_type>rotational</motion_type>
 										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
 										<default_value>0</default_value>
 										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
@@ -1714,7 +1714,7 @@
 									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
 									<scale_factors> 1 1 1</scale_factors>
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
-									<display_preference>4</display_preference>
+									<display_preference>0</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
 									<opacity>1</opacity>
 								</DisplayGeometry>
@@ -2697,7 +2697,7 @@
 								<objects>
 									<Coordinate name="knee_angle_l_beta">
 										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
-										<motion_type>Coupled</motion_type>
+										<motion_type>rotational</motion_type>
 										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
 										<default_value>0</default_value>
 										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
@@ -2806,7 +2806,7 @@
 							<objects>
 								<DisplayGeometry>
 									<!--Name of geometry file .vtp, .stl, .obj-->
-									<geometry_file>l_patella.vtp</geometry_file>
+									<geometry_file>l_pat.vtp</geometry_file>
 									<!--Color used to display the geometry when visible-->
 									<color> 1 1 1</color>
 									<!--Name of texture file .jpg, .bmp-->
@@ -2903,7 +2903,7 @@
 									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
 									<scale_factors> 1 1 1</scale_factors>
 									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
-									<display_preference>4</display_preference>
+									<display_preference>0</display_preference>
 									<!--Display opacity between 0.0 and 1.0-->
 									<opacity>1</opacity>
 								</DisplayGeometry>
@@ -6470,12 +6470,12 @@
 						<!--The wrap objecs that are associated with this path-->
 						<PathWrapSet>
 							<objects>
-								<PathWrap name="shank">
+								<PathWrap>
 									<wrap_object>GasLat_at_shank_r</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
 								</PathWrap>
-								<PathWrap name="condyles">
+								<PathWrap>
 									<wrap_object>Gastroc_at_condyles_r</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
@@ -6576,12 +6576,12 @@
 						<!--The wrap objecs that are associated with this path-->
 						<PathWrapSet>
 							<objects>
-								<PathWrap name="shank">
+								<PathWrap>
 									<wrap_object>GasMed_at_shank_r</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
 								</PathWrap>
-								<PathWrap name="condyles">
+								<PathWrap>
 									<wrap_object>Gastroc_at_condyles_r</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
@@ -10662,12 +10662,12 @@
 						<!--The wrap objecs that are associated with this path-->
 						<PathWrapSet>
 							<objects>
-								<PathWrap name="shank">
+								<PathWrap>
 									<wrap_object>GasLat_at_shank_l</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
 								</PathWrap>
-								<PathWrap name="condyles">
+								<PathWrap>
 									<wrap_object>Gastroc_at_condyles_l</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
@@ -10768,12 +10768,12 @@
 						<!--The wrap objecs that are associated with this path-->
 						<PathWrapSet>
 							<objects>
-								<PathWrap name="shank">
+								<PathWrap>
 									<wrap_object>GasMed_at_shank_l</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
 								</PathWrap>
-								<PathWrap name="condyles">
+								<PathWrap>
 									<wrap_object>Gastroc_at_condyles_l</wrap_object>
 									<method>hybrid</method>
 									<range> -1 -1</range>
@@ -13731,7 +13731,7 @@
 					<members> addbrev_r addlong_r addmagDist_r addmagIsch_r addmagMid_r addmagProx_r bflh_r bfsh_r edl_r ehl_r fdl_r fhl_r gaslat_r gasmed_r glmax1_r glmax2_r glmax3_r glmed1_r glmed2_r glmed3_r glmin1_r glmin2_r glmin3_r grac_r iliacus_r perbrev_r perlong_r piri_r psoas_r recfem_r sart_r semimem_r semiten_r soleus_r tfl_r tibant_r tibpost_r vasint_r vaslat_r vasmed_r</members>
 				</ObjectGroup>
 				<ObjectGroup name="left_leg">
-					<members> addbrev_l addlong_l addmagDist_l addmagIsch_l addmagMid_l addmagProx_l bflh_l bfsh_l edl_l ehl_l fdl_l fhl_l gaslat_l gasmed_l glmax1_l glmax2_l glmax3_l glmed1_l glmed2_l glmed3_l glmin1_l glmin2_l glmin3_l grac_l iliacus_l perbrev_l perlong_l piri_l psoas_l recfem_l sart_l semimem_l semiten_l soleus_l tfl_l tibant_l tibpost_l vasint_l vaslat_l vasmed_l</members>
+					<members> addbrev_l addlong_l addmagDist_l addmagIsch_l addmagMid_l addmagProx_l bflh_l bfsh_l edl_l ehl_l fdl_l fhl_l gaslat_l gasmed_l glmax1_l glmax2_l glmax3_l glmed1_l glmed2_l glmed3_l glmin1_l glmin2_l glmin3_l grac_l iliacus_l perbrev_l perlong_l psoas_l recfem_l sart_l semimem_l semiten_l soleus_l tfl_l tibant_l tibpost_l vasint_l vaslat_l vasmed_l</members>
 				</ObjectGroup>
 				<ObjectGroup name="hip_add_r">
 					<members> addbrev_r addlong_r addmagDist_r addmagIsch_r addmagMid_r addmagProx_r bflh_r grac_r semimem_r semiten_r</members>
@@ -13773,7 +13773,7 @@
 					<members> addbrev_l addlong_l addmagDist_l addmagIsch_l addmagMid_l addmagProx_l bflh_l grac_l semimem_l semiten_l</members>
 				</ObjectGroup>
 				<ObjectGroup name="hip_abd_l">
-					<members> glmax1_l glmed1_l glmed2_l glmed3_l glmin1_l glmin2_l glmin3_l piri_l sart_l tfl_l</members>
+					<members> glmax1_l glmed1_l glmed2_l glmed3_l glmin1_l glmin2_l glmin3_l sart_l tfl_l</members>
 				</ObjectGroup>
 				<ObjectGroup name="hip_flex_l">
 					<members> addbrev_l addlong_l glmin1_l grac_l iliacus_l psoas_l recfem_l sart_l tfl_l</members>
@@ -13782,7 +13782,7 @@
 					<members> addlong_l addmagDist_l addmagIsch_l addmagMid_l addmagProx_l bflh_l glmax1_l glmax2_l glmax3_l glmed1_l glmed2_l glmed3_l glmin3_l semimem_l semiten_l</members>
 				</ObjectGroup>
 				<ObjectGroup name="hip_exrot_l">
-					<members> glmin3_l piri_l</members>
+					<members> glmin3_l</members>
 				</ObjectGroup>
 				<ObjectGroup name="hip_inrot_l">
 					<members> glmed1_l glmed2_l glmed3_l glmin1_l iliacus_l psoas_l tfl_l</members>
