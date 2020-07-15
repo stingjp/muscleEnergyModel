@@ -1,5 +1,96 @@
 import osimpipeline as osp
 import tasks
+import pyBTK as btk
+import opensim as osm
+
+def filemodifier(self,mocapdir,subject,loadorno,condition,trial):
+    # Read in trc file and create acquisition object
+    import pdb
+    # pdb.set_trace()
+    ## old stuff
+        # reader = btk.btkAcquisitionFileReader()
+        # reader.SetFilename(mocapdir)
+        # reader.Update()
+        # acq = reader.GetOutput()
+
+        # Set data capture point frequency for all files in case
+        # missing from TRC. This is required if the method
+        # acq.GetPointFrameNumber() is to be used when adding a new
+        # marker.
+
+        # freq = 100.0 # Hz old = 120
+        # acq.SetPointFrequency(freq)
+
+        # dont need
+            # Remove unused marker recordings from left leg
+            # unused_markers = ["LCW", "LLS1", "LLS2", "LLS3", "LLS4",
+            #                   "LMS1", "LMS2", "LMS3", "LMS4", "LDAC",
+            #                   "LPAC", "LHJC"]
+            # for mark in unused_markers:
+            #     acq.RemovePoint(mark)
+        
+    ### read in files
+
+    # Only need to estimate joint centers for static trial
+    if loadorno == 'noload':
+        if condition == 'static':
+            print('\nStatic trial, adding markers...') 
+            acq = osm.TimeSeriesTableVec3(mocapdir)
+            self.add_virtual_markers(acq)
+
+
+
+    # Update acquisition object to reflect changes
+    # acq.Update()
+
+    # Write changes to new C3D file
+    # writer = btk.btkAcquisitionFileWriter()
+    # writer.SetInput(acq)
+    # writer.SetFilename(os.path.join(self.preprocess_path, subj,
+                                    # '%s.trc' % v))
+    # writer.Update()
+    ## old version
+        # for subj in self.study.all_subjects:
+        #     print(subj)
+        #     for k, v in self.cond_map.items():
+        #         print ('-->', v)
+
+        #         # shouldn't need to do this anymore
+        #         # Read in C3D file and create acquisition object
+        #         reader = btk.btkAcquisitionFileReader()
+        #         reader.SetFilename(os.path.join(self.preprocess_path, subj,
+        #                                         '%s.trc' % v))
+        #         reader.Update()
+        #         acq = reader.GetOutput()
+
+        #         # Set data capture point frequency for all files in case
+        #         # missing from TRC. This is required if the method
+        #         # acq.GetPointFrameNumber() is to be used when adding a new
+        #         # marker.
+        #         freq = 120.0 # Hz
+        #         acq.SetPointFrequency(freq)
+
+        #         # dont need
+        #             # Remove unused marker recordings from left leg
+        #             # unused_markers = ["LCW", "LLS1", "LLS2", "LLS3", "LLS4",
+        #             #                   "LMS1", "LMS2", "LMS3", "LMS4", "LDAC",
+        #             #                   "LPAC", "LHJC"]
+        #             # for mark in unused_markers:
+        #             #     acq.RemovePoint(mark)
+                
+        #         # Only need to estimate joint centers for static trial
+        #         if k=='static': 
+        #             self.add_virtual_markers(acq)
+
+        #         # Update acquisition object to reflect changes
+        #         acq.Update()
+
+        #         # Write changes to new C3D file
+        #         writer = btk.btkAcquisitionFileWriter()
+        #         writer.SetInput(acq)
+        #         writer.SetFilename(os.path.join(self.preprocess_path, subj,
+        #                                         '%s.trc' % v))
+        #         writer.Update()
 
 def generate_mrsmod_task(trial, mrs_setup_tasks, force_level):
 
@@ -59,7 +150,7 @@ def generate_ik_id_tasks(trial):
 
     trial.add_task(osp.TaskIDPost, id_setup_task, 
         butter_polys=butter_polys,  # default is false, this turns off the joint moment filtering
-        plot_primary_leg_only=True)
+        plot_primary_leg_only=False)
 
     
     
