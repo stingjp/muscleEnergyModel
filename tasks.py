@@ -1,10 +1,12 @@
 import os
-
+import itertools
+import pyBTK as btk
 import numpy as np
 import pylab as pl
 import pandas as pd
 import seaborn as sns
-import itertools
+
+import helpers
 
 import opensim as osm
 import osimpipeline as osp
@@ -13,7 +15,7 @@ from osimpipeline import postprocessing as pp
 from osimpipeline import task as task
 from matplotlib import colors as mcolors
 
-import btk
+
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
@@ -244,23 +246,22 @@ class TaskAverageAnkleKinematicsPlot(task.StudyTask):
                 pl.close(fig)
                 k += 2 
 
-        
-
-
 class TaskModifyExperimentalData(osp.StudyTask):
     REGISTRY = []
     def __init__(self, study):
 
         super(TaskModifyExperimentalData, self).__init__(study)                 #!!! idk what this is
+        import pdb
+        # pdb.set_trace()
         self.name = '_'.join([study.name, 'modify_exp_data'])
-        self.doc = ('Modify experimental data in C3D files to prepare for '
+        self.doc = ('Modify experimental data in C3D files (or any files) to prepare for '
             'OpenSim pipeline.')
-        self.preprocess_path = self.study.config['preprocess_path']
+        self.preprocess_path = os.path.join(self.study.config['preprocess_path'],study.name,'preprocess')
         self.repo_path = self.study.config['repo_path']
         self.cond_map = self.study.config['cond_map']
-        self.mocap_path = self.study.config['motion_capture_data_path']
+        self.mocap_path = os.path.join(self.study.config['motion_capture_data_path'],study.name,'mocap')
 
-        self.actions += [self.modify_data_files,
+        self.actions += [#self.modify_data_files,
                          self.copy_data_files_to_osim]                          #!!! does this call these, or not?
 
 
@@ -270,6 +271,8 @@ class TaskModifyExperimentalData(osp.StudyTask):
         directory. "osim" is the motion_capture_data_path where files will
         be copied from to the "results" folder for simulations.
         """
+        import pdb
+        pdb.set_trace()
         import shutil
         for subj in self.study.all_subjects:
             for k, v in self.cond_map.items():
@@ -282,51 +285,82 @@ class TaskModifyExperimentalData(osp.StudyTask):
                     if not os.path.exists(to_dir): os.makedirs(to_dir)
                     shutil.copyfile(prepro_fpath, mocap_fpath)
 
+
+
     def modify_data_files(self):
         """Make modifications to data files after being extracted from C3D:
         delete unused markers in TRC files, set data capture frequency, etc.
         """
+        print('\nin here')
+        import pdb
+        pdb.set_trace()
+        # loop through the subjects
         for subj in self.study.all_subjects:
-            print subj
-            for k, v in self.cond_map.items():
-                print '-->', v
+            print(subj)
+            # loop through the loaded or unloaded conditions (sometimes staticredo)
+            loaddir = os.path.join(self.preprocess_path, subj)
+            loaddirlist = []
+            for name in os.listdir(loaddir):
+                if os.path.isdir(os.path.join(loaddir, name)):
+                    loaddirlist.append(name)
+                    print('-->',name)
+                    # loop through the conditions
+                    conddir = os.path.join(loaddir, name)
+                    conddirlist = []
+                    for each in os.listdir(conddir):
+                        if os.path.isdir(os.path.join(conddir, each)):
+                            conddirlist.append(each)
+                            print('-->-->',each)
+                            # loop through trial numbers
+                            trialdir = os.path.join(conddir, each)
+                            trialdirlist = []
+                            # print(trialdir)        
+                            # now for trials
+                            for trial in os.listdir(trialdir):
+                                if os.path.isdir(os.path.join(trialdir,trial)):
+                                    trialdirlist.append(trial)
+                                    print('-->-->-->',trial)
 
-                # Read in C3D file and create acquisition object
-                reader = btk.btkAcquisitionFileReader()
-                reader.SetFilename(os.path.join(self.preprocess_path, subj,
-                                                '%s.trc' % v))
-                reader.Update()
-                acq = reader.GetOutput()
+                                    mocapdir = os.path.join(trialdir,trial,'expdata','motion_capture.trc')
+                                    # now what?
+                                    # pdb.set_trace()
 
-                # Set data capture point frequency for all files in case
-                # missing from TRC. This is required if the method
-                # acq.GetPointFrameNumber() is to be used when adding a new
-                # marker.
-                freq = 120.0 # Hz
-                acq.SetPointFrequency(freq)
+                                    helpers.filemodifier(self,mocapdir,subj,name,each,trial)
+                                    # pdb.set_trace()
+            print('\n')
+            pdb.set_trace()
 
-                # Remove unused marker recordings from left leg
-                unused_markers = ["LCW", "LLS1", "LLS2", "LLS3", "LLS4",
-                                  "LMS1", "LMS2", "LMS3", "LMS4", "LDAC",
-                                  "LPAC", "LHJC"]
-                for mark in unused_markers:
-                    acq.RemovePoint(mark)
 
-                # Only need to estimate joint centers for static trial
-                if k=='static':
-                    self.add_virtual_markers(acq)
-
-                # Update acquisition object to reflect changes
-                acq.Update()
-
-                # Write changes to new C3D file
-                writer = btk.btkAcquisitionFileWriter()
-                writer.SetInput(acq)
-                writer.SetFilename(os.path.join(self.preprocess_path, subj,
-                                                '%s.trc' % v))
-                writer.Update()
 
     def add_virtual_markers(self,acq):
+        import pdb
+        pdb.set_trace()
+        # Midpoint between shoulder markers
+        # acq.RemovePoint("MidAC")
+        RAC = acq.getDependentColumn("R.Shoulder")
+        LAC = acq.getDependentColumn("L.Shoulder")
+        pdb.set_trace()
+        MidAC = btk.btkPoint("MidAC", acq.GetPointFrameNumber())
+        MidAC.SetValues( (RAC.GetValues() + LAC.GetValues() )/2.0 )
+        acq.AppendPoint(MidAC)
+        '''
+        # midpoint of clavicle
+        Rclav = acq.GetPoint("R.Clavicle")
+        Lclav = acq.GetPoint("L.Clavicle")
+        MidClav = btk.btkPoint("MidClav", acq.GetPointFrameNumber())
+        MidClav.SetValues( (Rclav.GetValues() + Lclav.GetValues() )/2.0 )
+        acq.AppendPoint(MidClav)
+
+
+
+
+        # Midpoint between iliac crests
+        acq.RemovePoint("MidIC")
+        RIC = acq.GetPoint("RIC")
+        LIC = acq.GetPoint("LIC")
+        MidIC = btk.btkPoint("MidIC", acq.GetPointFrameNumber())
+        MidIC.SetValues( ( RIC.GetValues() + LIC.GetValues() )/2.0 )
+        acq.AppendPoint(MidIC)
 
         # Midpoint between trochanter markers
         acq.RemovePoint("MidTC")
@@ -336,21 +370,6 @@ class TaskModifyExperimentalData(osp.StudyTask):
         MidTC.SetValues( (RTC.GetValues() + LTC.GetValues() )/2.0 )
         acq.AppendPoint(MidTC)
 
-        # Midpoint between shoulder markers
-        acq.RemovePoint("MidAC")
-        RAC = acq.GetPoint("RAC")
-        LAC = acq.GetPoint("LAC")
-        MidAC = btk.btkPoint("MidAC", acq.GetPointFrameNumber())
-        MidAC.SetValues( (RAC.GetValues() + LAC.GetValues() )/2.0 )
-        acq.AppendPoint(MidAC)
-
-        # Midpoint between iliac crests
-        acq.RemovePoint("MidIC")
-        RIC = acq.GetPoint("RIC")
-        LIC = acq.GetPoint("LIC")
-        MidIC = btk.btkPoint("MidIC", acq.GetPointFrameNumber())
-        MidIC.SetValues( ( RIC.GetValues() + LIC.GetValues() )/2.0 )
-        acq.AppendPoint(MidIC)
 
         # Midpoint between ASIS markers
         acq.RemovePoint("MidASIS")
@@ -439,8 +458,128 @@ class TaskModifyExperimentalData(osp.StudyTask):
         RMidT_P = btk.btkPoint("RMidT_P", acq.GetPointFrameNumber())
         RMidT_P.SetValues( (RLTp+RMTp)/2 )
         acq.AppendPoint(RMidT_P)
+        '''
 
 
+
+
+
+
+
+
+        pdb.set_trace()
+        ## old stuff
+            # # Midpoint between trochanter markers
+            # acq.RemovePoint("MidTC")
+            # RTC = acq.GetPoint("RTC")
+            # LTC = acq.GetPoint("LTC")
+            # MidTC = btk.btkPoint("MidTC", acq.GetPointFrameNumber())
+            # MidTC.SetValues( (RTC.GetValues() + LTC.GetValues() )/2.0 )
+            # acq.AppendPoint(MidTC)
+
+            # # Midpoint between shoulder markers
+            # acq.RemovePoint("MidAC")
+            # RAC = acq.GetPoint("RAC")
+            # LAC = acq.GetPoint("LAC")
+            # MidAC = btk.btkPoint("MidAC", acq.GetPointFrameNumber())
+            # MidAC.SetValues( (RAC.GetValues() + LAC.GetValues() )/2.0 )
+            # acq.AppendPoint(MidAC)
+
+            # # Midpoint between iliac crests
+            # acq.RemovePoint("MidIC")
+            # RIC = acq.GetPoint("RIC")
+            # LIC = acq.GetPoint("LIC")
+            # MidIC = btk.btkPoint("MidIC", acq.GetPointFrameNumber())
+            # MidIC.SetValues( ( RIC.GetValues() + LIC.GetValues() )/2.0 )
+            # acq.AppendPoint(MidIC)
+
+            # # Midpoint between ASIS markers
+            # acq.RemovePoint("MidASIS")
+            # RASIS = acq.GetPoint("RASIS")
+            # LASIS = acq.GetPoint("LASIS")
+            # MidASIS = btk.btkPoint("MidASIS", acq.GetPointFrameNumber())
+            # MidASIS.SetValues( ( RASIS.GetValues() + LASIS.GetValues() )/2.0 )
+            # acq.AppendPoint(MidASIS)
+
+            # # Midpoint between PSIS markers
+            # acq.RemovePoint("MidPSIS")
+            # RPSIS = acq.GetPoint("RPSIS")
+            # LPSIS = acq.GetPoint("LPSIS")
+            # MidPSIS = btk.btkPoint("MidPSIS", acq.GetPointFrameNumber())
+            # MidPSIS.SetValues( ( RPSIS.GetValues() + LPSIS.GetValues() )/2.0 )
+            # acq.AppendPoint(MidPSIS)
+
+            # # Mid pelvis virtual marker
+            # acq.RemovePoint("MidPELV")
+            # MidPELV = btk.btkPoint("MidPELV", acq.GetPointFrameNumber())
+            # MidPELV.SetValues( ( MidPSIS.GetValues() + MidASIS.GetValues() )/2.0 )
+            # acq.AppendPoint(MidPELV)
+
+            # # Projected HJC location (set y-position to MidIC's y-position)
+            # acq.RemovePoint("RHJC_P")
+            # RHJC_P = btk.btkPoint("RHJC_P", acq.GetPointFrameNumber())
+            # RHJC = acq.GetPoint("RHJC")
+            # RHJCp = RHJC.GetValues()
+            # RHJCp[:,1] = MidIC.GetValues()[:,1]
+            # RHJC_P.SetValues(RHJCp)
+            # acq.AppendPoint(RHJC_P)
+
+            # # Right knee joint center
+            # acq.RemovePoint("RKJC")
+            # RLK = acq.GetPoint("RLK")
+            # RMK = acq.GetPoint("RMK")
+            # RKJC = btk.btkPoint("RKJC", acq.GetPointFrameNumber())
+            # RKJC.SetValues( ( RLK.GetValues() + RMK.GetValues() )/2.0 )
+            # acq.AppendPoint(RKJC)
+
+            # # Right ankle joint center
+            # acq.RemovePoint("RAJC")
+            # RLA = acq.GetPoint("RLA")
+            # RMA = acq.GetPoint("RMA")
+            # RAJC = btk.btkPoint("RAJC", acq.GetPointFrameNumber())
+            # RAJC.SetValues( ( RLA.GetValues() + RMA.GetValues() )/2.0 )
+            # acq.AppendPoint(RAJC)
+
+            # # Right ankle joint center projected onto the floor
+            # acq.RemovePoint("RAJC_P")
+            # RAJC_P = btk.btkPoint("RAJC_P", acq.GetPointFrameNumber())
+            # RAJCp = RAJC.GetValues()
+            # RAJCp[:,1] = 0 # set vertical axis component to zero
+            # RAJC_P.SetValues(RAJCp)
+            # acq.AppendPoint(RAJC_P)
+
+            # # Right heel marker projected onto the floor
+            # # acq.RemovePoint("RHL_P")
+            # # RHL_P = btk.btkPoint("RHL_P", acq.GetPointFrameNumber())
+            # # RHL = acq.GetPoint("RHL")
+            # # RHLp = RHL.GetValues()
+            # # RHLp[:,1] = 0 # set vertical axis component to zero
+            # # RHL_P.SetValues(RHL)
+            # # acq.AppendPoint(RHL_P)
+
+            # # RLT marker projected onto the floor
+            # acq.RemovePoint("RLT_P")
+            # RLT_P = btk.btkPoint("RLT_P", acq.GetPointFrameNumber())
+            # RLT = acq.GetPoint("RLT")
+            # RLTp = RLT.GetValues()
+            # RLTp[:,1] = 0 # set vertical axis component to zero
+            # RLT_P.SetValues(RLTp)
+            # acq.AppendPoint(RLT_P)
+
+            # # RMT marker projected onto the floor
+            # acq.RemovePoint("RMT_P")
+            # RMT_P = btk.btkPoint("RMT_P", acq.GetPointFrameNumber())
+            # RMT = acq.GetPoint("RMT")
+            # RMTp = RMT.GetValues()
+            # RMTp[:,1] = 0 # set vertical axis component to zero
+            # RMT_P.SetValues(RMTp)
+            # acq.AppendPoint(RMT_P)
+
+            # # Right mid toe marker projected onto the floor
+            # acq.RemovePoint("RMidT_P")
+            # RMidT_P = btk.btkPoint("RMidT_P", acq.GetPointFrameNumber())
+            # RMidT_P.SetValues( (RLTp+RMTp)/2 )
+            # acq.AppendPoint(RMidT_P)
 
 class TaskCopyMotionCaptureData(osp.TaskCopyMotionCaptureData):
     REGISTRY = []
@@ -587,7 +726,7 @@ class TaskGenericModelSetup(osp.StudyTask):
         # made because the knee in the model is not clamped, but should be?
         #!!! need to edit the modified one to clamp the knee
         #!!! need to add the action to the init above
-        print "\nhello need to finish the clamping editing function!!!\n"
+        print ("\nhello need to finish the clamping editing function!!!\n")
         
 
 
@@ -649,8 +788,6 @@ class TaskGenericModelSetup(osp.StudyTask):
         
     def add_metabolics_probes(self):
         util.add_metabolics_probes(self.model, twitch_ratio_set='gait2392')
-
-
 
 class TaskMRSDeGrooteModPost(osp.TaskMRSDeGrooteModPost):
     REGISTRY = []
@@ -878,7 +1015,6 @@ class TaskMRSDeGrooteModPost(osp.TaskMRSDeGrooteModPost):
         fig.savefig(target[0])
         pl.close(fig)
 
-
 def construct_multiindex_tuples(study, subjects, conditions, cycle_nums,
     muscle_level=False):
     ''' Construct multiindex tuples and list of cycles for DataFrame indexing.
@@ -919,7 +1055,6 @@ def construct_multiindex_tuples(study, subjects, conditions, cycle_nums,
 
     return multiindex_tuples, cycles
 
-
 class TaskAggregateMetabolicRateSlackKinematics(osp.StudyTask):
     """Aggregate metabolic rate without and with mods across all subjects and
     gait cycles for each condition provided."""
@@ -957,10 +1092,10 @@ class TaskAggregateMetabolicRateSlackKinematics(osp.StudyTask):
 
         ##!!! -> do we need two cases of this for the default and the Met trials??
         # lets give it a shot!
-        print "\n_______________________________________________________________________________"
-        print "Reminder to check which files are being looked at: Met or Default funcitons."
-        print "Look in tasks.py in the TaskAggregateMetabolicRateSlackKinematics task."
-        print "_______________________________________________________________________________\n"
+        print ("\n_______________________________________________________________________________")
+        print ("Reminder to check which files are being looked at: Met or Default funcitons.")
+        print ("Look in tasks.py in the TaskAggregateMetabolicRateSlackKinematics task.")
+        print ("_______________________________________________________________________________\n")
         # for cycle in cycles:
         #     if cycle.name in self.cycle_nums:
         #         self.mod_for_file_dep.append('experiment')
@@ -1170,7 +1305,7 @@ class TaskAggregatePlotStrideLengthsAssistedKinematics(osp.StudyTask):
             df.to_csv(f)
 
         ## TODO now for the averaging and plotting parts
-        print '\nplotting stuff'
+        print ('\nplotting stuff')
 
         sns.set(style="whitegrid")
         # df.reset_index(inplace=True)
@@ -1178,7 +1313,7 @@ class TaskAggregatePlotStrideLengthsAssistedKinematics(osp.StudyTask):
 
         dfnew = df.reset_index(level='condition')
         dfnewnew = dfnew.reset_index(level='subject')
-        print dfnewnew.keys()
+        print (dfnewnew.keys())
         axnew = sns.boxplot(x='condition',y='step_length',data=dfnewnew)
         fignew = axnew.get_figure()
         fignew.savefig(target[1])
@@ -1232,7 +1367,7 @@ class TaskAggregateMetabolicRateAssistedKinematics(osp.StudyTask):
         # Prepare for processing simulations of experiments.
         ##TODO alter to do the noassist cases as well
 
-        print "here to alter what all conditions etc get aggregated: line 1122/1511 ->"
+        print ("here to alter what all conditions etc get aggregated: line 1122/1511 ->")
         if study.costFunction == 'Met':
             # try the metabolic cost function with assist
             try:
@@ -1746,8 +1881,8 @@ class TaskPlotMetabolicReductions(osp.StudyTask):
             return met_relchange_pcent_mean, met_relchange_pcent_std
         
 
-        print "\n#####################################################################"
-        print "\nokay here we are, time to get cracking"
+        print ("\n#####################################################################")
+        print ("\nokay here we are, time to get cracking")
 
 
         #############################################################################
@@ -2540,7 +2675,7 @@ class TaskPlotMetabolicReductions(osp.StudyTask):
                 targ += 2
 
         elif 'raw' in target[0] and 'models' not in target[0]:
-            print '****need to check this****'
+            print ('****need to check this****')
             pics = [rawboth_ax_avg, rawboth_ax_comb]
             figs = [rawboth_fig_avg, rawboth_fig_comb]
             targ = 0
@@ -2569,7 +2704,7 @@ class TaskPlotMetabolicReductions(osp.StudyTask):
             targ = 0
             for pic in pics:
                 if 'raw' in target[targ]:
-                    print 'case 1'
+                    print ('case 1')
                     pic.set_ylim(3, 6)
                     pic.set_yticks(np.linspace(3, 6, 4))
                     pic.set_yticklabels(np.linspace(3, 6, 4), fontsize=12)
@@ -2588,7 +2723,7 @@ class TaskPlotMetabolicReductions(osp.StudyTask):
                     pl.close(figs[pics.index(pic)])
                     targ += 2
                 else:
-                    print 'case 2'
+                    print ('case 2')
                     # pic.set_ylabel('Percent Metabolic Reduction [%]')
                     pic.set_yticks(np.linspace(-25, 5, 7))
                     pic.set_yticklabels(np.linspace(-25, 5, 7), fontsize=12)
@@ -2890,15 +3025,15 @@ class TaskPlotMoments(osp.StudyTask):
         # Average over cycles.
         # axis=1 for columns (not rows).
         
-        print df_all
+        print (df_all)
 
         df_by_subj_dof_musc = df_all.groupby(
                 level=['subject', 'DOF', 'actuator'], axis=1).mean()
         
-        print df_by_subj_dof_musc
+        print (df_by_subj_dof_musc)
         df_mean = df_by_subj_dof_musc.groupby(level=['DOF', 'actuator'],
                 axis=1).mean()
-        print df_mean
+        print (df_mean)
         df_std = df_by_subj_dof_musc.groupby(level=['DOF', 'actuator'],
                 axis=1).std()
         pgc = df_mean.index
