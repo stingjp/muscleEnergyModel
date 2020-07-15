@@ -1,0 +1,7 @@
+'TaskScaleSetup', (0, 56)
+'TaskScale', (512, 56)
+'noloadwalkingstudy_generic_model_setup', (1024, 56)
+'subject05_scale_setup', (2048, 406)
+'trial01_ik_setup', (2560, 56)
+'subject05_scale_max_force', (3072, 56)
+'subject05_scale', (3584, 1620)
