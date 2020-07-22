@@ -1,20 +1,310 @@
 function somthing()
 
+    % modify a model for the metabolics study
+    metabolicsModelSetup('subject_walk_armless_noprobe.osim');
+
     % run a marker tracking to get joint angles etc. 
-    % torqueMarkerTrackGRFPrescribe();
+    torqueMarkerTrackGRFPrescribe();
 
     % run a inverse problem with the motion created above, and solve for muscles
-    % torqueStateTrackGRFPrescribe();
+    torqueStateTrackGRFPrescribe();
 
     % run an inverse problem and with prescribed states and grf for muscle activations
-%     muscleStatePrescribeGRFPrescribe();
+    muscleStatePrescribeGRFPrescribe();
     
     % run an inverse problem with prescribed states and grf, and
     % tracking experimental emg
     muscleStatePrescribeGRFPrescribeWithEMG();
+
+    % run an analysis to calculate the metabolic cost
+    analyzeMetabolicCost();
     
 end
 
+function metabolicsModelSetup(modelFilename)
+    import org.opensim.modeling.*
+        
+    muscleKeys = {'addbrev_r', ...
+                    'addlong_r', ...
+                    'addmagDist_r', ...
+                    'addmagIsch_r', ...
+                    'addmagMid_r', ...
+                    'addmagProx_r', ...
+                    'bflh_r', ...
+                    'bfsh_r', ...
+                    'edl_r', ...
+                    'ehl_r', ...
+                    'fdl_r', ...
+                    'fhl_r', ...
+                    'gaslat_r', ...
+                    'gasmed_r', ...
+                    'glmax1_r', ...
+                    'glmax2_r', ...
+                    'glmax3_r', ...
+                    'glmed1_r', ...
+                    'glmed2_r', ...
+                    'glmed3_r', ...
+                    'glmin1_r', ...
+                    'glmin2_r', ...
+                    'glmin3_r', ...
+                    'grac_r', ...
+                    'iliacus_r', ...
+                    'perbrev_r', ...
+                    'perlong_r', ...
+                    'piri_r', ...
+                    'psoas_r', ...
+                    'recfem_r', ...
+                    'sart_r', ...
+                    'semimem_r', ...
+                    'semiten_r', ...
+                    'soleus_r', ...
+                    'tfl_r', ...
+                    'tibant_r', ...
+                    'tibpost_r', ...
+                    'vasint_r', ...
+                    'vaslat_r', ...
+                    'vasmed_r', ...
+                    'addbrev_l', ...
+                    'addlong_l', ...
+                    'addmagDist_l', ...
+                    'addmagIsch_l', ...
+                    'addmagMid_l', ...
+                    'addmagProx_l', ...
+                    'bflh_l', ...
+                    'bfsh_l', ...
+                    'edl_l', ...
+                    'ehl_l', ...
+                    'fdl_l', ...
+                    'fhl_l', ...
+                    'gaslat_l', ...
+                    'gasmed_l', ...
+                    'glmax1_l', ...
+                    'glmax2_l', ...
+                    'glmax3_l', ...
+                    'glmed1_l', ...
+                    'glmed2_l', ...
+                    'glmed3_l', ...
+                    'glmin1_l', ...
+                    'glmin2_l', ...
+                    'glmin3_l', ...
+                    'grac_l', ...
+                    'iliacus_l', ...
+                    'perbrev_l', ...
+                    'perlong_l', ...
+                    'piri_l', ...
+                    'psoas_l', ...
+                    'recfem_l', ...
+                    'sart_l', ...
+                    'semimem_l', ...
+                    'semiten_l', ...
+                    'soleus_l', ...
+                    'tfl_l', ...
+                    'tibant_l', ...
+                    'tibpost_l', ...
+                    'vasint_l', ...
+                    'vaslat_l', ...
+                    'vasmed_l'};
+    ratioVals = [0.5, ...
+        0.5, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.54249999999999998, ...
+        0.52900000000000003, ...
+        0.75, ...
+        0.75, ...
+        0.59999999999999998, ...
+        0.59999999999999998, ...
+        0.50700000000000001, ...
+        0.56599999999999995, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.5, ...
+        0.5, ...
+        0.59999999999999998, ...
+        0.59999999999999998, ...
+        0.5, ...
+        0.5, ...
+        0.38650000000000001, ...
+        0.5, ...
+        0.49249999999999999, ...
+        0.42499999999999999, ...
+        0.80300000000000005, ...
+        0.5, ...
+        0.69999999999999996, ...
+        0.59999999999999998, ...
+        0.54300000000000004, ...
+        0.45500000000000002, ...
+        0.503, ...
+        0.5, ...
+        0.5, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.55200000000000005, ...
+        0.54249999999999998, ...
+        0.52900000000000003, ...
+        0.75, ...
+        0.75, ...
+        0.59999999999999998, ...
+        0.59999999999999998, ...
+        0.50700000000000001, ...
+        0.56599999999999995, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.55000000000000004, ...
+        0.5, ...
+        0.5, ...
+        0.59999999999999998, ...
+        0.59999999999999998, ...
+        0.5, ...
+        0.5, ...
+        0.38650000000000001, ...
+        0.5, ...
+        0.49249999999999999, ...
+        0.42499999999999999, ...
+        0.80300000000000005, ...
+        0.5, ...
+        0.69999999999999996, ...
+        0.59999999999999998, ...
+        0.54300000000000004, ...
+        0.45500000000000002, ...
+        0.503];
+    muscleRatio = containers.Map(muscleKeys, ratioVals);
+    
+    
+    modelProcessor = ModelProcessor(modelFilename);
+    % modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
+    % modelProcessor.append(ModOpIgnoreTendonCompliance());
+    % modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
+    % modelProcessor.append(ModOpIgnorePassiveFiberForcesDGF());
+    % modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
+    % modelProcessor.append(ModOpAddReserves(1.0));
+
+    model = modelProcessor.process();
+    
+    muscleSet = model.getMuscles();
+    numMuscles = muscleSet.getSize();
+    
+    probe_all = Umberger2010MuscleMetabolicsProbe();
+    probe_all.setName('all_metabolics');
+    
+    probe_act = Umberger2010MuscleMetabolicsProbe();
+    probe_act.setName('all_activation_maintenance_rate');
+    probe_act.set_activation_maintenance_rate_on(true);
+    probe_act.set_shortening_rate_on(false);
+    probe_act.set_basal_rate_on(false);
+    probe_act.set_mechanical_work_rate_on(false);
+    
+    probe_short = Umberger2010MuscleMetabolicsProbe();
+    probe_short.setName("all_shortening_rate");
+    probe_short.set_activation_maintenance_rate_on(false);
+    probe_short.set_shortening_rate_on(true);
+    probe_short.set_basal_rate_on(false);
+    probe_short.set_mechanical_work_rate_on(false);
+    
+    probe_basal = Umberger2010MuscleMetabolicsProbe();
+    probe_basal.setName("all_basal_rate");
+    probe_basal.set_activation_maintenance_rate_on(false);
+    probe_basal.set_shortening_rate_on(false);
+    probe_basal.set_basal_rate_on(true);
+    probe_basal.set_mechanical_work_rate_on(false);
+    
+    probe_mech = Umberger2010MuscleMetabolicsProbe();
+    probe_mech.setName("all_mechanical_work_rate");
+    probe_mech.set_activation_maintenance_rate_on(false);
+    probe_mech.set_shortening_rate_on(false);
+    probe_mech.set_basal_rate_on(false);
+    probe_mech.set_mechanical_work_rate_on(true);    
+    
+    for m = 0:numMuscles-1
+        musc = muscleSet.get(m);
+        muscName = musc.getName();
+        muscName = char(muscName);
+        probe_all.addMuscle(muscName, muscleRatio(muscName));
+        probe_act.addMuscle(muscName, muscleRatio(muscName));
+        probe_short.addMuscle(muscName, muscleRatio(muscName));
+        probe_basal.addMuscle(muscName, muscleRatio(muscName));
+        probe_mech.addMuscle(muscName, muscleRatio(muscName));
+    end
+    
+    model.addProbe(probe_all);
+    model.addProbe(probe_act);
+    model.addProbe(probe_short);
+    model.addProbe(probe_basal);
+    model.addProbe(probe_mech);
+    
+    %{
+        % save this for later when everything is actually working
+        
+        for m = 0:numMuscles-1
+            musc = muscleSet.get(m);
+            muscName = musc.getName();
+            muscName = char(muscName);
+            
+            % add a probe for each muscle
+            probe = Umberger2010MuscleMetabolicsProbe();
+            probe.setName(strcat("metabolics_", muscName));
+            probe.addMuscle(muscName, muscleRatio(muscName));
+            model.addProbe(probe);
+            
+            probe = Umberger2010MuscleMetabolicsProbe();
+            probe.setName(strcat('activation_maintenance_rate_',muscName));
+            probe.set_activation_maintenance_rate_on(true);
+            probe.set_shortening_rate_on(false);
+            probe.set_basal_rate_on(false);
+            probe.set_mechanical_work_rate_on(false);
+            probe.addMuscle(muscName, muscleRatio(muscName));
+            model.addProbe(probe);
+            
+            probe = Umberger2010MuscleMetabolicsProbe();
+            probe.setName(strcat("shortening_rate_",muscName));
+            probe.set_activation_maintenance_rate_on(false);
+            probe.set_shortening_rate_on(true);
+            probe.set_basal_rate_on(false);
+            probe.set_mechanical_work_rate_on(false);
+            probe.addMuscle(muscName, muscleRatio(muscName));
+            model.addProbe(probe);
+            
+            probe = Umberger2010MuscleMetabolicsProbe();
+            probe.setName(strcat("basal_rate_",muscName));
+            probe.set_activation_maintenance_rate_on(false);
+            probe.set_shortening_rate_on(false);
+            probe.set_basal_rate_on(true);
+            probe.set_mechanical_work_rate_on(false);
+            probe.addMuscle(muscName, muscleRatio(muscName));
+            model.addProbe(probe);
+            
+            probe = Umberger2010MuscleMetabolicsProbe();
+            probe.setName(strcat("mechanical_work_rate_",muscName));
+            probe.set_activation_maintenance_rate_on(false);
+            probe.set_shortening_rate_on(false);
+            probe.set_basal_rate_on(false);
+            probe.set_mechanical_work_rate_on(true);
+            probe.addMuscle(muscName, muscleRatio(muscName));
+            model.addProbe(probe);
+            
+        end
+    %}
+    
+    model.finalizeConnections();
+    model.print('simple_model_all_the_probes.osim');  
+
+end
 
 
 function torqueMarkerTrackGRFPrescribe()
@@ -26,7 +316,7 @@ function torqueMarkerTrackGRFPrescribe()
     track.setName("torque_markertrack_grfprescribe");
 
     % construct a ModelProcessor and add it to the tool.
-    modelProcessor = ModelProcessor("subject_walk_armless.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % add ground reaction external loads in lieu of ground-contact model. 
     modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
     % remove all muscles for torque driven analysis
@@ -98,7 +388,7 @@ function torqueStateTrackGRFPrescribe()
     track.setName("torque_statetrack_grfprescribe");
 
     % construct a ModelProcessor and add it to the tool.
-    modelProcessor = ModelProcessor("subject_walk_armless.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % add ground reaction external loads in lieu of ground-contact model. 
     modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
     % remove all muscles for torque driven analysis
@@ -171,7 +461,7 @@ function muscleStatePrescribeGRFPrescribe()
 
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('subject_walk_armless.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
@@ -211,7 +501,7 @@ function muscleStatePrescribeGRFPrescribe()
         'gscommand','C:\Program Files\gs\gs9.52\bin\gswin64.exe', ...
         'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
-    open(pdfFilePath);
+    %  open(pdfFilePath);
 end
 
 
@@ -219,10 +509,10 @@ end
 function muscleStatePrescribeGRFPrescribeWithEMG()
 
     import org.opensim.modeling.*;
-
+    
     % setting up model and the kinematics
     inverse = MocoInverse();
-    modelProcessor = ModelProcessor('subject_walk_armless.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
@@ -230,7 +520,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
     inverse.setModel(modelProcessor);
-
+    
     inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
     inverse.set_initial_time(0.81);
     inverse.set_final_time(1.65);
@@ -255,7 +545,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     bicfem = controlsRef.updDependentColumn('biceps_femoris');
     vaslat = controlsRef.updDependentColumn('vastus_lateralis');
     vasmed = controlsRef.updDependentColumn('vastus_medius');
-    recfem = controlsRef.updDependentColumn('rectus_femoris')
+    recfem = controlsRef.updDependentColumn('rectus_femoris');
     % glumax = controlsRef.updDependentColumn('gluteus_maximus');
     % glumed = controlsRef.updDependentColumn('gluteus_medius');
 
@@ -286,14 +576,18 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % emgTracking.setReferenceLabel('/forceset/glmax1_r','gluteus_maximus');
     % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
     % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
-    problem.addGoal(emgTracking)
+    problem.addGoal(emgTracking);
 
     % can we add in the rest of the actuators from the file to reference, or are they ignored
 
     solution = study.solve();
+    % study.visualize(solution);
+    keyboard
     solution.write('muscle_stateprescribe_grfprescribe_withemg_solution.sto')
+    STOFileAdapter.write(solution.exportToControlsTable(), 'testing_controls.sto')
+    STOFileAdapter.write(solution.exportToStatesTable(), 'testing_states.sto')
 
-    % keyboard
+    keyboard
 
 
 
@@ -323,7 +617,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     report = osimMocoTrajectoryReport(model, ...
              'muscle_stateprescribe_grfprescribe_solution.sto', ...
              'outputFilepath','muscle_stateprescribe_grfprescribe_withemg_solution_report.pdf', ...
-             'bilateral', true, ...
+             'bilateral', false, ...
              'refFiles', {'muscle_stateprescribe_grfprescribe_withemg_solution.sto', ...
                           'controls_reference.sto'});
     % the report is saved to the working directory
@@ -334,40 +628,134 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
         'gscommand','C:\Program Files\gs\gs9.52\bin\gswin64.exe', ...
         'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
-    % open(pdfFilePath);
-
-    keyboard
-
-    
-    
-    
-    
-    % need to then figure out how to calculate and save metabolics stuff
-
-    % function that sets up all the parameters for the metabolics probe
-    % calcWholeBodyMetabolicRate()
-    % function that sets up all the params for each muscle to calculate probe
-    % calcIndividualMetabolicRate()
-
-    % this is a matlab function that actually calculates the umberger cost
-    % calcUmbergetProbe()
-    
-
-    %{
-    model = org.opensim.modeling.Model(model_path);
-    
-    mat.Time = Time;                % Time = res.time;
-    mat.DatStore = DatStore;        % DatStore = lots
-    mat.OptInfo = OptInfo;          % OptInfo = output (from gpops)
-    mat.MuscleNames = MuscleNames;  % MuscleNames = DatStore.MuscleNames;
-
-    
-    wholeBodyEnergyCost = calcWholeBodyMetabolicRate(model, mat);
-    muscleEnergyCost = calcIndividualMetabolicRate(model, mat);
-    %}
-    
+    % open(pdfFilePath);   
 end
 
 
+
+function analyzeMetabolicCost()
+    
+    keyboard
+    import org.opensim.modeling.*
+    % Conduct an analysis using MuscleAnalysis and ProbeReporter.
+    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
+    Time = solution.getTimeMat();
+    numColPoints = solution.getNumTimes();
+    
+    % full moco method
+    analyze = AnalyzeTool();
+    analyze.setName("analyze");
+    analyze.setModelFilename("simple_model_all_the_probes.osim");
+    analyze.setStatesFileName("testing_states.sto");
+    analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
+    analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
+    analyze.updControllerSet().cloneAndAppend(PrescribedController("testing_controls.sto"));
+    analyze.setInitialTime(Time(1));
+    analyze.setFinalTime(Time(end));
+    analyze.print("testing_AnalyzeTool_setup.xml");
+    % Run the analysis.
+    analyze = AnalyzeTool("testing_AnalyzeTool_setup.xml");
+    analyze.run();
+
+    % tables
+    table_force = TimeSeriesTable("analyze_MuscleAnalysis_ActiveFiberForce.sto");
+    table_velocity = TimeSeriesTable("analyze_MuscleAnalysis_FiberVelocity.sto");
+    table_metabolics = TimeSeriesTable('analyze_ProbeReporter_probes.sto');
+
+    % time
+    time_os = table_force.getIndependentColumn();
+    time = [];
+    for i=0:time_os.size()-1
+        time = [time; time_os.get(i)];
+    end
+    time_met_os = table_metabolics.getIndependentColumn();
+    time_met = [];
+    for i=0:time_met_os.size()-1
+        time_met = [time_met; time_met_os.get(i)];
+    end
+
+    % work through all the muscles
+    muscles = [];
+    labels = table_force.getColumnLabels();
+    for i=0:labels.size()-1
+        muscles = [muscles, labels.get(i)];
+    end
+    numMuscles = length(muscles);
+    
+    % force and velocity
+    force = [];
+    velocity = [];
+    for i=1:length(muscles)
+        temp_force = table_force.getDependentColumn(muscles(i)).getAsMat();
+        force = [force, temp_force];
+        temp_velocity = table_velocity.getDependentColumn(muscles(i)).getAsMat();
+        velocity = [velocity, temp_velocity];
+    end
+    
+    keyboard
+    figure(1);
+    hold on
+    for i = 1:numMuscles
+        plot(time, force(:,i).*-velocity(:,i))
+    end
+    
+    
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % Create an AnalyzeTool setup file.
+    
+    
+    % controls
+    % get excitations
+    controlData = solution.getControlsTrajectoryMat();
+    controlNames_os = solution.getControlNames();
+    controlNames = [];
+    for i = 0:controlNames_os.size()-1
+        controlNames= [controlNames, controlNames_os.get(i)];
+    end
+
+    % get activations
+    stateData = solution.getStatesTrajectoryMat();
+    stateNames_os = solution.getStateNames();
+    stateNames = [];
+    for i=0:stateNames_os.size()-1
+        stateNames = [stateNames, stateNames_os.get(i)];
+    end
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % not sure about this stuff
+    model = Model('subject_walk_armless.osim');
+    musclesApoorva = model.getMuscles();
+    
+    probeSet = model.getProbeSet();
+    probe = probeSet.get('metabolic_power');
+    probeUmberger = Umberger2010MuscleMetabolicsProbe.safeDownCast(probe);
+    
+    rho = 1059.7;
+    muscleEnergyRate = NaN(numColPoints, numMuscles);
+    keyboard
+    
+    
+    
+    
+    
+    
+    %{
+    % big loop through all the muscles
+    for m = 1:numMuscles()
+        musc = musclesApoorva.get(muscles(m));
+        Fmax = musc.getMaxIsometricForce();
+        Lceopt = musc.getOptimalFiberLength();
+        maxFiberVel = musc.getMaxContractionVelocity();
+        
+        rST = probeUmberger.getRatioSlowTwitchFibers(muscles(m));        
+    end
+    %}
+    
+    
+end
 
 
