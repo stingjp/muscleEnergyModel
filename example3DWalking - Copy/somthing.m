@@ -1,20 +1,20 @@
 function somthing()
 
     % modify a model for the metabolics study
-    metabolicsModelSetup('subject_walk_armless_noprobe.osim');
+    % metabolicsModelSetup('subject_walk_armless_noprobe.osim');
 
     % run a marker tracking to get joint angles etc. 
-    torqueMarkerTrackGRFPrescribe();
+    % torqueMarkerTrackGRFPrescribe();
 
     % run a inverse problem with the motion created above, and solve for muscles
-    torqueStateTrackGRFPrescribe();
+    % torqueStateTrackGRFPrescribe();
 
     % run an inverse problem and with prescribed states and grf for muscle activations
-    muscleStatePrescribeGRFPrescribe();
+    % muscleStatePrescribeGRFPrescribe();
     
     % run an inverse problem with prescribed states and grf, and
     % tracking experimental emg
-    muscleStatePrescribeGRFPrescribeWithEMG();
+    % muscleStatePrescribeGRFPrescribeWithEMG();
 
     % run an analysis to calculate the metabolic cost
     analyzeMetabolicCost();
@@ -303,9 +303,7 @@ function metabolicsModelSetup(modelFilename)
     
     model.finalizeConnections();
     model.print('simple_model_all_the_probes.osim');  
-
 end
-
 
 function torqueMarkerTrackGRFPrescribe()
     
@@ -376,8 +374,6 @@ function torqueMarkerTrackGRFPrescribe()
     % open(pdfFilePath);
     % save('torque_markertrack_grfprescribe.mat');
 end
-
-
 
 function torqueStateTrackGRFPrescribe()
 
@@ -451,8 +447,6 @@ function torqueStateTrackGRFPrescribe()
     % save('torque_statetrack_grfprescribe.mat');
 end
 
-
-
 function muscleStatePrescribeGRFPrescribe()
     import org.opensim.modeling.*;
 
@@ -504,8 +498,6 @@ function muscleStatePrescribeGRFPrescribe()
     %  open(pdfFilePath);
 end
 
-
-
 function muscleStatePrescribeGRFPrescribeWithEMG()
 
     import org.opensim.modeling.*;
@@ -521,7 +513,20 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     modelProcessor.append(ModOpAddReserves(1.0));
     inverse.setModel(modelProcessor);
     
-    inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
+    tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
+    templabels_os = tempkintable.getColumnLabels();
+%     templabels = []
+    for i=0:templabels_os.size()-1
+%         templabels = [templabels, templabels_os.get(i)];
+        temp = templabels_os.get(i);
+        if ~temp.startsWith('/jointset')
+            tempkintable.removeColumn(temp);
+        end
+    end
+
+    inverse.setKinematics(TableProcessor(tempkintable));
+
+    % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
     inverse.set_initial_time(0.81);
     inverse.set_final_time(1.65);
     inverse.set_mesh_interval(0.02);
@@ -581,16 +586,14 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % can we add in the rest of the actuators from the file to reference, or are they ignored
 
     solution = study.solve();
+    solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
-    keyboard
+    
     solution.write('muscle_stateprescribe_grfprescribe_withemg_solution.sto')
     STOFileAdapter.write(solution.exportToControlsTable(), 'testing_controls.sto')
     STOFileAdapter.write(solution.exportToStatesTable(), 'testing_states.sto')
 
-    keyboard
-
-
-
+    
     % write the reference data in a way that's easy to compare to the solution.
     % controlsRef.removeColumn('medial_hamstrings');
     % controlsRef.removeColumn('biceps_femoris');
@@ -614,6 +617,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     % generate a report comparing MocoInverse solutions without and with EMG tracking
     model = modelProcessor.process();
+    model.print('post_simple_model_all_the_probes.osim');
     report = osimMocoTrajectoryReport(model, ...
              'muscle_stateprescribe_grfprescribe_solution.sto', ...
              'outputFilepath','muscle_stateprescribe_grfprescribe_withemg_solution_report.pdf', ...
@@ -645,7 +649,7 @@ function analyzeMetabolicCost()
     % full moco method
     analyze = AnalyzeTool();
     analyze.setName("analyze");
-    analyze.setModelFilename("simple_model_all_the_probes.osim");
+    analyze.setModelFilename("post_simple_model_all_the_probes.osim");
     analyze.setStatesFileName("testing_states.sto");
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
