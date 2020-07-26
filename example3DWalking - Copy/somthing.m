@@ -515,9 +515,9 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     
     tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
     templabels_os = tempkintable.getColumnLabels();
-%     templabels = []
+    % templabels = []
     for i=0:templabels_os.size()-1
-%         templabels = [templabels, templabels_os.get(i)];
+        % templabels = [templabels, templabels_os.get(i)];
         temp = templabels_os.get(i);
         if ~temp.startsWith('/jointset')
             tempkintable.removeColumn(temp);
@@ -639,7 +639,7 @@ end
 
 function analyzeMetabolicCost()
     
-    keyboard
+    
     import org.opensim.modeling.*
     % Conduct an analysis using MuscleAnalysis and ProbeReporter.
     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
@@ -661,13 +661,18 @@ function analyzeMetabolicCost()
     analyze = AnalyzeTool("testing_AnalyzeTool_setup.xml");
     analyze.run();
 
-    % tables
-    table_force = TimeSeriesTable("analyze_MuscleAnalysis_ActiveFiberForce.sto");
-    table_velocity = TimeSeriesTable("analyze_MuscleAnalysis_FiberVelocity.sto");
-    table_metabolics = TimeSeriesTable('analyze_ProbeReporter_probes.sto');
 
-    % time
-    time_os = table_force.getIndependentColumn();
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % tables
+    table_activefiberforce = TimeSeriesTable("analyze_MuscleAnalysis_ActiveFiberForce.sto");
+    table_fibervelocity = TimeSeriesTable("analyze_MuscleAnalysis_FiberVelocity.sto");
+    table_metabolics = TimeSeriesTable('analyze_ProbeReporter_probes.sto');
+    table_lMT = TimeSeriesTable('analyze_MuscleAnalysis_Length.sto');
+    table_fiberlength = TimeSeriesTable('analyze_MuscleAnalysis_FiberLength.sto');
+    
+    
+    % get time
+    time_os = table_activefiberforce.getIndependentColumn();
     time = [];
     for i=0:time_os.size()-1
         time = [time; time_os.get(i)];
@@ -678,40 +683,32 @@ function analyzeMetabolicCost()
         time_met = [time_met; time_met_os.get(i)];
     end
 
-    % work through all the muscles
+    % get all the muscles
     muscles = [];
-    labels = table_force.getColumnLabels();
+    labels = table_activefiberforce.getColumnLabels();
     for i=0:labels.size()-1
         muscles = [muscles, labels.get(i)];
     end
     numMuscles = length(muscles);
     
-    % force and velocity
-    force = [];
-    velocity = [];
+    % get active fiber force and fiber velocity
+    activefiberforce = [];
+    fibervelocity = [];
+    fiberlength = [];
     for i=1:length(muscles)
-        temp_force = table_force.getDependentColumn(muscles(i)).getAsMat();
-        force = [force, temp_force];
-        temp_velocity = table_velocity.getDependentColumn(muscles(i)).getAsMat();
-        velocity = [velocity, temp_velocity];
+        temp_activefiberforce = table_activefiberforce.getDependentColumn(muscles(i)).getAsMat();
+        activefiberforce = [activefiberforce, temp_activefiberforce];
+        temp_fibervelocity = table_fibervelocity.getDependentColumn(muscles(i)).getAsMat();
+        fibervelocity = [fibervelocity, temp_fibervelocity];
+        temp_fiberlength = table_fiberlength.getDependentColumn(muscles(i)).getAsMat();
+        fiberlength = [fiberlength, temp_fiberlength];
     end
     
-    keyboard
-    figure(1);
-    hold on
-    for i = 1:numMuscles
-        plot(time, force(:,i).*-velocity(:,i))
-    end
-    
-    
+    % get metabolics probe information - TODO: figure out what is useful from here 
+    metabolics_total_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
+    metabolics_total = metabolics_total_os.getAsMat;
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    % Create an AnalyzeTool setup file.
-    
-    
-    % controls
     % get excitations
     controlData = solution.getControlsTrajectoryMat();
     controlNames_os = solution.getControlNames();
@@ -728,19 +725,27 @@ function analyzeMetabolicCost()
         stateNames = [stateNames, stateNames_os.get(i)];
     end
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % not sure about this stuff
-    model = Model('subject_walk_armless.osim');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % workspace - working on the typical metabolic outputs that we have
+    % TODO: figure out good save points/methods for:
+    % whole body, each muscle, through time and averaged
+    keyboard
+
+    model = Model('post_simple_model_all_the_probes.osim');
     musclesApoorva = model.getMuscles();
     
     probeSet = model.getProbeSet();
-    probe = probeSet.get('metabolic_power');
+    probe = probeSet.get('all_metabolics'); % this can change for the different components
     probeUmberger = Umberger2010MuscleMetabolicsProbe.safeDownCast(probe);
     
-    rho = 1059.7;
+    rho = 1059.7; % muscle density [kg/m^3]
+    
+    % get ratio of max force output at this length to the optimal length
+    % [~, ~, F, Fiso] = DeGroote2016Muscle_lMtildeState();
+    
     muscleEnergyRate = NaN(numColPoints, numMuscles);
     keyboard
+%     getActiveForceMultiplier()
     
     
     
@@ -759,6 +764,22 @@ function analyzeMetabolicCost()
     end
     %}
     
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % some plotting 
+    %{
+        keyboard
+        figure(1);
+        hold on
+        for i = 1:numMuscles
+            plot(time, force(:,i).*-velocity(:,i))
+        end
+        
+    
+    figure(2);
+    hold on
+    plot(time, metabolics_total);
+    %}
     
 end
 
