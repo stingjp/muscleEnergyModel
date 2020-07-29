@@ -7,14 +7,14 @@ function somthing()
     % torqueMarkerTrackGRFPrescribe();
 
     % run a inverse problem with the motion created above, and solve for muscles
-    % torqueStateTrackGRFPrescribe();
+    torqueStateTrackGRFPrescribe;
 
     % run an inverse problem and with prescribed states and grf for muscle activations
-    % muscleStatePrescribeGRFPrescribe();
+    muscleStatePrescribeGRFPrescribe();
     
     % run an inverse problem with prescribed states and grf, and
     % tracking experimental emg
-    % muscleStatePrescribeGRFPrescribeWithEMG();
+    muscleStatePrescribeGRFPrescribeWithEMG();
 
     % run an analysis to calculate the metabolic cost
     analyzeMetabolicCost();
@@ -209,28 +209,28 @@ function metabolicsModelSetup(modelFilename)
     probe_act.set_shortening_rate_on(false);
     probe_act.set_basal_rate_on(false);
     probe_act.set_mechanical_work_rate_on(false);
-    
+
     probe_short = Umberger2010MuscleMetabolicsProbe();
     probe_short.setName("all_shortening_rate");
     probe_short.set_activation_maintenance_rate_on(false);
     probe_short.set_shortening_rate_on(true);
     probe_short.set_basal_rate_on(false);
     probe_short.set_mechanical_work_rate_on(false);
-    
+
     probe_basal = Umberger2010MuscleMetabolicsProbe();
     probe_basal.setName("all_basal_rate");
     probe_basal.set_activation_maintenance_rate_on(false);
     probe_basal.set_shortening_rate_on(false);
     probe_basal.set_basal_rate_on(true);
     probe_basal.set_mechanical_work_rate_on(false);
-    
+
     probe_mech = Umberger2010MuscleMetabolicsProbe();
     probe_mech.setName("all_mechanical_work_rate");
     probe_mech.set_activation_maintenance_rate_on(false);
     probe_mech.set_shortening_rate_on(false);
     probe_mech.set_basal_rate_on(false);
     probe_mech.set_mechanical_work_rate_on(true);    
-    
+
     for m = 0:numMuscles-1
         musc = muscleSet.get(m);
         muscName = musc.getName();
@@ -405,8 +405,8 @@ function torqueStateTrackGRFPrescribe()
     track.set_track_reference_position_derivatives(true);
 
     % set the times and mesh interval, mesh points are computed internally. 
-    track.set_initial_time(0.81);
-    track.set_final_time(1.65);
+    track.set_initial_time(0.631);
+    track.set_final_time(1.778);
     track.set_mesh_interval(0.05);
 
     % instead of calling solve, call initialize to get pre-configured
@@ -471,8 +471,8 @@ function muscleStatePrescribeGRFPrescribe()
     inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
     
     % set time and intervals
-    inverse.set_initial_time(0.81);
-    inverse.set_final_time(1.65);
+    inverse.set_initial_time(0.631);
+    inverse.set_final_time(1.778);
     inverse.set_mesh_interval(0.02);
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
@@ -482,7 +482,10 @@ function muscleStatePrescribeGRFPrescribe()
     % solution = inverse.solve(true); % to visualize
     solution = inverse.solve();
     solution.getMocoSolution().write('muscle_stateprescribe_grfprescribe_solution.sto');
-
+    STOFileAdapter.write(solution.getMocoSolution().exportToControlsTable(), 'muscleprescribe_controls.sto')
+    STOFileAdapter.write(solution.getMocoSolution().exportToStatesTable(), 'muscleprescribe_states.sto')
+    
+    
     % Generate a report with plots for the solution trajectory.
     model = modelProcessor.process();
     report = osimMocoTrajectoryReport(model, ...
@@ -527,8 +530,8 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     inverse.setKinematics(TableProcessor(tempkintable));
 
     % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
-    inverse.set_initial_time(0.81);
-    inverse.set_final_time(1.65);
+    inverse.set_initial_time(0.631);
+    inverse.set_final_time(1.778);
     inverse.set_mesh_interval(0.02);
     inverse.set_kinematics_allow_extra_columns(true);
 
@@ -590,8 +593,8 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % study.visualize(solution);
     
     solution.write('muscle_stateprescribe_grfprescribe_withemg_solution.sto')
-    STOFileAdapter.write(solution.exportToControlsTable(), 'testing_controls.sto')
-    STOFileAdapter.write(solution.exportToStatesTable(), 'testing_states.sto')
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribewithemg_controls.sto')
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribewithemg_states.sto')
 
     
     % write the reference data in a way that's easy to compare to the solution.
@@ -635,8 +638,6 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % open(pdfFilePath);   
 end
 
-
-
 function analyzeMetabolicCost()
     
     
@@ -645,6 +646,7 @@ function analyzeMetabolicCost()
     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
+    model_mass = 85.07; % kg
     
     % full moco method
     analyze = AnalyzeTool();
@@ -704,10 +706,6 @@ function analyzeMetabolicCost()
         fiberlength = [fiberlength, temp_fiberlength];
     end
     
-    % get metabolics probe information - TODO: figure out what is useful from here 
-    metabolics_total_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
-    metabolics_total = metabolics_total_os.getAsMat;
-
 
     % get excitations
     controlData = solution.getControlsTrajectoryMat();
@@ -729,58 +727,32 @@ function analyzeMetabolicCost()
     % workspace - working on the typical metabolic outputs that we have
     % TODO: figure out good save points/methods for:
     % whole body, each muscle, through time and averaged
-    keyboard
+    
+    % get metabolics probe information - TODO: figure out what is useful from here 
+    metabolics_all_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
+    metabolics_act_os = table_metabolics.getDependentColumn('all_activation_maintenance_rate_TOTAL');
+    metabolics_short_os = table_metabolics.getDependentColumn('all_shortening_rate_TOTAL');
+    metabolics_basal_os = table_metabolics.getDependentColumn('all_basal_rate_TOTAL');
+    metabolics_mech_os = table_metabolics.getDependentColumn('all_mechanical_work_rate_TOTAL');
+    
+    metabolics_all = metabolics_all_os.getAsMat;
+    metabolics_act = metabolics_act_os.getAsMat;
+    metabolics_short = metabolics_short_os.getAsMat;
+    metabolics_basal = metabolics_basal_os.getAsMat;
+    metabolics_mech = metabolics_mech_os.getAsMat;
 
-    model = Model('post_simple_model_all_the_probes.osim');
-    musclesApoorva = model.getMuscles();
-    
-    probeSet = model.getProbeSet();
-    probe = probeSet.get('all_metabolics'); % this can change for the different components
-    probeUmberger = Umberger2010MuscleMetabolicsProbe.safeDownCast(probe);
-    
-    rho = 1059.7; % muscle density [kg/m^3]
-    
-    % get ratio of max force output at this length to the optimal length
-    % [~, ~, F, Fiso] = DeGroote2016Muscle_lMtildeState();
-    
-    muscleEnergyRate = NaN(numColPoints, numMuscles);
-    keyboard
-%     getActiveForceMultiplier()
-    
-    
-    
-    
-    
-    
-    %{
-    % big loop through all the muscles
-    for m = 1:numMuscles()
-        musc = musclesApoorva.get(muscles(m));
-        Fmax = musc.getMaxIsometricForce();
-        Lceopt = musc.getOptimalFiberLength();
-        maxFiberVel = musc.getMaxContractionVelocity();
-        
-        rST = probeUmberger.getRatioSlowTwitchFibers(muscles(m));        
-    end
-    %}
-    
+    metabolics_all_avg = ((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
+    metabolics_act_avg = ((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
+    metabolics_short_avg = ((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
+    metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
+    metabolics_mech_avg = ((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % some plotting 
-    %{
-        keyboard
-        figure(1);
-        hold on
-        for i = 1:numMuscles
-            plot(time, force(:,i).*-velocity(:,i))
-        end
-        
-    
-    figure(2);
-    hold on
-    plot(time, metabolics_total);
-    %}
-    
+    met_rows = {'trial'};
+    met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
+                metabolics_basal_avg, metabolics_mech_avg, 'RowNames', met_rows);
+            
+    writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
+    keyboard
 end
 
 
