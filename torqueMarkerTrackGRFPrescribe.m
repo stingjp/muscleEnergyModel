@@ -19,7 +19,7 @@ function torqueMarkerTrackGRFPrescribe()
 
     % set the MocoTrack markers reference directly from trc file. 
     % data is filtered at 6Hz and if in millimeters, converted to m. 
-    track.setMarkersReferenceFromTRC("marker_trajectories.trc");
+    track.setMarkersReferenceFromTRC("motion_capture.trc");
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % increase global marker tracking weight, which is associated with internal 
@@ -44,8 +44,8 @@ function torqueMarkerTrackGRFPrescribe()
     track.set_markers_weight_set(markerWeights);
 
     % set the times and mesh interval, mesh points are computed internally. 
-    track.set_initial_time(0.81);
-    track.set_final_time(1.65);
+    track.set_initial_time(0.631);
+    track.set_final_time(1.778);
     track.set_mesh_interval(0.05);
 
     % solve - the bool indicates to visualize the solution
@@ -66,4 +66,5 @@ function torqueMarkerTrackGRFPrescribe()
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     % open(pdfFilePath);
     % save('torque_markertrack_grfprescribe.mat');
+    disp('end marker track');
 end

@@ -16,9 +16,15 @@ function torqueStateTrackGRFPrescribe()
     % ignores pelvis coordinates with already have. 
     modelProcessor.append(ModOpAddReserves(250));
     track.setModel(modelProcessor);
-
+    
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
-    track.setStatesReference(TableProcessor('coordinates.sto'));
+    % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
+    tableProcessor = TableProcessor('coordinates_updated.mot');
+    tableProcessor.append(TabOpUseAbsoluteStateNames());
+    tableProcessor.append(TabOpLowPassFilter(6));
+    
+    track.setStatesReference(tableProcessor);
+
     track.set_states_global_tracking_weight(10);
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
@@ -68,4 +74,5 @@ function torqueStateTrackGRFPrescribe()
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     % open(pdfFilePath);
     % save('torque_statetrack_grfprescribe.mat');
+    disp('end state torque track')
 end
