@@ -34,7 +34,10 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     study = inverse.initialize();
     problem = study.updProblem();
-
+    model = modelProcessor.process();
+    muscleset = model.getMuscles();
+    firstmuscle = muscleset.get(0).getName();
+        
     % add EMG tracking
     emgTracking = MocoControlTrackingGoal('emg_tracking');
     emgTracking.setWeight(50.0);
@@ -43,14 +46,14 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     % Scalde down the tracked muscle activity based on the peak levels from 
     % 'Gait analysis: normal and pathological function' by Perry and Burnfield, 2010 
-    soleus = controlsRef.updDependentColumn('soleus');
-    gasmed = controlsRef.updDependentColumn('gastrocnemius');
-    tibant = controlsRef.updDependentColumn('tibialis_anterior');
-    medham = controlsRef.updDependentColumn('medial_hamstrings');
-    bicfem = controlsRef.updDependentColumn('biceps_femoris');
-    vaslat = controlsRef.updDependentColumn('vastus_lateralis');
-    vasmed = controlsRef.updDependentColumn('vastus_medius');
-    recfem = controlsRef.updDependentColumn('rectus_femoris');
+    soleus = controlsRef.updDependentColumn('SOL');
+    gasmed = controlsRef.updDependentColumn('GAS');
+    tibant = controlsRef.updDependentColumn('TA');
+    medham = controlsRef.updDependentColumn('MH');
+    bicfem = controlsRef.updDependentColumn('BF');
+    vaslat = controlsRef.updDependentColumn('VL');
+    vasmed = controlsRef.updDependentColumn('VM');
+    recfem = controlsRef.updDependentColumn('RF');
     % glumax = controlsRef.updDependentColumn('gluteus_maximus');
     % glumed = controlsRef.updDependentColumn('gluteus_medius');
 
@@ -68,19 +71,37 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     end
 
     emgTracking.setReference(TableProcessor(controlsRef));
-    % associate actuators in the model with columns in electromyography.sto
-    emgTracking.setReferenceLabel('/forceset/soleus_r','soleus');
-    emgTracking.setReferenceLabel('/forceset/gasmed_r','gastrocnemius');
-    emgTracking.setReferenceLabel('/forceset/gaslat_r','gastrocnemius');
-    emgTracking.setReferenceLabel('/forceset/tibant_r','tibialis_anterior');
-    emgTracking.setReferenceLabel('/forceset/semimem_r','medial_hamstrings');
-    emgTracking.setReferenceLabel('/forceset/bflh_r','biceps_femoris');
-    emgTracking.setReferenceLabel('/forceset/vaslat_r','vastus_lateralis');
-    emgTracking.setReferenceLabel('/forceset/vasmed_r','vastus_medius');
-    emgTracking.setReferenceLabel('/forceset/recfem_r','rectus_femoris');
-    % emgTracking.setReferenceLabel('/forceset/glmax1_r','gluteus_maximus');
-    % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
-    % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
+    
+    if strcmp(firstmuscle, 'addbrev_r')
+        % associate actuators in the model with columns in electromyography.sto
+        emgTracking.setReferenceLabel('/forceset/soleus_r','SOL');
+        emgTracking.setReferenceLabel('/forceset/gasmed_r','GAS');
+        emgTracking.setReferenceLabel('/forceset/gaslat_r','GAS');
+        emgTracking.setReferenceLabel('/forceset/tibant_r','TA');
+        emgTracking.setReferenceLabel('/forceset/semimem_r','MH');
+        emgTracking.setReferenceLabel('/forceset/bflh_r','BF');
+        emgTracking.setReferenceLabel('/forceset/vaslat_r','VL');
+        emgTracking.setReferenceLabel('/forceset/vasmed_r','VM');
+        emgTracking.setReferenceLabel('/forceset/recfem_r','RF');
+        % emgTracking.setReferenceLabel('/forceset/glmax1_r','gluteus_maximus');
+        % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
+        % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
+    else
+        % associate actuators in the model with columns in electromyography.sto
+        emgTracking.setReferenceLabel('/forceset/soleus_r','SOL');
+        emgTracking.setReferenceLabel('/forceset/med_gas_r','GAS');
+        emgTracking.setReferenceLabel('/forceset/lat_gas_r','GAS');
+        emgTracking.setReferenceLabel('/forceset/tib_ant_r','TA');
+        emgTracking.setReferenceLabel('/forceset/semimem_r','MH');
+        emgTracking.setReferenceLabel('/forceset/bifemlh_r','BF');
+        emgTracking.setReferenceLabel('/forceset/vas_lat_r','VL');
+        emgTracking.setReferenceLabel('/forceset/vas_med_r','VM');
+        emgTracking.setReferenceLabel('/forceset/rect_fem_r','RF');
+        % emgTracking.setReferenceLabel('/forceset/glmax1_r','gluteus_maximus');
+        % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
+        % emgTracking.setReferenceLabel('/forceset/glmax2_r','gluteus_maximus');
+    end
+        
     problem.addGoal(emgTracking);
 
     % can we add in the rest of the actuators from the file to reference, or are they ignored
@@ -100,23 +121,38 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % controlsRef.removeColumn('vastus_lateralis');
     % controlsRef.removeColumn('vastus_medius');
     % controlsRef.removeColumn('rectus_femoris');
-    controlsRef.removeColumn('gluteus_maximus');
-    controlsRef.removeColumn('gluteus_medius');
+    controlsRef.removeColumn('GMAX');
+    controlsRef.removeColumn('GMED');
     columnLabels = StdVectorString();
-    columnLabels.add('/forceset/soleus_r');
-    columnLabels.add('/forceset/gasmed_r');
-    columnLabels.add('/forceset/tibant_r');
-    columnLabels.add('/forceset/semimem_r');
-    columnLabels.add('/forceset/bflh_r');
-    columnLabels.add('/forceset/vaslat_r');
-    columnLabels.add('/forceset/vaslmed_r');
-    columnLabels.add('/forceset/recfem_r');
-    controlsRef.setColumnLabels(columnLabels);
-    controlsRef.appendColumn('/forceset/gaslat_r', gasmed);
+    
+    if strcmp(firstmuscle, 'addbrev_r')
+        columnLabels.add('/forceset/soleus_r');
+        columnLabels.add('/forceset/gasmed_r');
+        columnLabels.add('/forceset/tibant_r');
+        columnLabels.add('/forceset/semimem_r');
+        columnLabels.add('/forceset/bflh_r');
+        columnLabels.add('/forceset/vaslat_r');
+        columnLabels.add('/forceset/vaslmed_r');
+        columnLabels.add('/forceset/recfem_r');
+        controlsRef.setColumnLabels(columnLabels);
+        controlsRef.appendColumn('/forceset/gaslat_r', gasmed);
+    else
+        columnLabels.add('/forceset/soleus_r');
+        columnLabels.add('/forceset/med_gas_r');
+        columnLabels.add('/forceset/tib_ant_r');
+        columnLabels.add('/forceset/semimem_r');
+        columnLabels.add('/forceset/bifemlh_r');
+        columnLabels.add('/forceset/vas_lat_r');
+        columnLabels.add('/forceset/vas_lmed_r');
+        columnLabels.add('/forceset/rect_fem_r');
+        controlsRef.setColumnLabels(columnLabels);
+        controlsRef.appendColumn('/forceset/lat_gas_r', gasmed);
+    end
+    
     STOFileAdapter.write(controlsRef, 'controls_reference.sto');
 
     % generate a report comparing MocoInverse solutions without and with EMG tracking
-    model = modelProcessor.process();
+    % model = modelProcessor.process();
     model.print('post_simple_model_all_the_probes.osim');
     report = osimMocoTrajectoryReport(model, ...
              'muscle_stateprescribe_grfprescribe_solution.sto', ...
