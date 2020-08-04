@@ -4,7 +4,7 @@ nColumns=11
 nRows=4780
 DataType=double
 version=3
-OpenSimVersion=4.2
+OpenSimVersion=4.2-2020-07-15-c97928fa4
 endheader
 time	/forceset/soleus_r	/forceset/gasmed_r	/forceset/tibant_r	/forceset/semimem_r	/forceset/bflh_r	/forceset/vaslat_r	/forceset/vaslmed_r	/forceset/recfem_r	/forceset/gaslat_r
 0	0.007445410069829759	0.002437919345619994	0.01697292723734935	0.006916093728383444	0.002135971160473943	0.003169243400220754	0.01235990352352427	0.005166068103043857	0.002437919345619994
