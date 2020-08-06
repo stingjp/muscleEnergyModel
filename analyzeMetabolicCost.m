@@ -110,6 +110,8 @@ function analyzeMetabolicCost()
     metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_mech_avg = ((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
 
+    temp_reg = metabolics_all_avg;
+
     met_rows = {'trial'};
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
                 metabolics_basal_avg, metabolics_mech_avg, 'RowNames', met_rows);
@@ -225,6 +227,10 @@ function analyzeMetabolicCost()
     metabolics_short_avg = ((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
     metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_mech_avg = ((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
+
+    temp_reg
+    temp_emg = metabolics_all_avg
+    difference = temp_reg - temp_emg
 
     met_rows = {'trial'};
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
