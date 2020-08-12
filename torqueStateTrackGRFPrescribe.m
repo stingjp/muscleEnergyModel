@@ -33,9 +33,25 @@ function torqueStateTrackGRFPrescribe()
     % the derivative of splined position data
     track.set_track_reference_position_derivatives(true);
 
+
+
+    % get the subject name and gait timings
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    workdir = pwd;
+    [~,trialname,~] = fileparts(pwd);
+    cd ../
+    [~,conditionname,~] = fileparts(pwd);
+    cd ../
+    [~,subjectname,~] = fileparts(pwd);
+    cd(workdir);
+
+    gait_start = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).initial;
+    gait_end = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).final;
+
+
     % set the times and mesh interval, mesh points are computed internally. 
-    track.set_initial_time(0.631);
-    track.set_final_time(1.778);
+    track.set_initial_time(gait_start);
+    track.set_final_time(gait_end);
     track.set_mesh_interval(0.05);
 
     % instead of calling solve, call initialize to get pre-configured

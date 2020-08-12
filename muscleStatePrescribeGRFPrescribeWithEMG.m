@@ -25,10 +25,25 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     end
 
     inverse.setKinematics(TableProcessor(tempkintable));
-
     % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
-    inverse.set_initial_time(0.631);
-    inverse.set_final_time(1.778);
+
+
+
+    % get the subject name and gait timings
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    workdir = pwd;
+    [~,trialname,~] = fileparts(pwd);
+    cd ../
+    [~,conditionname,~] = fileparts(pwd);
+    cd ../
+    [~,subjectname,~] = fileparts(pwd);
+    cd(workdir);
+
+    gait_start = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).initial;
+    gait_end = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).final;
+
+    inverse.set_initial_time(gait_start);
+    inverse.set_final_time(gait_end);
     inverse.set_mesh_interval(0.02);
     inverse.set_kinematics_allow_extra_columns(true);
 
