@@ -9,7 +9,15 @@ function analyzeMetabolicCost()
     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
-    model_mass = 85.07; % kg
+    
+    % get the subject name and mass
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+    workdir = pwd;
+    cd ../../
+    tempdir = pwd;
+    [~,subjectname,~] = fileparts(pwd);
+    cd(workdir);
+    model_mass = subjectmass.(genvarname(subjectname)); % kg
     
     % full moco method
     analyze = AnalyzeTool();
@@ -88,10 +96,8 @@ function analyzeMetabolicCost()
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % workspace - working on the typical metabolic outputs that we have
-    % TODO: figure out good save points/methods for:
-    % whole body, each muscle, through time and averaged
     
-    % get metabolics probe information - TODO: figure out what is useful from here 
+    % get metabolics probe information
     metabolics_all_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
     metabolics_act_os = table_metabolics.getDependentColumn('all_activation_maintenance_rate_TOTAL');
     metabolics_short_os = table_metabolics.getDependentColumn('all_shortening_rate_TOTAL');
@@ -104,11 +110,11 @@ function analyzeMetabolicCost()
     metabolics_basal = metabolics_basal_os.getAsMat;
     metabolics_mech = metabolics_mech_os.getAsMat;
 
-    metabolics_all_avg = ((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
-    metabolics_act_avg = ((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
-    metabolics_short_avg = ((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
-    metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
-    metabolics_mech_avg = ((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
+    metabolics_all_avg = 2*((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
+    metabolics_act_avg = 2*((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
+    metabolics_short_avg = 2*((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
+    metabolics_basal_avg = 2*((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
+    metabolics_mech_avg = 2*((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
 
     temp_reg = metabolics_all_avg;
 
@@ -127,7 +133,15 @@ function analyzeMetabolicCost()
     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
-    model_mass = 85.07; % kg
+    
+    % get the subject name and mass
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+    workdir = pwd;
+    cd ../../
+    tempdir = pwd;
+    [~,subjectname,~] = fileparts(pwd);
+    cd(workdir);
+    model_mass = subjectmass.(genvarname(subjectname)); % kg
     
     % full moco method
     analyze = AnalyzeTool();
@@ -222,11 +236,11 @@ function analyzeMetabolicCost()
     metabolics_basal = metabolics_basal_os.getAsMat;
     metabolics_mech = metabolics_mech_os.getAsMat;
 
-    metabolics_all_avg = ((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
-    metabolics_act_avg = ((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
-    metabolics_short_avg = ((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
-    metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
-    metabolics_mech_avg = ((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
+    metabolics_all_avg = 2*((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
+    metabolics_act_avg = 2*((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
+    metabolics_short_avg = 2*((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
+    metabolics_basal_avg = 2*((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
+    metabolics_mech_avg = 2*((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
 
     temp_reg
     temp_emg = metabolics_all_avg

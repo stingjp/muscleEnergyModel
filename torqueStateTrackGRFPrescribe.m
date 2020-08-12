@@ -1,15 +1,15 @@
 function torqueStateTrackGRFPrescribe()
 
     import org.opensim.modeling.*;
-
+    
     % create and name an instance of the MocoTrack tool
     track = MocoTrack();
     track.setName("torque_statetrack_grfprescribe");
-
+    
     % construct a ModelProcessor and add it to the tool.
     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % add ground reaction external loads in lieu of ground-contact model. 
-    modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
+%     modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
     % remove all muscles for torque driven analysis
     modelProcessor.append(ModOpRemoveMuscles());
     % add CoordinateActuators to the model DOF. 

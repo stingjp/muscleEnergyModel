@@ -36,11 +36,11 @@ function torqueMarkerTrackGRFPrescribe()
     markerWeights.cloneAndAppend(MocoWeight("R.Heel", 10));
     markerWeights.cloneAndAppend(MocoWeight("R.MT5", 5));
     markerWeights.cloneAndAppend(MocoWeight("R.Toe", 2));
-    markerWeights.cloneAndAppend(MocoWeight("L.Knee", 10));
-    markerWeights.cloneAndAppend(MocoWeight("L.Ankle", 10));
-    markerWeights.cloneAndAppend(MocoWeight("L.Heel", 10));
-    markerWeights.cloneAndAppend(MocoWeight("L.MT5", 5));
-    markerWeights.cloneAndAppend(MocoWeight("L.Toe", 2));
+    % markerWeights.cloneAndAppend(MocoWeight("L.Knee", 10));
+    % markerWeights.cloneAndAppend(MocoWeight("L.Ankle", 10));
+    % markerWeights.cloneAndAppend(MocoWeight("L.Heel", 10));
+    % markerWeights.cloneAndAppend(MocoWeight("L.MT5", 5));
+    % markerWeights.cloneAndAppend(MocoWeight("L.Toe", 2));
     track.set_markers_weight_set(markerWeights);
 
     % set the times and mesh interval, mesh points are computed internally. 
