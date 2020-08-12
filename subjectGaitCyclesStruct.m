@@ -192,4 +192,4 @@ subjectgaitcycles.demb014.dembloadedfree.trial04.final = 1.8701;
 
 
 
-save 'subjectGaitCycles.mat'
+save 'subjectgaitcycles.mat'

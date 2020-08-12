@@ -21,9 +21,24 @@ function muscleStatePrescribeGRFPrescribe()
     % if no operators, it returns the base table
     inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
     
+
+
+    % get the subject name and gait timings
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    workdir = pwd;
+    [~,trialname,~] = fileparts(pwd);
+    cd ../
+    [~,conditionname,~] = fileparts(pwd);
+    cd ../
+    [~,subjectname,~] = fileparts(pwd);
+    cd(workdir);
+
+    gait_start = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).initial;
+    gait_end = subjectgaitcycles.(genvarname(subjectname)).(genvarname(conditionname)).(genvarname(trialname)).final;
+
     % set time and intervals
-    inverse.set_initial_time(0.631);
-    inverse.set_final_time(1.778);
+    inverse.set_initial_time(gait_start);
+    inverse.set_final_time(gait_end);
     inverse.set_mesh_interval(0.02);
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
