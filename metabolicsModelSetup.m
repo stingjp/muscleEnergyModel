@@ -266,10 +266,23 @@ function metabolicsModelSetup()
     
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     model = modelProcessor.process();
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % might not work
     %{}
+
+    % remove the previous metabolics probes
+    probeset = model.getProbeSet();
+    numProbes = probeset.getSize();
+    taken = 0;
+    for p = 0:numProbes-1
+        probe = probeset.get(p-taken);
+        probename = probe.getName();
+        probeset.remove(probe);
+        taken = taken + 1;
+    end
+
+    model.updProbeSet();
+
     % also potentially remove some limbs??
     getrid_body = {'humerus_r','ulna_r','radius_r','hand_r', ...
                     'humerus_l','ulna_l','radius_l','hand_l' ...
@@ -554,39 +567,59 @@ function metabolicsModelSetup()
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % actually works
-    
-    % now to add probes and things for metabolics
-    
+
+
+
     probe_all = Umberger2010MuscleMetabolicsProbe();
-    probe_all.setName('all_metabolics');
-    
+    model.addProbe(probe_all);
     probe_act = Umberger2010MuscleMetabolicsProbe();
+    model.addProbe(probe_act);
+    probe_short = Umberger2010MuscleMetabolicsProbe();
+    model.addProbe(probe_short);
+    probe_basal = Umberger2010MuscleMetabolicsProbe();
+    model.addProbe(probe_basal);
+    probe_mech = Umberger2010MuscleMetabolicsProbe();
+    model.addProbe(probe_mech);
+    
+
+
+    % now to add probes and things for metabolics
+
+    probe_all.setName('all_metabolics');
+    % probe_all.set_use_Bhargava_recruitment_model(false);
+
     probe_act.setName('all_activation_maintenance_rate');
     probe_act.set_activation_maintenance_rate_on(true);
     probe_act.set_shortening_rate_on(false);
     probe_act.set_basal_rate_on(false);
     probe_act.set_mechanical_work_rate_on(false);
+    % probe_act.set_use_Bhargava_recruitment_model(false);
 
-    probe_short = Umberger2010MuscleMetabolicsProbe();
     probe_short.setName("all_shortening_rate");
     probe_short.set_activation_maintenance_rate_on(false);
     probe_short.set_shortening_rate_on(true);
     probe_short.set_basal_rate_on(false);
     probe_short.set_mechanical_work_rate_on(false);
-
-    probe_basal = Umberger2010MuscleMetabolicsProbe();
+    % probe_short.set_use_Bhargava_recruitment_model(false);
+    
     probe_basal.setName("all_basal_rate");
     probe_basal.set_activation_maintenance_rate_on(false);
     probe_basal.set_shortening_rate_on(false);
     probe_basal.set_basal_rate_on(true);
     probe_basal.set_mechanical_work_rate_on(false);
+    % probe_basal.set_use_Bhargava_recruitment_model(false);
 
-    probe_mech = Umberger2010MuscleMetabolicsProbe();
     probe_mech.setName("all_mechanical_work_rate");
     probe_mech.set_activation_maintenance_rate_on(false);
     probe_mech.set_shortening_rate_on(false);
     probe_mech.set_basal_rate_on(false);
-    probe_mech.set_mechanical_work_rate_on(true);    
+    probe_mech.set_mechanical_work_rate_on(true);
+    % probe_mech.set_use_Bhargava_recruitment_model(false);
+    
+    % TODO:
+    %% figure out how to set the specific tension
+    %% figure out how to adjust some muscle params 
+
     
     numMuscle = muscleset.getSize();
     if strcmp(char(muscleset.get(0).getName()),'addbrev_r')
@@ -595,10 +628,15 @@ function metabolicsModelSetup()
             muscName = musc.getName();
             muscName = char(muscName);
             probe_all.addMuscle(muscName, muscleRatio(muscName));
+            % probe_all.setSpecificTension(muscName, 300000);    
             probe_act.addMuscle(muscName, muscleRatio(muscName));
+            % probe_act.setSpecificTension(muscName, 300000);
             probe_short.addMuscle(muscName, muscleRatio(muscName));
+            % probe_short.setSpecificTension(muscName, 300000);
             probe_basal.addMuscle(muscName, muscleRatio(muscName));
+            % probe_basal.setSpecificTension(muscName, 300000);
             probe_mech.addMuscle(muscName, muscleRatio(muscName));
+            % probe_mech.setSpecificTension(muscName, 300000);
         end
     else
         for m = 0:numMuscle-1
@@ -606,19 +644,56 @@ function metabolicsModelSetup()
             muscName = musc.getName();
             muscName = char(muscName);
             probe_all.addMuscle(muscName, muscleRatio_long(muscName));
+            % probe_all.setSpecificTension(muscName, 300000);
             probe_act.addMuscle(muscName, muscleRatio_long(muscName));
+            % probe_act.setSpecificTension(muscName, 300000);
             probe_short.addMuscle(muscName, muscleRatio_long(muscName));
+            % probe_short.setSpecificTension(muscName, 300000);
             probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
+            % probe_basal.setSpecificTension(muscName, 300000);
             probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
+            % probe_mech.setSpecificTension(muscName, 300000);
         end
     end
 
-    model.addProbe(probe_all);
-    model.addProbe(probe_act);
-    model.addProbe(probe_short);
-    model.addProbe(probe_basal);
-    model.addProbe(probe_mech);
-    
+    model.finalizeConnections();
+
+    % now change the specific tension
+    if strcmp(char(muscleset.get(0).getName()),'addbrev_r')
+        for m = 0:numMuscle-1
+            musc = muscleset.get(m);
+            muscName = musc.getName();
+            muscName = char(muscName);
+            % probe_all.addMuscle(muscName, muscleRatio(muscName));
+            probe_all.setSpecificTension(muscName, 300000);    
+            % probe_act.addMuscle(muscName, muscleRatio(muscName));
+            probe_act.setSpecificTension(muscName, 300000);
+            % probe_short.addMuscle(muscName, muscleRatio(muscName));
+            probe_short.setSpecificTension(muscName, 300000);
+            % probe_basal.addMuscle(muscName, muscleRatio(muscName));
+            probe_basal.setSpecificTension(muscName, 300000);
+            % probe_mech.addMuscle(muscName, muscleRatio(muscName));
+            probe_mech.setSpecificTension(muscName, 300000);
+        end
+    else
+        for m = 0:numMuscle-1
+            musc = muscleset.get(m);
+            muscName = musc.getName();
+            muscName = char(muscName);
+            % probe_all.addMuscle(muscName, muscleRatio_long(muscName));
+            probe_all.setSpecificTension(muscName, 300000);
+            % probe_act.addMuscle(muscName, muscleRatio_long(muscName));
+            probe_act.setSpecificTension(muscName, 300000);
+            % probe_short.addMuscle(muscName, muscleRatio_long(muscName));
+            probe_short.setSpecificTension(muscName, 300000);
+            % probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
+            probe_basal.setSpecificTension(muscName, 300000);
+            % probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
+            probe_mech.setSpecificTension(muscName, 300000);
+        end
+    end
+
+
     %{
         % save this for later when everything is actually working
         

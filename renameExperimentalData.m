@@ -1,5 +1,5 @@
 function renameExperimentalData()
-
+    
     % set up all the new files for the study - from exp/ik results/scaling
     destination = pwd;
     subject_file = 'subject.osim';
@@ -26,15 +26,19 @@ function renameExperimentalData()
             full_source = strcat(pwd, strcat('\', tempfile));
             copyfile(full_source, full_dest);
         elseif contains(tempfile, 'electromyography')
-            % copy the EMG file
-            full_dest = strcat(destination, strcat('\', emg_file));
-            full_source = strcat(pwd, strcat('\', tempfile));
-            copyfile(full_source, full_dest);
+            if ~contains(tempfile, 'anc')
+                % copy the EMG file
+                full_dest = strcat(destination, strcat('\', emg_file));
+                full_source = strcat(pwd, strcat('\', tempfile));
+                copyfile(full_source, full_dest);
+            end
         elseif contains(tempfile, 'ground_reaction') || contains(tempfile, 'grf_walk')
-            % copy the grf file
-            full_dest = strcat(destination, strcat('\', grf_file));
-            full_source = strcat(pwd, strcat('\', tempfile));
-            copyfile(full_source, full_dest);
+            if ~contains(tempfile, 'svg')
+                % copy the grf file
+                full_dest = strcat(destination, strcat('\', grf_file));
+                full_source = strcat(pwd, strcat('\', tempfile));
+                copyfile(full_source, full_dest);
+            end
         elseif contains(tempfile, 'ik_solution')
             % copy ik file
             full_dest = strcat(destination, strcat('\', ik_file));
