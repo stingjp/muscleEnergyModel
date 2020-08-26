@@ -12,14 +12,16 @@ print('Creating all the file directories...\n')
 
 repodir = os.getcwd()
 resultbasedir = os.path.join(repodir,'..\\results\\')
-print(repodir)
-print(resultbasedir)
+# print(repodir)
+# print(resultbasedir)
 
 templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
-print(templateanalysis)
+# print(templateanalysis)
+templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
+
 
 os.chdir(resultbasedir)
-print(os.getcwd())
+# print(os.getcwd())
 
 # subjects
 subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
@@ -151,8 +153,11 @@ for subj in subjects:
                     pass
                 trialdir = os.path.join(tempdir_2, keys)
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 if not os.path.exists(targetfile):
                     copyfile(templateanalysis, targetfile)
+                if not os.path.exists(targetfile2):
+                    copyfile(templategrf, targetfile2)
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
                 except:

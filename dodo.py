@@ -388,20 +388,20 @@ else:
 
 ########################################################################
 ## For the loaded walking study noload portion of the results:
-noloadwalkingstudy = osp.Study(name='noloadwalkingstudy',
+dembstudy = osp.Study(name='dembstudy',
         generic_model_fpath=modified_model,
         reserve_actuators_fpath='Rajagopal2015_reserve_actuators.xml',
         rra_actuators_fpath=None,
         cmc_actuators_fpath=None)
 # muscle names
-noloadwalkingstudy.muscle_names = muscle_names
+dembstudy.muscle_names = muscle_names
 
 
 # 'Default' (act/exc squared) or 'Met' (Umberger's metabolic cost model)
-noloadwalkingstudy.costFunction = 'Met'
+dembstudy.costFunction = 'Met'
 # Shift experimental exoskeleton device torque peaks to line up with ID moments
 # 'true' or 'false'                   !!! what is going on here? what does this do??
-noloadwalkingstudy.shift_exo_peaks = 'false' # switch to true for modified slack kinematic trials
+dembstudy.shift_exo_peaks = 'false' # switch to true for modified slack kinematic trials
 
 
 ##need to understand what these markers are used for!!! TODO
@@ -419,18 +419,20 @@ error_markers = ['R.Shoulder','L.Shoulder','R.Clavicle','L.Clavicle','R.Biceps',
                 'R.Heel','L.Heel','R.TH1','R.TH2','R.TH3','R.SH1','R.SH2','R.SH3','R.SH4',
                 'L.TH1','L.TH2','L.TH3','L.SH1','L.SH2','L.SH3','L.TH4']
 
-noloadwalkingstudy.error_markers = error_markers
+dembstudy.error_markers = error_markers
 # loadedwalking_subj_nums = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14']
-noloadwalking_subj_nums = ['05']
-noloadwalkingstudy.all_subjects = ['subject' + num for num in noloadwalking_subj_nums]
+demb_subj_nums = ['005','007','009','010','011','012','014']
 
+# pineapple
+# this may be useful
+dembstudy.all_subjects = ['subject' + num for num in demb_subj_nums]
 
-import pdb
 
 # loadedwalkingstudy.add_task(TaskModifyExperimentalData)
 
 #Setup model: rename muscles, add HBL base marker set
-noloadwalkingstudy.add_task(TaskGenericModelSetup, generic_model) #,
+# pineapple
+# dembstudy.add_task(TaskGenericModelSetup, generic_model) #,
         # muscle_name_map=muscle_name_map,
         # marker_map=marker_map)
 
@@ -447,6 +449,7 @@ noloadwalkingstudy.add_task(TaskGenericModelSetup, generic_model) #,
     # study.param_dict['muscle_strain'] =        param_muscle_list
 
     # study.cost_dict = dict()
+# pineapple
 ## TODO: figure out passive calibration in MOCO if I go that route
 
 # So we set up the general structure of the study
@@ -457,7 +460,7 @@ subjects = config['subjects']         # takes the subject list from the config f
 for subj in subjects:
     if subj == 'noload05':
         import noload05                 #!!! what is actually being imported?? - is it the subjectXX.py file stuff?
-        noload05.add_to_study(noloadwalkingstudy)    #!!! this goes to the add_to_study(study) object - 
+        noload05.add_to_study(dembstudy)    #!!! this goes to the add_to_study(study) object - 
     # if subj == 77:
     #     import subject077
     #     subject077.add_to_study(study)
