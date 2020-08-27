@@ -616,11 +616,7 @@ function metabolicsModelSetup()
     probe_mech.set_mechanical_work_rate_on(true);
     % probe_mech.set_use_Bhargava_recruitment_model(false);
     
-    % TODO:
-    %% figure out how to set the specific tension
-    %% figure out how to adjust some muscle params 
-
-    
+    % add muscles to each probe setup
     numMuscle = muscleset.getSize();
     if strcmp(char(muscleset.get(0).getName()),'addbrev_r')
         for m = 0:numMuscle-1
