@@ -1,19 +1,13 @@
-look at command window
-it is pointing to the wrong opensim
+figure out doit
 
-there is something going on with osimpipeline
-need to install it correctly probably
+want a task that will cycle through all the subjects and run the analysis in some type of way that will allow user to specify which ones they actually want run - semi specifically. 
+
+##
+seeing what including the passive fiber forces does to the results of the sims
 
 
-
-File "C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\dodo.py", line 35, in <module>
-    import osimpipeline as osp
-  File "C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\osimpipeline\__init__.py", line 1, in <module>
-    from .study import *
-  File "C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\osimpipeline\study.py", line 6, in <module>
-    import vital_tasks
-  File "osimpipeline\vital_tasks.py", line 9, in <module>
-    import opensim as osm
-  File "C:\OpenSim 4.1\sdk\python\opensim\__init__.py", line 2, in <module>
-    from .common import *
+4. scale goal
+5. smooth grf
+6. run demb noload studies
+7. figure out muscle masses
 
