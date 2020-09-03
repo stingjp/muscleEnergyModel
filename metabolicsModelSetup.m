@@ -450,9 +450,9 @@ function metabolicsModelSetup()
     model.updForceSet();
 
     % edit the markers
-    getrid_marker = {'R.Biceps','R.Elbow','R.Forearm','R.Wrist', ...
+    getrid_marker = {'R.MElbow','L.MElbow','R.Biceps','R.Elbow','R.Forearm','R.Wrist', ...
                     'L.Biceps','L.Elbow','L.Forearm','L.Wrist', ...
-                    'L.TH1','L.TH2','L.TH3','L.TH4','L.Knee','L.SH1','L.SH2','L.SH3','L.Ankle','L.Toe','L.Heel','L.MT5'};
+                    'L.TH1','L.TH2','L.TH3','L.TH4','L.Knee','L.SH1','L.SH2','L.SH3','L.Ankle','L.Toe','L.Heel','L.MT5','L_HJC','L_KJC','L_AJC','L.MKnee','L.MAnkle','L.AnkleJoint','L.KneeJoint','L.HeelGround','L.MT5Ground','L.ToeGround','L.AnkleJointGround'};
                 
     markerset = model.getMarkerSet();
     numMarker = markerset.getSize();
