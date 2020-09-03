@@ -8,6 +8,8 @@ function muscleStatePrescribeGRFPrescribe()
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
     modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
+
+    % set up the base model
     modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
     % only valid for degroote
@@ -15,12 +17,53 @@ function muscleStatePrescribeGRFPrescribe()
     % only valid for degroote
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
-    inverse.setModel(modelProcessor);
+    
+    % now do tweaks to get tendon compliance
+    basemodel = modelProcessor.process();
+    basemodel.initSystem();
+    basemuscles = basemodel.updMuscles();
+    numBaseMuscles = basemuscles.getSize();
+    for m = 0:numBaseMuscles-1
+        % set tendon compliance on for certain muscles
+        % if lopt > lst want stiff (ignore)
+
+        % get the muscle
+        basemusc = basemuscles.get(m);
+        % get lopt
+        baselopt = basemusc.getOptimalFiberLength();
+        % get lst
+        baselst = basemusc.getTendonSlackLength();
+        % set compliance if lopt > lst
+        if baselopt < baselst
+            basemusc.set_ignore_tendon_compliance(false)
+        end
+    end
+
+    %% do more model processor stuff
+    modelProcessorDC = ModelProcessor(basemodel);
+    modelProcessorDC.append(ModOpFiberDampingDGF(0.01));
+    % modelProcessorDC.append(ModOpAddReserves(1, 2.5, true));
+    modelProcessorDC.append(ModOpTendonComplianceDynamicsModeDGF('implicit'));
+    inverse.setModel(modelProcessorDC);
+
+
+    tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
+    templabels_os = tempkintable.getColumnLabels();
+    % templabels = []
+    for i=0:templabels_os.size()-1
+        % templabels = [templabels, templabels_os.get(i)];
+        temp = templabels_os.get(i);
+        if ~temp.startsWith('/jointset')
+            tempkintable.removeColumn(temp);
+        end
+    end
+
+    inverse.setKinematics(TableProcessor(tempkintable));
+    % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
 
     % construct TableProcessor of the coordinate data and pass it to the inverse tool
     % if no operators, it returns the base table
-    inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));
-    
+    % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));    
 
 
     % get the subject name and gait timings
@@ -44,12 +87,47 @@ function muscleStatePrescribeGRFPrescribe()
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
 
+    % set inverse goals
+    inverse.set_minimize_sum_squared_activations(true);
+    
+    study = inverse.initialize();
+    problem = study.updProblem();
+    
+    
+    
+    % add goals to the problem and scale them to get close to ~1
+    % effortgoal = MocoControlGoal('effort');
+    % effortgoal.setWeight(0.0001);
+    initactivationgoal = MocoInitialActivationGoal('init_activation');
+    % initactivationgoal.setWeight(0.0001);
+
+    % TODO test
+    % activationsgoal = MocoSumSquaredStateGoal
+
+    % problem.addGoal(effortgoal);
+    problem.addGoal(initactivationgoal);
+
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    solver.resetProblem(problem);
+
+    solution = study.solve();
+    solution.insertStatesTrajectory(tempkintable);
+    % study.visualize(solution);
+
+    model = modelProcessorDC.process();
+    model.print('post_simple_model_all_the_probes.osim');
+
+    solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
+
+
     % Solve the problem and write the solution to a Storage file.
     % solution = inverse.solve(true); % to visualize
-    solution = inverse.solve();
-    solution.getMocoSolution().write('muscle_stateprescribe_grfprescribe_solution.sto');
-    STOFileAdapter.write(solution.getMocoSolution().exportToControlsTable(), 'muscleprescribe_controls.sto')
-    STOFileAdapter.write(solution.getMocoSolution().exportToStatesTable(), 'muscleprescribe_states.sto')
+    % solution = inverse.solve();
+    % solution.getMocoSolution().write('muscle_stateprescribe_grfprescribe_solution.sto');
+    % STOFileAdapter.write(solution.getMocoSolution().exportToControlsTable(), 'muscleprescribe_controls.sto')
+    % STOFileAdapter.write(solution.getMocoSolution().exportToStatesTable(), 'muscleprescribe_states.sto')
     
     
     % Generate a report with plots for the solution trajectory.
@@ -65,4 +143,7 @@ function muscleStatePrescribeGRFPrescribe()
         'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     %  open(pdfFilePath);
+
+    % analyze the metabolic cost
+    analyzeMetabolicCost();
 end
