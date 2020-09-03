@@ -6,12 +6,45 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     inverse = MocoInverse();
     modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
+
+    % set up the base model
     modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
+    % only for DGF
     modelProcessor.append(ModOpIgnorePassiveFiberForcesDGF());
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
-    inverse.setModel(modelProcessor);
+
+    % now do tweaks to get tendon compliance
+    basemodel = modelProcessor.process();
+    basemodel.initSystem();
+    basemuscles = basemodel.updMuscles();
+    numBaseMuscles = basemuscles.getSize();
+    for m = 0:numBaseMuscles-1
+        % set tendon compliance on for certain muscles
+        % if lopt > lst want stiff (ignore)
+
+        % get the muscle
+        basemusc = basemuscles.get(m);
+        % get lopt
+        baselopt = basemusc.getOptimalFiberLength();
+        % get lst
+        baselst = basemusc.getTendonSlackLength();
+        % set compliance if lopt > lst
+        if baselopt < baselst
+            basemusc.set_ignore_tendon_compliance(false)
+        end
+    end
+
+    %% do more model processor stuff
+    modelProcessorDC = ModelProcessor(basemodel);
+    modelProcessorDC.append(ModOpFiberDampingDGF(0.01));
+    % modelProcessorDC.append(ModOpAddReserves(1, 2.5, true));
+    modelProcessorDC.append(ModOpTendonComplianceDynamicsModeDGF('implicit'));
+
+    inverse.setModel(modelProcessorDC);
+
+
     
     tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
     templabels_os = tempkintable.getColumnLabels();
@@ -47,9 +80,23 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     inverse.set_mesh_interval(0.02);
     inverse.set_kinematics_allow_extra_columns(true);
 
+    % goal act^2
+    inverse.set_minimize_sum_squared_activations(true);
+
     study = inverse.initialize();
     problem = study.updProblem();
-    model = modelProcessor.process();
+
+    % add goals to the problem and scale them to get close to ~1
+    % effortgoal = MocoControlGoal('effort');
+    % effortgoal.setWeight(0.0001);
+    initactivationgoal = MocoInitialActivationGoal('init_activation');
+    % initactivationgoal.setWeight(0.0001);
+
+    % problem.addGoal(effortgoal);
+    problem.addGoal(initactivationgoal);
+
+    
+    model = modelProcessorDC.process();
     muscleset = model.getMuscles();
     firstmuscle = muscleset.get(0).getName();
         
@@ -121,10 +168,12 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     % can we add in the rest of the actuators from the file to reference, or are they ignored
 
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    solver.resetProblem(problem);
+
     solution = study.solve();
     solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
-    
     solution.write('muscle_stateprescribe_grfprescribe_withemg_solution.sto')
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribewithemg_controls.sto')
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribewithemg_states.sto')
@@ -184,4 +233,8 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
         'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     % open(pdfFilePath);   
+
+    % analyze the metabolics
+    analyzeMetabolicCostWithEMG();
+
 end
