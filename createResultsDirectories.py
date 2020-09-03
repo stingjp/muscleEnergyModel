@@ -7,6 +7,8 @@ used in the matlab scripts - must be present
 
 import os
 from shutil import copyfile
+from shutil import copy
+
 
 print('Creating all the file directories...\n')
 
@@ -154,10 +156,13 @@ for subj in subjects:
                 trialdir = os.path.join(tempdir_2, keys)
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
-                if not os.path.exists(targetfile):
-                    copyfile(templateanalysis, targetfile)
-                if not os.path.exists(targetfile2):
-                    copyfile(templategrf, targetfile2)
+                copy(templateanalysis, targetfile)
+                copy(templategrf, targetfile2)
+
+                # if not os.path.exists(targetfile):
+                #     copyfile(templateanalysis, targetfile)
+                # if not os.path.exists(targetfile2):
+                #     copyfile(templategrf, targetfile2)
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
                 except:
