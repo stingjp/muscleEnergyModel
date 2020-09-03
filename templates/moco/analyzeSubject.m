@@ -10,9 +10,6 @@ TODO:
 making a script to set up the file structure...
 %}
 
-clear all
-clc
-
 % edit experimental data for simulations
 renameExperimentalData();
 
@@ -28,6 +25,5 @@ muscleStatePrescribeGRFPrescribe();
 close all;
 muscleStatePrescribeGRFPrescribeWithEMG();
 close all;
-analyzeMetabolicCost();
-close all;
+
 disp('success');
