@@ -47,4 +47,19 @@ function renameExperimentalData()
         end
     end
     cd ..
+    
+    cd ik;
+    ikfiles = dir();
+    L = size(ikfiles);
+    L = L(1);
+    for i=1:L
+        tempfile = ikfiles(i).name();
+        if contains(tempfile, 'ik_solution')
+            % copy ik file
+            full_dest = strcat(destination, strcat('\', ik_file));
+            full_source = strcat(pwd, strcat('\', tempfile));
+            copyfile(full_source, full_dest);
+        end
+    end
+    cd ..
 end
