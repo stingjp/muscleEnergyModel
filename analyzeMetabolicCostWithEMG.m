@@ -1,11 +1,10 @@
-function analyzeMetabolicCost()
+function analyzeMetabolicCostWithEMG()
     import org.opensim.modeling.*
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % for the unconstrained solution
+    % for the EMG constrained solution
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Conduct an analysis using MuscleAnalysis and ProbeReporter.
-    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
     
@@ -22,10 +21,10 @@ function analyzeMetabolicCost()
     analyze = AnalyzeTool();
     analyze.setName("analyze");
     analyze.setModelFilename("post_simple_model_all_the_probes.osim");
-    analyze.setStatesFileName("muscleprescribe_states.sto");
+    analyze.setStatesFileName("muscleprescribewithemg_states.sto");
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
-    analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
+    analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribewithemg_controls.sto"));
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
     analyze.print("testing_AnalyzeTool_setup.xml");
@@ -95,8 +94,10 @@ function analyzeMetabolicCost()
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % workspace - working on the typical metabolic outputs that we have
+    % TODO: figure out good save points/methods for:
+    % whole body, each muscle, through time and averaged
     
-    % get metabolics probe information
+    % get metabolics probe information - TODO: figure out what is useful from here 
     metabolics_all_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
     metabolics_act_os = table_metabolics.getDependentColumn('all_activation_maintenance_rate_TOTAL');
     metabolics_short_os = table_metabolics.getDependentColumn('all_shortening_rate_TOTAL');
@@ -115,12 +116,14 @@ function analyzeMetabolicCost()
     metabolics_basal_avg = 2*((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_mech_avg = 2*((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
 
-    temp_reg = metabolics_all_avg
+    % temp_reg
+    temp_emg = metabolics_all_avg
+    % difference = temp_reg - temp_emg
 
     met_rows = {'trial'};
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
                 metabolics_basal_avg, metabolics_mech_avg, 'RowNames', met_rows);
             
-    writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
+    writetable(met_table, 'metabolicsTable_withemg.csv','WriteRowNames',true);
 
 end
