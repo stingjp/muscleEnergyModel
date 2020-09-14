@@ -6,8 +6,9 @@ want a task that will cycle through all the subjects and run the analysis in som
 seeing what including the passive fiber forces does to the results of the sims
 
 
-4. scale goal
+4. scale goal - slack message has new
 5. smooth grf
 6. run demb noload studies
-7. figure out muscle masses
+7. figure out muscle masses -> utilities.py has stuff on muscle masses and setting up probes! may be incorrect masses - although if they are all referencing the same mass, then wouldn't it be a smaller cost???
+
 

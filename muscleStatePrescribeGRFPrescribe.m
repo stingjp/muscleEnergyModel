@@ -87,23 +87,27 @@ function muscleStatePrescribeGRFPrescribe()
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
 
+    
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    
+    % inverse.set_reserves_weight(10);
+
     study = inverse.initialize();
     problem = study.updProblem();
-    
-    
     
     % add goals to the problem and scale them to get close to ~1
     % effortgoal = MocoControlGoal('effort');
     % effortgoal.setWeight(0.0001);
     initactivationgoal = MocoInitialActivationGoal('init_activation');
-    % initactivationgoal.setWeight(0.0001);
+    initactivationgoal.setWeight(1);
 
     % TODO test
-    % activationsgoal = MocoSumSquaredStateGoal
-
+    excitegoal = problem.updGoal('excitation_effort');
+    excitegoal.setWeight(1);
+    % 'activation_effort' goal
+    activegoal = problem.updGoal('activation_effort');
+    activegoal.setWeight(2);
+    
     % problem.addGoal(effortgoal);
     problem.addGoal(initactivationgoal);
 
@@ -131,7 +135,7 @@ function muscleStatePrescribeGRFPrescribe()
     
     
     % Generate a report with plots for the solution trajectory.
-    model = modelProcessor.process();
+    % model = modelProcessor.process();
     report = osimMocoTrajectoryReport(model, ...
             'muscle_stateprescribe_grfprescribe_solution.sto', 'bilateral', true);
     % The report is saved to the working directory.
