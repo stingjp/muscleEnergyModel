@@ -249,9 +249,16 @@ function metabolicsModelSetup()
     model = Model('subject.osim');
     coordfile = StdVectorString();
     coordfile.add('coordinates.mot');
-    opensimSimulation.updatePre40KinematicsFilesFor40MotionType(model, coordfile);
-    opensimSimulation.updateSocketConnecteesBySearch(model);
-    model.print('subject_updated.osim');
+    try
+        % the model and coordinates need updated
+        opensimSimulation.updatePre40KinematicsFilesFor40MotionType(model, coordfile);
+        opensimSimulation.updateSocketConnecteesBySearch(model);
+        model.print('subject_updated.osim');
+    catch
+        % just the coordinates need updated
+        oldmodel = Model('subject_old.osim');
+        opensimSimulation.updatePre40KinematicsFilesFor40MotionType(oldmodel, coordfile);
+        model.print('subject_updated.osim');
 
     % now to do stuff with the model
     modelProcessor = ModelProcessor(model);    
@@ -661,15 +668,15 @@ function metabolicsModelSetup()
             muscName = musc.getName();
             muscName = char(muscName);
             % probe_all.addMuscle(muscName, muscleRatio(muscName));
-            probe_all.setSpecificTension(muscName, 300000);    
+            probe_all.setSpecificTension(muscName, 600000);    
             % probe_act.addMuscle(muscName, muscleRatio(muscName));
-            probe_act.setSpecificTension(muscName, 300000);
+            probe_act.setSpecificTension(muscName, 600000);
             % probe_short.addMuscle(muscName, muscleRatio(muscName));
-            probe_short.setSpecificTension(muscName, 300000);
+            probe_short.setSpecificTension(muscName, 600000);
             % probe_basal.addMuscle(muscName, muscleRatio(muscName));
-            probe_basal.setSpecificTension(muscName, 300000);
+            probe_basal.setSpecificTension(muscName, 600000);
             % probe_mech.addMuscle(muscName, muscleRatio(muscName));
-            probe_mech.setSpecificTension(muscName, 300000);
+            probe_mech.setSpecificTension(muscName, 600000);
         end
     else
         for m = 0:numMuscle-1
@@ -677,15 +684,15 @@ function metabolicsModelSetup()
             muscName = musc.getName();
             muscName = char(muscName);
             % probe_all.addMuscle(muscName, muscleRatio_long(muscName));
-            probe_all.setSpecificTension(muscName, 300000);
+            probe_all.setSpecificTension(muscName, 600000);
             % probe_act.addMuscle(muscName, muscleRatio_long(muscName));
-            probe_act.setSpecificTension(muscName, 300000);
+            probe_act.setSpecificTension(muscName, 600000);
             % probe_short.addMuscle(muscName, muscleRatio_long(muscName));
-            probe_short.setSpecificTension(muscName, 300000);
+            probe_short.setSpecificTension(muscName, 600000);
             % probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
-            probe_basal.setSpecificTension(muscName, 300000);
+            probe_basal.setSpecificTension(muscName, 600000);
             % probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
-            probe_mech.setSpecificTension(muscName, 300000);
+            probe_mech.setSpecificTension(muscName, 600000);
         end
     end
 

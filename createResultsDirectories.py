@@ -8,6 +8,7 @@ used in the matlab scripts - must be present
 import os
 from shutil import copyfile
 from shutil import copy
+from shutil import copytree
 
 
 print('Creating all the file directories...\n')
@@ -20,7 +21,7 @@ resultbasedir = os.path.join(repodir,'..\\results\\')
 templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 # print(templateanalysis)
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
-
+geometrydir = os.path.join(repodir,'Geometry')
 
 os.chdir(resultbasedir)
 # print(os.getcwd())
@@ -156,15 +157,18 @@ for subj in subjects:
                 trialdir = os.path.join(tempdir_2, keys)
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
+                targetgeometry = os.path.join(trialdir,'Geometry')
+
                 copy(templateanalysis, targetfile)
                 copy(templategrf, targetfile2)
-
+                
                 # if not os.path.exists(targetfile):
                 #     copyfile(templateanalysis, targetfile)
                 # if not os.path.exists(targetfile2):
                 #     copyfile(templategrf, targetfile2)
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
+                    copytree(geometrydir, targetgeometry)
                 except:
                     pass
     elif subj[0:4] == 'sild':

@@ -3,6 +3,7 @@ function renameExperimentalData()
     % set up all the new files for the study - from exp/ik results/scaling
     destination = pwd;
     subject_file = 'subject.osim';
+    old_subject_file = 'subject_old.osim';
     mocap_file = 'motion_capture.trc';
     grf_file = 'ground_reaction.mot';
     ik_file = 'coordinates.mot';
@@ -16,10 +17,17 @@ function renameExperimentalData()
     for i=1:L
         tempfile = expfiles(i).name;
         if contains(tempfile, 'osim')
-            % copy the osim file
-            full_dest = strcat(destination, strcat('\',subject_file));
-            full_source = strcat(pwd, strcat('\',tempfile));
-            copyfile(full_source, full_dest);        
+            if contains(tempfile, 'old.osim')
+                % copy over the old one
+                full_dest = strcat(destination, strcat('\',old_subject_file));
+                full_source = strcat(pwd, strcat('\',tempfile));
+                copyfile(full_source, full_dest);
+            else
+                % copy the osim file
+                full_dest = strcat(destination, strcat('\',subject_file));
+                full_source = strcat(pwd, strcat('\',tempfile));
+                copyfile(full_source, full_dest);
+            end
         elseif contains(tempfile, 'trc')
             % copy the mocap file
             full_dest = strcat(destination, strcat('\', mocap_file));

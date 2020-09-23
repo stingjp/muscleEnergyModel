@@ -20,7 +20,7 @@ cd(resultsdir)
 %                   'sildbwrun0','sild10wrun0','sild20wrun0','sild30wrun0']
 
 dembconditions = {'dembnoloadfree'};
-dembsubjects = {'demb005','demb007','demb009','demb010'};
+dembsubjects = {'demb005'}; %'demb007','demb009','demb010'};
 
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
@@ -39,6 +39,7 @@ for subj=1:length(dembsubjects)
             % run the analysis
             try
                 analyzeSubject();
+                disp('ran');
             catch
                 disp('issue');
                 disp(trialdir);

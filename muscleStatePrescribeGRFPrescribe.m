@@ -87,30 +87,34 @@ function muscleStatePrescribeGRFPrescribe()
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
 
-    
+
     % set inverse goals
-    inverse.set_minimize_sum_squared_activations(true);
-    % inverse.set_reserves_weight(10);
+    % inverse.set_minimize_sum_squared_activations(true);
+    inverse.set_reserves_weight(1);
 
     study = inverse.initialize();
     problem = study.updProblem();
+
     
     % add goals to the problem and scale them to get close to ~1
     % effortgoal = MocoControlGoal('effort');
-    % effortgoal.setWeight(0.0001);
-    initactivationgoal = MocoInitialActivationGoal('init_activation');
-    initactivationgoal.setWeight(1);
+    % effortgoal.setWeight(100);
+    % problem.addGoal(effortgoal);
+
+    
+    % initactivationgoal = MocoInitialActivationGoal('init_activation');
+    % initactivationgoal.setWeight(1);
+    % problem.addGoal(initactivationgoal);
+    
 
     % TODO test
-    excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(1);
+    % excitegoal = problem.updGoal('excitation_effort');
+    % excitegoal.setWeight(1e-4);
     % 'activation_effort' goal
-    activegoal = problem.updGoal('activation_effort');
-    activegoal.setWeight(2);
+    % activegoal = problem.updGoal('activation_effort');
+    % activegoal.setWeight(1e-3);
     
-    % problem.addGoal(effortgoal);
-    problem.addGoal(initactivationgoal);
-
+    % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
 
@@ -118,6 +122,8 @@ function muscleStatePrescribeGRFPrescribe()
     solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
 
+
+    % post problem processing
     model = modelProcessorDC.process();
     model.print('post_simple_model_all_the_probes.osim');
 
