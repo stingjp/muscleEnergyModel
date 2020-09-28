@@ -82,6 +82,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     % goal act^2
     inverse.set_minimize_sum_squared_activations(true);
+    inverse.set_reserves_weight(20); % 10
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -89,13 +90,22 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % add goals to the problem and scale them to get close to ~1
     % effortgoal = MocoControlGoal('effort');
     % effortgoal.setWeight(0.0001);
-    initactivationgoal = MocoInitialActivationGoal('init_activation');
-    % initactivationgoal.setWeight(0.0001);
-
     % problem.addGoal(effortgoal);
-    problem.addGoal(initactivationgoal);
 
+    % initactivationgoal = MocoInitialActivationGoal('init_activation');
+    % initactivationgoal.setWeight(0.0001);
+    % problem.addGoal(initactivationgoal);
+
+    % testing
+    % excitation_effort goal
+    excitegoal = problem.updGoal('excitation_effort');
+    excitegoal.setWeight(1e-4); % 1e-4
+    % 'activation_effort' goal
+    % activegoal = problem.updGoal('activation_effort');
+    % activegoal.setWeight(1e-4);
     
+
+    % add emg tracking stuff
     model = modelProcessorDC.process();
     muscleset = model.getMuscles();
     firstmuscle = muscleset.get(0).getName();
