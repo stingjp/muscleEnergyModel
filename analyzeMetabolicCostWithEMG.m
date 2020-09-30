@@ -19,7 +19,7 @@ function analyzeMetabolicCostWithEMG()
     
     % full moco method
     analyze = AnalyzeTool();
-    analyze.setName("analyze");
+    analyze.setName("analyzemusclesEMG");
     analyze.setModelFilename("post_simple_model_all_the_probes.osim");
     analyze.setStatesFileName("muscleprescribewithemg_states.sto");
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
