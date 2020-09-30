@@ -18,12 +18,16 @@ close all;
 metabolicsModelSetup();
 close all;
 % torqueMarkerTrackGRFPrescribe();
-close all;
+% close all;
 torqueStateTrackGRFPrescribe();
 close all;
 muscleStatePrescribeGRFPrescribe();
 close all;
 muscleStatePrescribeGRFPrescribeWithEMG();
 close all;
+
+%%% only once
+% analyzeMetabolicCost();
+% analyzeMetabolicCostWithEMG();
 
 disp('success');
