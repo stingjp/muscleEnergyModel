@@ -551,7 +551,9 @@ function metabolicsModelSetup()
                     'vas_int_l', ...
                     'vas_lat_l', ...
                     'vas_med_l'};
-                
+    
+    
+
     muscleset = model.getMuscles();
     numMuscle = muscleset.getSize();            
     taken = 0;
@@ -569,13 +571,13 @@ function metabolicsModelSetup()
     
     
     %}
-
+    muscleset = model.getMuscles();
+    numMuscle = muscleset.getSize();            
+    
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % actually works
-
-
 
     probe_all = Umberger2010MuscleMetabolicsProbe();
     model.addProbe(probe_all);

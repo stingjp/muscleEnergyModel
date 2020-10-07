@@ -245,6 +245,6 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % open(pdfFilePath);   
 
     % analyze the metabolics
-    analyzeMetabolicCostWithEMG();
+    analyzeMetabolicCostWithEMG(solution);
 
 end
