@@ -120,6 +120,7 @@ function muscleStatePrescribeGRFPrescribe()
     solver.resetProblem(problem);
 
     solution = study.solve();
+    % solution.write('muscletestingforcontrols.sto')
     solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
 
@@ -127,7 +128,7 @@ function muscleStatePrescribeGRFPrescribe()
     % post problem processing
     model = modelProcessorDC.process();
     model.print('post_simple_model_all_the_probes.osim');
-
+    
     solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
