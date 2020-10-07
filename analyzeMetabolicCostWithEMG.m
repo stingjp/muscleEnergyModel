@@ -1,10 +1,10 @@
-function analyzeMetabolicCostWithEMG()
+function analyzeMetabolicCostWithEMG(solution)
     import org.opensim.modeling.*
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % for the EMG constrained solution
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Conduct an analysis using MuscleAnalysis and ProbeReporter.
-    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
+    % solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
     
@@ -35,11 +35,11 @@ function analyzeMetabolicCostWithEMG()
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % tables
-    table_activefiberforce = TimeSeriesTable("analyze_MuscleAnalysis_ActiveFiberForce.sto");
-    table_fibervelocity = TimeSeriesTable("analyze_MuscleAnalysis_FiberVelocity.sto");
-    table_metabolics = TimeSeriesTable('analyze_ProbeReporter_probes.sto');
-    table_lMT = TimeSeriesTable('analyze_MuscleAnalysis_Length.sto');
-    table_fiberlength = TimeSeriesTable('analyze_MuscleAnalysis_FiberLength.sto');
+    table_activefiberforce = TimeSeriesTable("analyzemusclesEMG_MuscleAnalysis_ActiveFiberForce.sto");
+    table_fibervelocity = TimeSeriesTable("analyzemusclesEMG_MuscleAnalysis_FiberVelocity.sto");
+    table_metabolics = TimeSeriesTable('analyzemusclesEMG_ProbeReporter_probes.sto');
+    table_lMT = TimeSeriesTable('analyzemusclesEMG_MuscleAnalysis_Length.sto');
+    table_fiberlength = TimeSeriesTable('analyzemusclesEMG_MuscleAnalysis_FiberLength.sto');
     
     
     % get time

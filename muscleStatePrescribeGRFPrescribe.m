@@ -155,6 +155,13 @@ function muscleStatePrescribeGRFPrescribe()
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     %  open(pdfFilePath);
 
+
+    keyboard
+    computeIDFromResult(solution);
+
     % analyze the metabolic cost
-    analyzeMetabolicCost();
+    analyzeMetabolicCost(solution);
+    % ID analysis and evaluate the reserves
+%     keyboard
+%     computeIDFromResult(model, solution);
 end

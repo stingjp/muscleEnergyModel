@@ -10,7 +10,7 @@ end
 filePattern = fullfile(myFolder, '*.PNG');
 pngFiles = dir(filePattern);
 % Open the video writer object.
-writerObj = VideoWriter('torque_statetrack_grfprescribe_solution.avi');
+writerObj = VideoWriter('muscle_stateprescribe_grfprescribe_solution.avi');
 open(writerObj);
 % Go through image by image writing it out to the AVI file.
 for frameNumber = 1 : length(pngFiles)
