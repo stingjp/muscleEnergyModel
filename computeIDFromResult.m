@@ -91,32 +91,30 @@ function computeIDFromResultMuscle(solution)
         end
     end
 
-    
-    
-    keyboard
+    % get the control actuator moments
+    controlstable = solution.exportToControlsTable();
     % coordinate actuator moments
     numcoordact = length(coordactforcepaths);
+    % coordactmoments1 = zeros(length(Time), numcoordact);
     coordactmoments = zeros(length(Time), numcoordact);
     for c=0:numcoordact-1
         tempcoordact = CoordinateActuator().safeDownCast(modelid.getComponent(coordactforcepaths(c+1)));
+        tempcoordact_forcemultiply = tempcoordact.getOptimalForce();
+        tempcontrols = controlstable.getDependentColumn(coordactforcepaths(c+1));
         for t=0:length(Time)-1
-            tempstate = statestraj.get(t);
-            modelid.realizeDynamics(tempstate);
-            coordactmoments(t+1,c+1) = tempcoordact.getActuation(tempstate);
+            % tempstate = statestraj.get(t);
+            tempcontrol = tempcontrols.get(t);
+            % modelid.realizeDynamics(tempstate);
+            % coordactmoments1(t+1,c+1) = tempcoordact.getActuation(tempstate);
+            coordactmoments(t+1,c+1) = tempcoordact_forcemultiply*tempcontrol;
         end
     end
-
-
-
 
     keyboard
     % figure out how to visualize and plot all the stuff that I want to see, 
     % and throw a warning if the reserves are certain % of net moments
     % TODO
     %% now going to actually compute and plot some stuff?
-
-    % get the tendon forces
-
 
 
     figure(1);
