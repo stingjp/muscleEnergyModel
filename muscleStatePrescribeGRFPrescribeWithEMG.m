@@ -1,4 +1,4 @@
-function muscleStatePrescribeGRFPrescribeWithEMG()
+function [Issues] = muscleStatePrescribeGRFPrescribeWithEMG(Issues)
 
     import org.opensim.modeling.*;
     
@@ -82,7 +82,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
 
     % goal act^2
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(20); % 10
+    inverse.set_reserves_weight(30); % 10
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -99,7 +99,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
     % testing
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(1e-4); % 1e-4
+    excitegoal.setWeight(5e-4); % 1e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
     % activegoal.setWeight(1e-4);
@@ -112,7 +112,7 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
         
     % add EMG tracking
     emgTracking = MocoControlTrackingGoal('emg_tracking');
-    emgTracking.setWeight(50.0);
+    emgTracking.setWeight(15.0);
     % each column in electromyography.sto is normalized so the maximum value is 1 for each
     controlsRef = TimeSeriesTable('electromyography.sto');
 
@@ -244,7 +244,9 @@ function muscleStatePrescribeGRFPrescribeWithEMG()
         'gslibpath','C:\Program Files\gs\gs9.52\lib');
     % open(pdfFilePath);   
 
-    % analyze the metabolics
+    % post analysis and validation
     analyzeMetabolicCostWithEMG(solution);
+    Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
 
+    Issues = computeIDFromResult(Issues, solution);
 end

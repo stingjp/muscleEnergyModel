@@ -1,4 +1,4 @@
-function muscleStatePrescribeGRFPrescribe()
+function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     import org.opensim.modeling.*;
 
     % construct MocoInverse tool
@@ -89,7 +89,7 @@ function muscleStatePrescribeGRFPrescribe()
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(20); % 10
+    inverse.set_reserves_weight(30); %20 10
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -107,7 +107,7 @@ function muscleStatePrescribeGRFPrescribe()
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(1e-4); % 1e-4
+    excitegoal.setWeight(5e-4); % 1e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
     % activegoal.setWeight(1e-4);
@@ -157,12 +157,10 @@ function muscleStatePrescribeGRFPrescribe()
     %  open(pdfFilePath);
 
 
-    keyboard
-    computeIDFromResult(solution);
-
-    % analyze the metabolic cost
+   
+    % post analysis and validation
     analyzeMetabolicCost(solution);
-    % ID analysis and evaluate the reserves
-%     keyboard
-%     computeIDFromResult(model, solution);
+    Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+    Issues = computeIDFromResult(Issues, solution);
+   
 end
