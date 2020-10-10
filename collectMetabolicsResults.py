@@ -4,8 +4,6 @@ Jon Stingel
 File to collect all the of metabolic results that are dispersed throughout the results
 directories. The files are saved in csv files from matlab. I will collect them all 
 into a single place. 
-
-TODO: decide what form that file or structure should take. 
 '''
 
 import os
@@ -19,6 +17,10 @@ print('Collecting all the metabolics results...\n')
 repodir = os.getcwd()
 resultsbasedir = os.path.join(repodir,'..\\results\\')
 analysisbasedir = os.path.join(repodir,'..\\analysis\\')
+metabolicsbasedir = os.path.join(repodir,'..\\metabolicsResults\\')
+targetmuscleresults = os.path.join(metabolicsbasedir,'muscleInverse\\')
+targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\')
+
 
 
 ## set up all the subject conditions and trials that we will need
@@ -89,106 +91,51 @@ os.chdir(resultsbasedir)
 for subj in subjects:
     if subj[0:4] == 'wals':
         # make the directories
-        tempdir = os.path.join(resultbasedir,subj) 
-        try:
-            os.mkdir(tempdir)
-        except:
-            # print('\nDirectory exists.')
-            pass
-        # loop the conditions
-        for cond in walsconditions:
-            try:
-                os.mkdir(os.path.join(tempdir, cond))
-            except:
-                # print('\nDirectory exists.')
-                pass
+        tempdir = os.path.join(resultsbasedir,subj) 
+        # TODO: copy and edit for these subjects
+    
     elif subj[0:4] == 'welk':
         # make the directories
-        tempdir = os.path.join(resultbasedir,subj) 
-        try:
-            os.mkdir(tempdir)
-        except:
-            # print('\nDirectory exists.')
-            pass
-        # loop the conditions
-        for cond in welkconditions:
-            try:
-                os.mkdir(os.path.join(tempdir, cond))
-            except:
-                # print('\nDirectory exists.')
-                pass
+        tempdir = os.path.join(resultsbasedir,subj) 
+        # TODO: copy and edit for these subjects
+
     elif subj[0:4] == 'jack':
         # make the directories
-        tempdir = os.path.join(resultbasedir,subj) 
-        try:
-            os.mkdir(tempdir)
-        except:
-            # print('\nDirectory exists.')
-            pass
-        # loop the conditions
-        for cond in jackconditions:
-            try:
-                os.mkdir(os.path.join(tempdir, cond))
-            except:
-                # print('\nDirectory exists.')
-                pass
+        tempdir = os.path.join(resultsbasedir,subj) 
+        # TODO: copy and edit for these subjects
+
     elif subj[0:4] == 'demb':
         # make the directories
-        tempdir = os.path.join(resultbasedir,subj) 
-        try:
-            os.mkdir(tempdir)
-        except:
-            # print('\nDirectory exists.')
-            pass
-        # loop the conditions
+        tempdir = os.path.join(resultsbasedir,subj)
+        # loop each condition
         for cond in dembconditions:
-            try:
-                os.mkdir(os.path.join(tempdir, cond))
-            except:
-                # print('\nDirectory exists.')
-                pass
-            # do the trial directories
             tempdir_2 = os.path.join(tempdir, cond)
+            # loop through each trial
             for keys in dembtrials[subj+cond]:
+                # get the trial dir
+                trialdir = os.path.join(tempdir_2, keys)                
+                # directory for each metabolic result file
+                metfile1 = os.path.join(trialdir, 'metabolicsTable.csv')
+                metfile2 = os.path.join(trialdir, 'metabolicsTable_withemg.csv')
+                # new names for when they are copied
+                newname1 = subj+'_'+cond+'_'+keys+'_metabolicsTable.csv'
+                newname2 = subj+'_'+cond+'_'+keys+'_metabolicsTable_withemg.csv'
+                # target location paths
+                target1 = os.path.join(targetmuscleresults,newname1)
+                target2 = os.path.join(targetmuscleEMGresults,newname2)
+                # copy the files
                 try:
-                    os.mkdir(os.path.join(tempdir_2, keys))
+                    copy(metfile1,target1)
+                    copy(metfile2,target2)
                 except:
-                    # print('\nTrial directory exists.')
                     pass
-                trialdir = os.path.join(tempdir_2, keys)
-                targetfile = os.path.join(trialdir, 'analyzeSubject.m')
-                targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
-                targetgeometry = os.path.join(trialdir,'Geometry')
 
-                copy(templateanalysis, targetfile)
-                copy(templategrf, targetfile2)
-                
-                # if not os.path.exists(targetfile):
-                #     copyfile(templateanalysis, targetfile)
-                # if not os.path.exists(targetfile2):
-                #     copyfile(templategrf, targetfile2)
-                try:
-                    os.mkdir(os.path.join(trialdir, 'expdata'))
-                    copytree(geometrydir, targetgeometry)
-                except:
-                    pass
     elif subj[0:4] == 'sild':
         # make the directories
-        tempdir = os.path.join(resultbasedir,subj) 
-        try:
-            os.mkdir(tempdir)
-        except:
-            # print('\nDirectory exists.')
-            pass
-        # loop the conditions
-        for cond in sildconditions:
-            try:
-                os.mkdir(os.path.join(tempdir, cond))
-            except:
-                # print('\nDirectory exists.')
-                pass
+        tempdir = os.path.join(resultsbasedir,subj) 
+        # TODO: copy and edit for these subjects
 
-# end 
+
 
 ## TODO:
 ## copy over the experimental data from a csv file to the same format 
@@ -196,6 +143,6 @@ for subj in subjects:
 
 
 print('\n...end')
-print('\nNow all the metabolic simulation data should be consolidated.')
-print('\nAdditionally, the experimental values should be too.')
-print('\nRun further analysis scripts to make it work.')
+print('Now all the metabolic simulation data should be consolidated.')
+print('Additionally, the experimental values should be in the repo directory too.')
+print('Run further analysis scripts to make it work.')
