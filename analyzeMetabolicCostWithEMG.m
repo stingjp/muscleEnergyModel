@@ -10,13 +10,17 @@ function analyzeMetabolicCostWithEMG(solution)
     
     % get the subject name and mass
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+    
     workdir = pwd;
-    cd ../../
-    tempdir = pwd;
+    [~,trialname,~] = fileparts(pwd);
+    cd ../
+    [~,condname,~] = fileparts(pwd);
+    cd ../
     [~,subjectname,~] = fileparts(pwd);
+    experimentname = subjectname(1:4);
     cd(workdir);
     model_mass = subjectmass.(genvarname(subjectname)); % kg
-    
+
     % full moco method
     analyze = AnalyzeTool();
     analyze.setName("analyzemusclesEMG");
@@ -122,7 +126,8 @@ function analyzeMetabolicCostWithEMG(solution)
 
     met_rows = {'trial'};
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
-                metabolics_basal_avg, metabolics_mech_avg, 'RowNames', met_rows);
+                metabolics_basal_avg, metabolics_mech_avg, subjectname,condname,...
+                experimentname,trialname,'RowNames', met_rows);
             
     writetable(met_table, 'metabolicsTable_withemg.csv','WriteRowNames',true);
 

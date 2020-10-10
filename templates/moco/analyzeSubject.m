@@ -9,6 +9,23 @@ to extract data.
 TODO:
 making a script to set up the file structure...
 %}
+% print out issues to look at for each subject:
+import org.opensim.modeling.*
+workingdir = pwd;
+[~,trialname,~] = fileparts(pwd);
+cd ../
+[~,condname,~] = fileparts(pwd);
+cd ../
+[~,subjectname,~] = fileparts(pwd);
+experimentname = subjectname(1:4);
+cd(workingdir)
+
+
+if exist('Issues','var')
+    Issues = [Issues; [java.lang.String(subjectname); java.lang.String(strcat(condname,trialname))]];
+else
+    Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
+end
 
 % edit experimental data for simulations
 renameExperimentalData();
@@ -21,13 +38,26 @@ close all;
 % close all;
 torqueStateTrackGRFPrescribe();
 close all;
-muscleStatePrescribeGRFPrescribe();
+Issues = muscleStatePrescribeGRFPrescribe(Issues);
 close all;
-muscleStatePrescribeGRFPrescribeWithEMG();
+Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 close all;
 
 %%% only once
-% analyzeMetabolicCost();
-% analyzeMetabolicCostWithEMG();
+% solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+% solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 
-disp('success');
+% analyzeMetabolicCost(solution1);
+% Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+% Issues = computeIDFromResult(Issues, solution1);
+% analyzeMetabolicCostWithEMG(solution2);
+% Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
+% Issues = computeIDFromResult(Issues, solution2);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% finisher
+disp('finished the subject-condition-trial');
+% Issues
+save('issuesfile.mat','Issues');
+disp('end this subject-condition-trial')

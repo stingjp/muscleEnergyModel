@@ -19,10 +19,14 @@ cd(resultsdir)
 %                   'sild20w0','sild20w5','sild20w10','sild30w0','sild30w5','sild30w10',
 %                   'sildbwrun0','sild10wrun0','sild20wrun0','sild30wrun0']
 
-dembconditions = {'dembloadedfree',};%'dembnoloadfree'};
-dembsubjects = {'demb005','demb007','demb009','demb010'};
+dembconditions = {'dembloadedfree','dembnoloadfree'};
+dembsubjects = {'demb011','demb012','demb014'}; % 'demb005','demb007','demb009','demb010'
 
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+
+% TODO an issues holder for this script
+global Issues
+Issues = [[java.lang.String('running multiple subjects'); java.lang.String('here we go')]];
 
 for subj=1:length(dembsubjects)
     subject = char(dembsubjects(subj));
@@ -38,7 +42,7 @@ for subj=1:length(dembsubjects)
             cd(trialdir)
             % run the analysis
             try
-                analyzeSubject();
+                analyzeSubject()
                 disp('ran');
             catch
                 disp('issue');
@@ -48,3 +52,7 @@ for subj=1:length(dembsubjects)
     end
 end
 
+disp('finished all the sims!')
+cd(resultsdir)
+save('bigissuesfile.mat','Issues');
+disp('end')

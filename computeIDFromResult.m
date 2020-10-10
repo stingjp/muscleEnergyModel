@@ -1,6 +1,6 @@
-function computeIDFromResultMuscle(solution)
+function [Issues] = computeIDFromResultMuscle(Issues, solution)
     import org.opensim.modeling.*
-
+%     Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,32 +91,108 @@ function computeIDFromResultMuscle(solution)
         end
     end
 
+    
     % get the control actuator moments
     controlstable = solution.exportToControlsTable();
-    % coordinate actuator moments
     numcoordact = length(coordactforcepaths);
-    % coordactmoments1 = zeros(length(Time), numcoordact);
-    coordactmoments = zeros(length(Time), numcoordact);
+    tempmoments = zeros(length(Time), numcoordact);
+    coordactmoments = struct();
+    coordactmoments.time = Time;
     for c=0:numcoordact-1
         tempcoordact = CoordinateActuator().safeDownCast(modelid.getComponent(coordactforcepaths(c+1)));
         tempcoordact_forcemultiply = tempcoordact.getOptimalForce();
         tempcontrols = controlstable.getDependentColumn(coordactforcepaths(c+1));
         for t=0:length(Time)-1
-            % tempstate = statestraj.get(t);
             tempcontrol = tempcontrols.get(t);
-            % modelid.realizeDynamics(tempstate);
-            % coordactmoments1(t+1,c+1) = tempcoordact.getActuation(tempstate);
-            coordactmoments(t+1,c+1) = tempcoordact_forcemultiply*tempcontrol;
+            tempmoments(t+1,c+1) = tempcoordact_forcemultiply*tempcontrol;
         end
+        tempcoordactname = coordactforcepaths(c+1);
+        tempcoordactname = tempcoordactname.split('/');
+        tempcoordactname = char(tempcoordactname(end));
+        coordactmoments.(genvarname(tempcoordactname)) = tempmoments(:,c+1);
     end
+    coordactmomentstable = osimTableFromStruct(coordactmoments);
 
-    keyboard
-    % figure out how to visualize and plot all the stuff that I want to see, 
-    % and throw a warning if the reserves are certain % of net moments
-    % TODO
-    %% now going to actually compute and plot some stuff?
+    
+    % get moment arms, and plot stuff
+    % aim for 5% of net joint moment or less
+    forcecheck = {'tx','ty','tz'};
+    templabels = coordactmomentstable.getColumnLabels();
+    for i=1:length(coordinatepaths);
+        tempcoordinate = coordinatepaths(i);
+        coord = Coordinate.safeDownCast(modelid.getComponent(tempcoordinate));
+        % skip the patella coordinate, loop others
+        if ~any(contains(char(tempcoordinate),'beta'))
+            % compare the reserve for each coordinate to the net joint moment
+            tempmomentname = tempcoordinate.split('/');
+            tempmomentname = char(tempmomentname(end));
+            % figure out how to get the reserve ones here
+            matched = false;
+            c = 0;
+            while ~matched
+                tempcoordact = templabels.get(c);
+                if any(contains(char(tempcoordact), tempmomentname)) || any(contains(tempmomentname, char(tempcoordact))) 
+                    matched = true;
+                else
+                    c = c+1;
+                end
+            end
+            % need condition to get the full net moment or force name
+            if any(contains(char(tempcoordinate),forcecheck))
+                % this is a translational force
+                tempmomentname = strcat(tempmomentname,'_force');
+            else
+                tempmomentname = strcat(tempmomentname,'_moment');
+            end
+            tempnet = netjointmoments.getDependentColumn(tempmomentname);
+            tempnet = tempnet.getAsMat();
+            tempind = coordactmomentstable.getDependentColumn(tempcoordact);
+            tempind = tempind.getAsMat();
+            % get the reserve moment
+            % do a validation check on the reserve vs net
+            tempnetmean = mean(tempnet);
+            tempindmean = mean(tempind);
+            ratio = tempindmean/tempnetmean;
+            if ratio > .05
+                Issues = [Issues; [tempcoordact, java.lang.String(string(ratio))]];
+            end
+            % loop through time to find the largest instantaneous ratio
+            instmaxratio = 0;
+            for n=1:length(Time)
+                instnet = tempnet(n);
+                instind = tempind(n);
+                instratio = instind/instnet;
+                if instratio > instmaxratio
+                    instmaxratio = instratio;
+                end
+            end
+            if instmaxratio > .05
+                Issues = [Issues; [tempcoordact, java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
+            end
+            % get the peak of each and compare:
+            % maybe talk to Scott or Jen about this? Nick?
+        end
+        
+        
+        % now need moment arms I think and then we should be good
+        momentarms = zeros(length(Time), nummuscles);
+        for m=1:length(muscleforcepaths)
+            muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
+            for t=1:length(Time)
+                state = statestraj.get(t-1);
+                momentarms(t,m) = muscle.computeMomentArm(state, coord);
+            end
+        end
+
+        %% TODO
+        % here is where I should do any plotting of specific things 
+        % that I want to plot for moments
 
 
-    figure(1);
+    end
+    
+
+
+%     figure(1);
 
 end
