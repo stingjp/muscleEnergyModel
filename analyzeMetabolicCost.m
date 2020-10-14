@@ -105,25 +105,44 @@ function analyzeMetabolicCost(solution)
     metabolics_short_os = table_metabolics.getDependentColumn('all_shortening_rate_TOTAL');
     metabolics_basal_os = table_metabolics.getDependentColumn('all_basal_rate_TOTAL');
     metabolics_mech_os = table_metabolics.getDependentColumn('all_mechanical_work_rate_TOTAL');
+    % individual muscles
+    metabolics_gas_os = table_metabolics.getDependentColumn('gastroc_metabolics_TOTAL');
+    metabolics_sol_os = table_metabolics.getDependentColumn('soleus_metabolics_TOTAL');
+    metabolics_bifemlh_os = table_metabolics.getDependentColumn('bifemlh_metabolics_TOTAL');
+    metabolics_recfem_os = table_metabolics.getDependentColumn('recfem_metabolics_TOTAL');
+
     
     metabolics_all = metabolics_all_os.getAsMat;
     metabolics_act = metabolics_act_os.getAsMat;
     metabolics_short = metabolics_short_os.getAsMat;
     metabolics_basal = metabolics_basal_os.getAsMat;
     metabolics_mech = metabolics_mech_os.getAsMat;
+    % individual muscles
+    metabolics_gas = metabolics_gas_os.getAsMat;
+    metabolics_sol = metabolics_sol_os.getAsMat;
+    metabolics_bifemlh = metabolics_bifemlh_os.getAsMat;
+    metabolics_recfem = metabolics_recfem_os.getAsMat;
 
     metabolics_all_avg = 2*((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
     metabolics_act_avg = 2*((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
     metabolics_short_avg = 2*((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
     metabolics_basal_avg = 2*((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_mech_avg = 2*((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
+    % individual muscles
+    metabolics_gas_avg = ((trapz(time, metabolics_gas)) / (time(end)-time(1))) / model_mass;
+    metabolics_sol_avg = ((trapz(time, metabolics_sol)) / (time(end)-time(1))) / model_mass;
+    metabolics_bifemlh_avg = ((trapz(time, metabolics_bifemlh)) / (time(end)-time(1))) / model_mass;
+    metabolics_recfem_avg = ((trapz(time, metabolics_recfem)) / (time(end)-time(1))) / model_mass;
+
 
     temp_reg = metabolics_all_avg
 
     % get everything set up for the table printout
     met_rows = {'trial'};
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
-                metabolics_basal_avg, metabolics_mech_avg, subjectname,condname,...
+                metabolics_basal_avg, metabolics_mech_avg,...
+                metabolics_gas_avg, metabolics_sol_avg, metabolics_bifemlh_avg, metabolics_recfem_avg,... 
+                subjectname,condname,...
                 experimentname,trialname,'RowNames', met_rows);
             
     writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
