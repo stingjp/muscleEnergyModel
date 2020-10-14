@@ -17,6 +17,11 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 import statsmodels.api as sm
 
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score,mean_squared_error
+import seaborn as sns
+
 
 ####################################################
 ## import the experimental values
@@ -87,18 +92,32 @@ print("The linear model is: Y = {:.5} + {:.5}X".format(reg.intercept_[0], reg.co
 
 predictions = reg.predict(X)
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
 
-plt.figure(figsize=(8,8))
-plt.scatter(bothtrim_df['metabolics_all_avg_mean_x'],
-    bothtrim_df['metabolics_all_avg_mean_y'],
-    c='black')
-plt.plot(bothtrim_df['metabolics_all_avg_mean_x'],
-    predictions,
-    c='blue',
-    linewidth=2)
-ax.set_aspect('equal')
-plt.xlim((3,10))
-plt.ylim((3,10))
-plt.show()
+# plt.figure(figsize=(8,8))
+# plt.scatter(bothtrim_df['metabolics_all_avg_mean_x'],
+#     bothtrim_df['metabolics_all_avg_mean_y'],
+#     c='black')
+# plt.plot(bothtrim_df['metabolics_all_avg_mean_x'],
+#     predictions,
+#     c='blue',
+#     linewidth=2)
+# ax.set_aspect('equal')
+# plt.xlim((3,10))
+# plt.ylim((3,10))
+# plt.show()
+
+########################################################
+## random forest implementation
+
+# X = bothtrim_df.metabolics_all_avg_mean_x.values.reshape(-1,1)
+# Y = bothtrim_df.metabolics_all_avg_mean_y.values.reshape(-1,1)
+
+# x_train, x_test, y_train, y_test = train_test_split(X,Y,test_size=0.1,random_state=12)
+
+# # RandomForestRegModel = RandomForestRegressor()
+# # RandomForestRegModel.fit(x_train, y_train)
+
+# print(x_train)
+# print(y_train)
