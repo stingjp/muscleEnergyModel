@@ -89,7 +89,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(30); %20 10
+    inverse.set_reserves_weight(20);% 30 %20 10
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -107,7 +107,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(5e-4); % 1e-4
+    excitegoal.setWeight(1e-4); % 5e-4 % 1e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
     % activegoal.setWeight(1e-4);
