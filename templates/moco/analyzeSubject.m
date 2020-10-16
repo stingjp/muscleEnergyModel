@@ -31,7 +31,7 @@ end
 renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
-close all;
+% close all;
 metabolicsModelSetup();
 close all;
 % torqueMarkerTrackGRFPrescribe();
@@ -43,7 +43,8 @@ close all;
 Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 close all;
 
-%%% only once
+%%% only uncomment this if the above simulations are commented out
+% this will load the existing solutions and perform the post analyses
 % solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 
