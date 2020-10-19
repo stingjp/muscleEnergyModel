@@ -118,22 +118,35 @@ function analyzeMetabolicCostWithEMG(solution)
     metabolics_short = metabolics_short_os.getAsMat;
     metabolics_basal = metabolics_basal_os.getAsMat;
     metabolics_mech = metabolics_mech_os.getAsMat;
+
+    % fix the basal stuff
+    metabolics_basal_old = metabolics_basal;
+    basal_coef = 1.2;
+    basal_exp = 1;
+    for i=1:length(metabolics_basal)
+        metabolics_all(i) = metabolics_all(i) - metabolics_basal(i);
+        metabolics_basal(i) = basal_coef*(model_mass^basal_exp);
+        % metabolics_all(i) = metabolics_all(i) + metabolics_basal(i)
+    end
+
     % individual muscles
     metabolics_gas = metabolics_gas_os.getAsMat;
     metabolics_sol = metabolics_sol_os.getAsMat;
     metabolics_bifemlh = metabolics_bifemlh_os.getAsMat;
     metabolics_recfem = metabolics_recfem_os.getAsMat;
 
-    metabolics_all_avg = 2*((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
+    metabolics_basal_avg = ((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_act_avg = 2*((trapz(time, metabolics_act)) / (time(end)-time(1))) / model_mass;
     metabolics_short_avg = 2*((trapz(time, metabolics_short)) / (time(end)-time(1))) / model_mass;
-    metabolics_basal_avg = 2*((trapz(time, metabolics_basal)) / (time(end)-time(1))) / model_mass;
     metabolics_mech_avg = 2*((trapz(time, metabolics_mech)) / (time(end)-time(1))) / model_mass;
+    metabolics_all_avg = 2*((trapz(time, metabolics_all)) / (time(end)-time(1))) / model_mass;
+    metabolics_all_avg = metabolics_all_avg + metabolics_basal_avg;
+
     % individual muscles
-    metabolics_gas_avg = ((trapz(time, metabolics_gas)) / (time(end)-time(1))) / model_mass;
-    metabolics_sol_avg = ((trapz(time, metabolics_sol)) / (time(end)-time(1))) / model_mass;
-    metabolics_bifemlh_avg = ((trapz(time, metabolics_bifemlh)) / (time(end)-time(1))) / model_mass;
-    metabolics_recfem_avg = ((trapz(time, metabolics_recfem)) / (time(end)-time(1))) / model_mass;
+    metabolics_gas_avg = ((trapz(time, metabolics_gas)) / (time(end)-time(1))); %/ model_mass;
+    metabolics_sol_avg = ((trapz(time, metabolics_sol)) / (time(end)-time(1))); %/ model_mass;
+    metabolics_bifemlh_avg = ((trapz(time, metabolics_bifemlh)) / (time(end)-time(1))); %/ model_mass;
+    metabolics_recfem_avg = ((trapz(time, metabolics_recfem)) / (time(end)-time(1))); %/ model_mass;
 
     % temp_reg
     temp_emg = metabolics_all_avg
