@@ -19,8 +19,8 @@ cd(resultsdir)
 %                   'sild20w0','sild20w5','sild20w10','sild30w0','sild30w5','sild30w10',
 %                   'sildbwrun0','sild10wrun0','sild20wrun0','sild30wrun0']
 
-dembconditions = {'dembnoloadfree'}; % 'dembloadedfree',
-dembsubjects = {'demb010'}; % 'demb011','demb012','demb014'}; % 'demb005','demb007','demb009',,
+dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
+dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
 
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
