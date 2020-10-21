@@ -21,7 +21,9 @@ resultbasedir = os.path.join(repodir,'..\\results\\')
 templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 # print(templateanalysis)
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
-geometrydir = os.path.join(repodir,'Geometry')
+geometrydir = os.path.join(repodir,'Geometry\\')
+# backpackdir = os.path.join(geometrydir, 'backpack0.vtp')
+print(backpackdir)
 
 os.chdir(resultbasedir)
 # print(os.getcwd())
@@ -158,6 +160,7 @@ for subj in subjects:
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetgeometry = os.path.join(trialdir,'Geometry')
+                # targetbackpack = os.path.join(targetgeometry,'backpack0.vtp')
 
                 copy(templateanalysis, targetfile)
                 copy(templategrf, targetfile2)
@@ -167,6 +170,7 @@ for subj in subjects:
                 # if not os.path.exists(targetfile2):
                 #     copyfile(templategrf, targetfile2)
                 try:
+                    # copy(backpackdir, targetbackpack)
                     os.mkdir(os.path.join(trialdir, 'expdata'))
                     copytree(geometrydir, targetgeometry)
                 except:
