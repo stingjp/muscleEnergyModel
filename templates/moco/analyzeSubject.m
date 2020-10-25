@@ -28,30 +28,30 @@ else
 end
 
 % edit experimental data for simulations
-renameExperimentalData();
+% renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
-metabolicsModelSetup();
-close all;
+% metabolicsModelSetup();
+% close all;
 % torqueMarkerTrackGRFPrescribe();
 % close all;
-torqueStateTrackGRFPrescribe();
-close all;
-Issues = muscleStatePrescribeGRFPrescribe(Issues);
-close all;
-Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
-close all;
+% torqueStateTrackGRFPrescribe();
+% close all;
+% Issues = muscleStatePrescribeGRFPrescribe(Issues);
+% close all;
+% Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
+% close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
-% solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-% solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
+solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 
-% analyzeMetabolicCost(solution1);
+analyzeMetabolicCost(solution1);
 % Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution1);
-% analyzeMetabolicCostWithEMG(solution2);
+analyzeMetabolicCostWithEMG(solution2);
 % Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution2);
 
