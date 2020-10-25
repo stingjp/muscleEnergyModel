@@ -23,7 +23,7 @@ templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
 geometrydir = os.path.join(repodir,'Geometry\\')
 # backpackdir = os.path.join(geometrydir, 'backpack0.vtp')
-print(backpackdir)
+
 
 os.chdir(resultbasedir)
 # print(os.getcwd())
