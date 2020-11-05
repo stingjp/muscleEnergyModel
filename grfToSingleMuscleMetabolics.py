@@ -18,8 +18,10 @@ import scipy
 
 
 from keras import layers
-from keras.layers import Input, Dense, BatchNormalization #, Activation, ZeroPadding2D, , Flatten, Conv2D
+from keras.layers import Input, Dense, BatchNormalization, Dropout #, Activation, ZeroPadding2D, , Flatten, Conv2D
 # from keras.layers import AveragePooling2D, MaxPooling2D, Dropout, GlobalMaxPooling2D, GlobalAveragePooling2D
+from keras.regularizers import l2
+
 from keras.models import Model, Sequential
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.model_selection import cross_val_score
@@ -63,10 +65,14 @@ def baseline_model(input_shape):
     # model.compile(loss='mean_squared_error', optimizer='adam')
     
     X_input = Input(input_shape)
-    
-    X = Dense(64, input_dim=input_shape, kernel_initializer='normal', activation='relu')(X_input)
-    X = Dense(64, activation='relu', kernel_initializer='normal')(X)
-    X = Dense(1, kernel_initializer='normal', activation='linear')(X)
+    # X = Dropout(0.2, input_shape=input_shape)(X_input)
+    X = Dense(100, input_dim=input_shape, kernel_initializer='normal', activation='relu', kernel_regularizer=l2(0.01))(X_input)
+    X = Dropout(0.2)(X)
+    X = Dense(100, activation='relu', kernel_initializer='normal', kernel_regularizer=l2(0.01))(X)
+    X = Dropout(0.2)(X)
+    # X = Dense(300, activation='relu', kernel_initializer='normal', kernel_regularizer=l2(0.01))(X)
+    # X = Dropout(0.2)(X)
+    X = Dense(1, kernel_initializer='normal', activation='linear', kernel_regularizer=l2(0.01))(X)
     
     model = Model(inputs=X_input, outputs=X, name='baselineModel')
     return model
@@ -108,13 +114,34 @@ def importGRFs(grffilelist):
 
         # fig = plt.figure()
         # plt.plot(tempgrfy)
-        # plt.show()
 
+        # fig, axs = plt.subplots(3, sharex=True, sharey=False)
+        # fig.suptitle('GRF Values', fontsize=16)
+        # axs[0].plot(tempgrfx, color='red', lw=3)
+        # # axs[0].set_xticks(fontsize=16)
+        # # axs[0].set_yticks(fontsize=16)
+        # axs[0].set(ylabel='Force [N]') #, fontsize=16)
+
+        # axs[1].plot(tempgrfy, color='darkgreen', lw=3)
+        # axs[1].set(ylabel='Force[N]') #, fontsize=16)
+        # # axs[1].set_yticks(fontsize=16)
+        # # axs[1].set_ylabel('Force [N]', fontsize=16)
+
+        # axs[2].plot(tempgrfz, color='blue', lw=3)
+        # # plt.tight_layout()
+        # # axs[2].set_xticks(fontsize=16)
+        # # axs[2].set_yticks(fontsize=16)
+        # axs[2].set(ylabel='Force [N]') #, fontsize=16)
+
+        # plt.show()
+        # import time
+        # time.sleep(30)
         newgrfx = scipy.signal.resample(x=tempgrfx, num=25) #, t=temptime) newtime
         newgrfy = scipy.signal.resample(tempgrfy, 25)
         newgrfz = scipy.signal.resample(tempgrfz, 25)
         newgrf = np.vstack((newgrfx, newgrfy, newgrfz))
         
+        # binned samples
         newgrf = scipy.signal.resample(newgrf, (newgrf.shape[0]//30)*30)
         test = newgrf.reshape(30, (newgrf.shape[0] // 30))
         test = test.mean(axis=1)
@@ -201,8 +228,8 @@ grffilelist = os.listdir(grffilespath)
 # print(grffilelist)
 
 muscles = ['metabolics_sol_avg'] # ['metabolics_bifemlh_avg', 'metabolics_recfem_avg','metabolics_sol_avg','metabolics_gas_avg'] 
-grf_datatype = ['grf xyz binned'] # ['grf x curve', 'grf y curve', 'grf z curve', 'grf xyz curves', 'grf xyz peaks', 'grf xyz integral', 'grf xyz peak and integral', 'grf xyz binned']
-modeltypes = ['Linear Regression','Random Forest','Neural Network']
+grf_datatype = ['grf xyz binned'] #, 'grf x curve', 'grf y curve', 'grf z curve', 'grf xyz curves', 'grf xyz peaks'] #, 'grf xyz integral', 'grf xyz peak and integral', 'grf xyz binned']
+modeltypes = ['Random Forest','Neural Network'] # 'Linear Regression'
 
 # get the grf dataframe
 grf_df = importGRFs(grffilelist)
@@ -306,15 +333,15 @@ for muscle in muscles:
                     basenn = baseline_model(x_train.shape[1:])
                     basenn.compile(optimizer='Adam', loss='mse', 
                         metrics=['mean_absolute_error','mean_squared_error', 'mape'])
-                    basenn.fit(x=x_train, y=y_train, epochs=1000, verbose=0, 
+                    basenn.fit(x=x_train, y=y_train, epochs=3000, verbose=0, 
                         shuffle=True, batch_size=None)
                     
                     preds = basenn.evaluate(x=x_test, y=y_test, verbose=0)
-                    print('#######################################')
-                    print('Loss = %f' % preds[0])
-                    print('RMSE = %f' % np.sqrt(preds[2]))
-                    print('MAE = %f' % preds[1])
-                    print('MAPE= %f ' % preds[3])
+                    # print('#######################################')
+                    # print('Loss = %f' % preds[0])
+                    # print('RMSE = %f' % np.sqrt(preds[2]))
+                    # print('MAE = %f' % preds[1])
+                    # print('MAPE= %f ' % preds[3])
 
                     y_pred_train = basenn.predict(x=x_train)
                     y_pred_test = basenn.predict(x=x_test)
@@ -337,7 +364,7 @@ for muscle in muscles:
 
                 
                 else:
-                    ran_for = RandomForestRegressor(random_state=13, n_estimators=100)
+                    ran_for = RandomForestRegressor(random_state=13, n_estimators=1000)
                     ran_for.fit(x_train, y_train[:,0])
 
                     # make predictions
