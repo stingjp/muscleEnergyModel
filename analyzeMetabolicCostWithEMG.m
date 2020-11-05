@@ -121,7 +121,7 @@ function analyzeMetabolicCostWithEMG(solution)
 
     % fix the basal stuff
     metabolics_basal_old = metabolics_basal;
-    basal_coef = 1.2;
+    basal_coef = 2;
     basal_exp = 1;
     for i=1:length(metabolics_basal)
         metabolics_all(i) = metabolics_all(i) - metabolics_basal(i);
