@@ -2,11 +2,24 @@ cd 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyMod
 
 subjectgaitcycles = struct();
 
-% walsh experiments
+%% walsh experiments
 
-% welker experiments
+%% welker experiments
+% subject 01
+subjectgaitcycles.welk001.welknatural.trial01.initial = 0.341;
+subjectgaitcycles.welk001.welknatural.trial01.final = 1.017;
+subjectgaitcycles.welk001.welknatural.trial02.initial = 1.017;
+subjectgaitcycles.welk001.welknatural.trial02.final = 1.675;
+subjectgaitcycles.welk001.welknatural.trial03.initial = 1.675;
+subjectgaitcycles.welk001.welknatural.trial03.final = 2.343;
+subjectgaitcycles.welk001.welknatural.trial04.initial = 2.343;
+subjectgaitcycles.welk001.welknatural.trial04.final = 3.025;
 
-% jackson experiments
+% subjectgaitcycles.welk001.dembloadedfree.trial01.initial = ;
+% subjectgaitcycles.welk001.dembloadedfree.trial01.final = ;
+
+
+%% jackson experiments
 
 %% dembia un/loaded experiments
 

@@ -21,6 +21,7 @@ resultbasedir = os.path.join(repodir,'..\\results\\')
 templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 # print(templateanalysis)
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
+templategrf_welk = os.path.join(repodir,'templates\\moco\\welk_grf_walk.xml')
 geometrydir = os.path.join(repodir,'Geometry\\')
 # backpackdir = os.path.join(geometrydir, 'backpack0.vtp')
 
@@ -30,7 +31,7 @@ os.chdir(resultbasedir)
 
 # subjects
 subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
-            'welk001','weld002','welk003','welk004',
+            'welk001','welk002','welk003','welk004',
             'jack001','jack002','jack003','jack004','jack005','jack006','jack007','jack008',
             'demb005','demb007','demb009','demb010','demb011','demb012','demb014',
             'sild001','sild001b','sild002','sild003','sild004','sild005','sild007_standing','sild007',
@@ -81,6 +82,39 @@ dembtrials = {'demb005dembnoloadfree':['trial02','trial03','trial06'],
               'demb014dembloadedmatched':[]
               }
 
+welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
+              'welk002welknatural':['trial01','trial02','trial03','trial04'],
+              'welk003welknatural':['trial01','trial02','trial03','trial04'],
+              'welk004welknatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexo':['trial01','trial02','trial03','trial04'],
+              'welk002welkexo':['trial01','trial02','trial03','trial04'],
+              'welk003welkexo':['trial01','trial02','trial03','trial04'],
+              'welk004welkexo':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk001welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk002welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk003welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk004welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk001welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk002welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk003welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk004welkexofast':['trial01','trial02','trial03','trial04'],
+              }
 ## TODO
 # have to figure out the trials for each of the conditions, 
 # and then get the expdata folder and copy script
@@ -118,6 +152,27 @@ for subj in subjects:
             except:
                 # print('\nDirectory exists.')
                 pass
+            # do the trial directories
+            tempdir_2 = os.path.join(tempdir, cond)
+            for keys in welktrials[subj+cond]:
+                try:
+                    os.mkdir(os.path.join(tempdir_2, keys))
+                except:
+                    pass
+                trialdir = os.path.join(tempdir_2, keys)
+                targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
+                targetgeometry = os.path.join(trialdir, 'Geometry')
+
+                copy(templateanalysis, targetfile)
+                copy(templategrf_welk, targetfile2)
+
+                try:
+                    os.mkdir(os.path.join(trialdir, 'expdata'))
+                    copytree(geometrydir, targetgeometry)
+                except:
+                    pass
+
     elif subj[0:4] == 'jack':
         # make the directories
         tempdir = os.path.join(resultbasedir,subj) 

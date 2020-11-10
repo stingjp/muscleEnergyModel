@@ -40,14 +40,14 @@ function renameExperimentalData()
                 full_source = strcat(pwd, strcat('\', tempfile));
                 copyfile(full_source, full_dest);
             end
-        elseif contains(tempfile, 'ground_reaction') || contains(tempfile, 'grf_walk')
+        elseif contains(tempfile, 'ground_reaction') || contains(tempfile, 'grf_walk') || contains(tempfile, 'GRFs')
             if ~contains(tempfile, 'svg')
                 % copy the grf file
                 full_dest = strcat(destination, strcat('\', grf_file));
                 full_source = strcat(pwd, strcat('\', tempfile));
                 copyfile(full_source, full_dest);
             end
-        elseif contains(tempfile, 'ik_solution')
+        elseif contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik')
             % copy ik file
             full_dest = strcat(destination, strcat('\', ik_file));
             full_source = strcat(pwd, strcat('\', tempfile));
@@ -55,19 +55,22 @@ function renameExperimentalData()
         end
     end
     cd ..
-    
-    cd ik;
-    ikfiles = dir();
-    L = size(ikfiles);
-    L = L(1);
-    for i=1:L
-        tempfile = ikfiles(i).name();
-        if contains(tempfile, 'ik_solution')
-            % copy ik file
-            full_dest = strcat(destination, strcat('\', ik_file));
-            full_source = strcat(pwd, strcat('\', tempfile));
-            copyfile(full_source, full_dest);
+    try
+        cd ik;
+        ikfiles = dir();
+        L = size(ikfiles);
+        L = L(1);
+        for i=1:L
+            tempfile = ikfiles(i).name();
+            if contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik')
+                % copy ik file
+                full_dest = strcat(destination, strcat('\', ik_file));
+                full_source = strcat(pwd, strcat('\', tempfile));
+                copyfile(full_source, full_dest);
+            end
         end
-    end
-    cd ..
+        cd ..
+    catch
+        % there is no IK folder
+    end 
 end

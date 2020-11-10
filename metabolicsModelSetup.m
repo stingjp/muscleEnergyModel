@@ -259,6 +259,7 @@ function metabolicsModelSetup()
         oldmodel = Model('subject_old.osim');
         opensimSimulation.updatePre40KinematicsFilesFor40MotionType(oldmodel, coordfile);
         model.print('subject_updated.osim');
+    end
 
     % now to do stuff with the model
     modelProcessor = ModelProcessor(model);
@@ -557,7 +558,7 @@ function metabolicsModelSetup()
     
     model.finalizeConnections();
     model.print('pre_simple_model_all_the_probes.osim');  
-
+    
 
 
     % also potentially remove some limbs??
@@ -725,11 +726,13 @@ function metabolicsModelSetup()
         end
     end
     model.updForceSet();
-
+    
+    
     % edit the markers
     getrid_marker = {'R.MElbow','L.MElbow','R.Biceps','R.Elbow','R.Forearm','R.Wrist', ...
                     'L.Biceps','L.Elbow','L.Forearm','L.Wrist', ...
-                    'L.TH1','L.TH2','L.TH3','L.TH4','L.Knee','L.SH1','L.SH2','L.SH3','L.Ankle','L.Toe','L.Heel','L.MT5','L_HJC','L_KJC','L_AJC','L.MKnee','L.MAnkle','L.AnkleJoint','L.KneeJoint','L.HeelGround','L.MT5Ground','L.ToeGround','L.AnkleJointGround'};
+                    'L.TH1','L.TH2','L.TH3','L.TH4','L.Knee','L.SH1','L.SH2','L.SH3','L.Ankle','L.Toe','L.Heel','L.MT5','L_HJC','L_KJC','L_AJC','L.MKnee','L.MAnkle','L.AnkleJoint','L.KneeJoint','L.HeelGround','L.MT5Ground','L.ToeGround','L.AnkleJointGround', ...
+                    'L_HJC','L_thigh1','L_thigh2','L_thigh3','L_thigh4','L_knee','L_mknee','L_ankle','L_shank_antsup','L_sh2','L_sh3','L_mankle','L_toe','L_calc','L_5meta','L_5meta_proj','L_toe_proj','L_AJC','L_AJC_proj','L_KJC','L_band_shoe','R_elbow_medial','R_elbow_lateral','L_elbow_medial','L_elbow_lateral','L_wrist_medial','L_wrist_lateral','R_wrist_medial','R_wrist_lateral','R_wrist_tracking','L_wrist_tracking'};
                 
     markerset = model.getMarkerSet();
     numMarker = markerset.getSize();
@@ -1097,7 +1100,7 @@ function metabolicsModelSetup()
     %     end
     % %}
     
-    % model.finalizeConnections();
+    model.finalizeConnections();
 
 
     model.print('simple_model_all_the_probes.osim');  
