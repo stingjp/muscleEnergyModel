@@ -47,7 +47,7 @@ function renameExperimentalData()
                 full_source = strcat(pwd, strcat('\', tempfile));
                 copyfile(full_source, full_dest);
             end
-        elseif contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik')
+        elseif contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik') || contains(tempfile, 'results_IK')
             % copy ik file
             full_dest = strcat(destination, strcat('\', ik_file));
             full_source = strcat(pwd, strcat('\', tempfile));
@@ -62,7 +62,7 @@ function renameExperimentalData()
         L = L(1);
         for i=1:L
             tempfile = ikfiles(i).name();
-            if contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik')
+            if contains(tempfile, 'ik_solution') || contains(tempfile, 'results_IK') || contains(tempfile, 'results_ik')
                 % copy ik file
                 full_dest = strcat(destination, strcat('\', ik_file));
                 full_source = strcat(pwd, strcat('\', tempfile));
