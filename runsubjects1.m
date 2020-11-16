@@ -10,8 +10,6 @@ cd(resultsdir)
 
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
-% welkconditions = ['welknatural','welkexo','welknaturalslow','welknaturalnatural',
-%                   'welknaturalexo','welkexonatural','welkexoexo','welkexofast']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
 %                   'jacktau1','jacktau2','jacktau3','jacktau4','jacktau5']
 % dembconditions = ['dembnoloadfree','dembnoloadslow','dembloadedfree','dembloadedmatched']
@@ -19,21 +17,24 @@ cd(resultsdir)
 %                   'sild20w0','sild20w5','sild20w10','sild30w0','sild30w5','sild30w10',
 %                   'sildbwrun0','sild10wrun0','sild20wrun0','sild30wrun0']
 
-dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
-dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-
+%%%%%
+% dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
+% dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
+welkconditions = {'welknatural','welkexo','welknaturalslow','welknaturalnatural', ...
+                  'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
+welksubjects = {'welk001'};
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 % TODO an issues holder for this script
 global Issues
 Issues = [[java.lang.String('running multiple subjects'); java.lang.String('here we go')]];
 
-for subj=1:length(dembsubjects)
-    subject = char(dembsubjects(subj));
+for subj=1:length(welksubjects)
+    subject = char(welksubjects(subj));
     subjdir = strcat(resultsdir, strcat('/',subject));
     
-    for cond=1:length(dembconditions)
-       condition = char(dembconditions(cond));
+    for cond=1:length(welkconditions)
+       condition = char(welkconditions(cond));
        conddir = strcat(subjdir, strcat('/',condition));
        trials = fieldnames(subjectgaitcycles.(genvarname(subject)).(genvarname(condition)));
         for trial=1:length(trials)
