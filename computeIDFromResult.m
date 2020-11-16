@@ -177,10 +177,13 @@ function [Issues] = computeIDFromResultMuscle(Issues, solution)
         % now need moment arms I think and then we should be good
         momentarms = zeros(length(Time), nummuscles);
         for m=1:length(muscleforcepaths)
-            muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
-            for t=1:length(Time)
-                state = statestraj.get(t-1);
-                momentarms(t,m) = muscle.computeMomentArm(state, coord);
+            if ~any(contains(char(muscleforcepaths(m)),'exotendon'))
+                muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
+                
+                for t=1:length(Time)
+                    state = statestraj.get(t-1);
+                    momentarms(t,m) = muscle.computeMomentArm(state, coord);
+                end
             end
         end
 
