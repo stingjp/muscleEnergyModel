@@ -16,14 +16,14 @@
 				<!--Identifier (string) to locate the torque to be applied in the data source.-->
 				<torque_identifier>rT_</torque_identifier>
 			</ExternalForce>
-			<!-- <ExternalForce name="Left_GRF">
+			<ExternalForce name="Left_GRF">
 				<applied_to_body>calcn_l</applied_to_body>
 				<force_expressed_in_body>ground</force_expressed_in_body>
 				<point_expressed_in_body>ground</point_expressed_in_body>
-				<force_identifier>ground_force_l_v</force_identifier>
-				<point_identifier>ground_force_l_p</point_identifier>
-				<torque_identifier>ground_torque_l_</torque_identifier>
-			</ExternalForce> -->
+				<force_identifier>lF_</force_identifier>
+				<point_identifier>lCOP_</point_identifier>
+				<torque_identifier>lT_</torque_identifier>
+			</ExternalForce>
 		</objects>
 		<groups />
 		<!--Storage file (.sto) containing (3) components of force and/or torque and point of application.Note: this file overrides the data source specified by the individual external forces if specified.-->
