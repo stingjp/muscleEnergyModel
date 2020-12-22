@@ -29,6 +29,8 @@ function analyzeMetabolicCostWithEMG(solution)
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribewithemg_controls.sto"));
+    analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
+    analyze.updAnalysisSet().cloneAndAppend(BodyKinematics());
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
     analyze.print("testing_AnalyzeTool_setup.xml");

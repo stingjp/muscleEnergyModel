@@ -29,6 +29,8 @@ function analyzeMetabolicCost(solution)
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
+    analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
+    analyze.updAnalysisSet().cloneAndAppend(BodyKinematics());
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
     analyze.print("testing_AnalyzeTool_setup.xml");
@@ -44,7 +46,6 @@ function analyzeMetabolicCost(solution)
     table_metabolics = TimeSeriesTable('analyzemuscles_ProbeReporter_probes.sto');
     table_lMT = TimeSeriesTable('analyzemuscles_MuscleAnalysis_Length.sto');
     table_fiberlength = TimeSeriesTable('analyzemuscles_MuscleAnalysis_FiberLength.sto');
-    
     
     % get time
     time_os = table_activefiberforce.getIndependentColumn();
