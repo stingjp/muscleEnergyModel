@@ -42,6 +42,9 @@ function renameExperimentalData()
             end
         elseif contains(tempfile, 'ground_reaction') || contains(tempfile, 'grf_walk') || contains(tempfile, 'GRFs')
             if ~contains(tempfile, 'svg')
+                % TODO: edit the grf file so that it has the new name as the source in line 1
+                % we actually might be okay here...
+
                 % copy the grf file
                 full_dest = strcat(destination, strcat('\', grf_file));
                 full_source = strcat(pwd, strcat('\', tempfile));
