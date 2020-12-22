@@ -115,17 +115,40 @@ function [Issues] = computeIDFromResultMuscle(Issues, solution)
 
     
     % get moment arms, and plot stuff
-    % aim for 5% of net joint moment or less
+    % aim for 5% of net joint moment or less for reserves
+    % lots for residuals
+    % get grf for residual comparisons
+    table_grf = TimeSeriesTable('analyzemuscles_ForceReporter_forces.sto');
+    grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
+    grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
+    grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
+    grf_l_Fx = table_grf.getDependentColumn('calcn_l_Left_GRF_Fx').getAsMat();
+    grf_l_Fy = table_grf.getDependentColumn('calcn_l_Left_GRF_Fy').getAsMat();
+    grf_l_Fz = table_grf.getDependentColumn('calcn_l_Left_GRF_Fz').getAsMat();
+    grf_r_Tx = table_grf.getDependentColumn('calcn_r_Right_GRF_Tx').getAsMat();
+    grf_r_Ty = table_grf.getDependentColumn('calcn_r_Right_GRF_Ty').getAsMat();
+    grf_r_Tz = table_grf.getDependentColumn('calcn_r_Right_GRF_Tz').getAsMat();
+    grf_l_Tx = table_grf.getDependentColumn('calcn_l_Left_GRF_Tx').getAsMat();
+    grf_l_Ty = table_grf.getDependentColumn('calcn_l_Left_GRF_Ty').getAsMat();
+    grf_l_Tz = table_grf.getDependentColumn('calcn_l_Left_GRF_Tz').getAsMat();
+
+    table_com = TimeSeriesTable('analyzemuscles_BodyKinematics_pos_global.sto');
+    com_x = table_com.getDependentColumn('center_of_mass_X').getAsMat();
+    com_y = table_com.getDependentColumn('center_of_mass_Y').getAsMat();
+    com_z = table_com.getDependentColumn('center_of_mass_Z').getAsMat();
+    
     forcecheck = {'tx','ty','tz'};
     templabels = coordactmomentstable.getColumnLabels();
     for i=1:length(coordinatepaths);
         tempcoordinate = coordinatepaths(i);
         coord = Coordinate.safeDownCast(modelid.getComponent(tempcoordinate));
+        
         % skip the patella coordinate, loop others
         if ~any(contains(char(tempcoordinate),'beta'))
             % compare the reserve for each coordinate to the net joint moment
             tempmomentname = tempcoordinate.split('/');
             tempmomentname = char(tempmomentname(end));
+                        
             % figure out how to get the reserve ones here
             matched = false;
             c = 0;
@@ -137,62 +160,122 @@ function [Issues] = computeIDFromResultMuscle(Issues, solution)
                     c = c+1;
                 end
             end
+
+
             % need condition to get the full net moment or force name
             if any(contains(char(tempcoordinate),forcecheck))
                 % this is a translational force
                 tempmomentname = strcat(tempmomentname,'_force');
+
+                if contains(char(tempmomentname),'pelvis')
+                    % do the residual force stuff
+                    tempnetexternal = sqrt(grf_r_Fx.^2 + grf_r_Fy.^2 + grf_r_Fz.^2);
+                    tempnetexternal_peak = max(abs(tempnetexternal));
+                    tempnetexternal_rms = rms(tempnetexternal);
+
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+
+                    ratio_peak = tempind_peak/tempnetexternal_peak;
+                    ratio_rms = tempind_rms/tempnetexternal_rms;
+                    
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end 
+                
+                else
+                    % do the reserve force stuff
+                    disp('need to figure this out');
+                end
             else
                 tempmomentname = strcat(tempmomentname,'_moment');
-            end
-            tempnet = netjointmoments.getDependentColumn(tempmomentname);
-            tempnet = tempnet.getAsMat();
-            tempind = coordactmomentstable.getDependentColumn(tempcoordact);
-            tempind = tempind.getAsMat();
-            % get the reserve moment
-            % do a validation check on the reserve vs net
-            tempnetmean = mean(tempnet);
-            tempindmean = mean(tempind);
-            ratio = tempindmean/tempnetmean;
-            if ratio > .05
-                Issues = [Issues; [tempcoordact, java.lang.String(string(ratio))]];
-            end
-            % loop through time to find the largest instantaneous ratio
-            instmaxratio = 0;
-            for n=1:length(Time)
-                instnet = tempnet(n);
-                instind = tempind(n);
-                instratio = instind/instnet;
-                if instratio > instmaxratio
-                    instmaxratio = instratio;
+            
+                if contains(char(tempmomentname),'pelvis')
+                    % do the residual moment stuff
+                    %residual moments that are less than 1% of COM height times the magni- tude of the measured net external force
+                    tempnetexternal = sqrt(grf_r_Fx.^2 + grf_r_Fy.^2 + grf_r_Fz.^2);
+                    tempnetexternalcom = com_y .* tempnetexternal;
+                    tempnetexternalcom_peak = max(abs(tempnetexternalcom));
+                    tempnetexternalcom_rms = rms(tempnetexternalcom);
+
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+ 
+                    ratio_peak = tempind_peak/tempnetexternalcom_peak;
+                    ratio_rms = tempind_rms/tempnetexternalcom_rms;
+
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end 
+
+                else
+                    % do the reserve moment stuff
+                    tempnet = netjointmoments.getDependentColumn(tempmomentname).getAsMat();
+                    tempnet_peak = max(abs(tempnet));
+                    tempnet_rms = rms(tempnet);
+                    
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+
+                    ratio_peak = tempind_peak/tempnet_peak;
+                    ratio_rms = tempind_rms/tempnet_rms;
+
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end
                 end
             end
-            if instmaxratio > .05
-                Issues = [Issues; [tempcoordact, java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
-            end
+            
+
+            % % loop through time to find the largest instantaneous ratio
+            % instmaxratio = 0;
+            % for n=1:length(Time)
+            %     instnet = tempnet(n);
+            %     instind = tempind(n);
+            %     instratio = instind/instnet;
+            %     if instratio > instmaxratio
+            %         instmaxratio = instratio;
+            %     end
+            % end
+            % if instmaxratio > .05
+            %     Issues = [Issues; [tempcoordact, java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
+            % end
             % get the peak of each and compare:
             % maybe talk to Scott or Jen about this? Nick?
         end
+    end
         
         
-        % now need moment arms I think and then we should be good
-        momentarms = zeros(length(Time), nummuscles);
-        for m=1:length(muscleforcepaths)
-            if ~any(contains(char(muscleforcepaths(m)),'exotendon'))
-                muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
-                
-                for t=1:length(Time)
-                    state = statestraj.get(t-1);
-                    momentarms(t,m) = muscle.computeMomentArm(state, coord);
-                end
+    % now need moment arms I think and then we should be good
+    momentarms = zeros(length(Time), nummuscles);
+    for m=1:length(muscleforcepaths)
+        if ~any(contains(char(muscleforcepaths(m)),'exotendon')) && ~any(contains(char(muscleforcepaths(m)),'HOBL'))
+            muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
+            
+            for t=1:length(Time)
+                state = statestraj.get(t-1);
+                momentarms(t,m) = muscle.computeMomentArm(state, coord);
             end
         end
-
-        %% TODO
-        % here is where I should do any plotting of specific things 
-        % that I want to plot for moments
-
-
     end
+
+    %% TODO
+    % here is where I should do any plotting of specific things 
+    % that I want to plot for moments
+
+
     
 
 
