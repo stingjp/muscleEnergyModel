@@ -261,6 +261,12 @@ function metabolicsModelSetup()
         model.print('subject_updated.osim');
     end
 
+    % scale the max isometric muscle force
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectheight.mat';
+    model = scaleModelMaxIsometricForces(subjectmass, subjectheight);
+
+    
     % now to do stuff with the model
     modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
