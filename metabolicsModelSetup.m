@@ -567,22 +567,31 @@ function metabolicsModelSetup()
     
     %%% need an option for remove all or just the arms
 
-
+    
     % also potentially remove some limbs??
-    getrid_body = {'humerus_r','ulna_r','radius_r','hand_r', ...
+    getrid_body_arms = {'humerus_r','ulna_r','radius_r','hand_r', ...
                     'humerus_l','ulna_l','radius_l','hand_l'}; % ...
-                    % 'femur_l','tibia_l','patella_l','talus_l','calcn_l','toes_l'};
+    getrid_body_legs = {}; % 'femur_l','tibia_l','patella_l','talus_l','calcn_l','toes_l'};
     bodyset = model.getBodySet();
     numBodies = bodyset.getSize();
     taken = 0;
     for b = 0:numBodies-1
         body = bodyset.get(b-taken);
         bodyname = body.getName();
-        if any(strcmp(getrid_body, bodyname))
-            % get rid of the body
+        if any(strcmp(getrid_body_arms, bodyname))
+            % get rid of the body but add arm weight to the torso
+            torso = bodyset.get('torso');
+            torsomass = torso.getMass();
+            bodymass = body.getMass();
+            torso.setMass(torsomass + bodymass);
+            bodyset.remove(body);
+            taken = taken + 1;
+        elseif any(strcmp(getrid_body_legs, bodyname))
+            % get rid of body
             bodyset.remove(body);
             taken = taken + 1;
         end
+            
     end
     model.updBodySet();
     
