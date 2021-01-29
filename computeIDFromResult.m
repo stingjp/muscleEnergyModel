@@ -1,4 +1,4 @@
-function [Issues] = computeIDFromResultMuscle(Issues, solution)
+function [Issues] = computeIDFromResult(Issues, solution)
     import org.opensim.modeling.*
 %     Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,10 +28,33 @@ function [Issues] = computeIDFromResultMuscle(Issues, solution)
     % end
 
     % try storage instead
-    idstorage = solution.exportToStatesStorage();
-
+    
+    sto = Storage();
+    solutionstatestable = solution.exportToStatesTable();
+    labels = solutionstatestable.getColumnLabels();
+    numlabels = labels.size();
+    properlabels = org.opensim.modeling.ArrayStr();
+    properlabels.set(0,"time");
+    for i=0:numlabels-1
+%         templabel = labels.get(i)
+        properlabels.set(i+1,labels.get(i));
+    end
+    sto.setColumnLabels(properlabels);
+    
+    statetime = solutionstatestable.getIndependentColumn();
+    timelength = statetime.size();
+    
+    for i=0:timelength-1
+        temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
+        temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
+        sto.append(statetime.get(i), temprow2);
+        
+    end
+    
+    % idstorage = solution.exportToStatesStorage();
     % set the tool up
-    idtool.setCoordinateValues(idstorage);
+    % idtool.setCoordinateValues(idstorage);
+    idtool.setCoordinateValues(sto);
     idresult = 'muscle_joint_moment_breakdown.sto';
     idtool.setResultsDir(workingdir);
     idtool.setOutputGenForceFileName(idresult);
