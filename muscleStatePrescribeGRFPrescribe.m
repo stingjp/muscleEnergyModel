@@ -3,7 +3,9 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % construct MocoInverse tool
     inverse = MocoInverse();
-
+    
+    % need to get the geometry path for the pathwrapset
+    
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
     modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
@@ -89,7 +91,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(20);% 30 %20 10
+    inverse.set_reserves_weight(1000);% 30 %20 10
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -107,7 +109,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(1e-4); % 5e-4 % 1e-4
+    excitegoal.setWeight(5e-4); % 5e-4 % 1e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
     % activegoal.setWeight(1e-4);
@@ -118,7 +120,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-
+    
     solution = study.solve();
     % solution.write('muscletestingforcontrols.sto')
     solution.insertStatesTrajectory(tempkintable);
