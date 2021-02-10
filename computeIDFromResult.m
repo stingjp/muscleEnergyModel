@@ -28,7 +28,6 @@ function [Issues] = computeIDFromResult(Issues, solution)
     % end
 
     % try storage instead
-    
     sto = Storage();
     solutionstatestable = solution.exportToStatesTable();
     labels = solutionstatestable.getColumnLabels();
@@ -48,7 +47,6 @@ function [Issues] = computeIDFromResult(Issues, solution)
         temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
         temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
         sto.append(statetime.get(i), temprow2);
-        
     end
     
     % idstorage = solution.exportToStatesStorage();
