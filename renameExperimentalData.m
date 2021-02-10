@@ -1,5 +1,5 @@
 function renameExperimentalData()
-    
+    import org.opensim.modeling.*
     % set up all the new files for the study - from exp/ik results/scaling
     destination = pwd;
     subject_file = 'subject.osim';
@@ -10,6 +10,7 @@ function renameExperimentalData()
     emg_file = 'electromyography.sto';
 
     cd expdata;
+    
     expfiles = dir();
     L = size(expfiles);
     L = L(1);
@@ -46,9 +47,44 @@ function renameExperimentalData()
                 % we actually might be okay here...
 
                 % copy the grf file
-                full_dest = strcat(destination, strcat('\', grf_file));
+                full_dest = strcat(destination, strcat('\', 'ground_reaction_full.mot'));
+                full_dest_short = strcat(destination, strcat('\', grf_file));
                 full_source = strcat(pwd, strcat('\', tempfile));
+
                 copyfile(full_source, full_dest);
+
+                % figure out a way to get open the ground reaction file and then trim and save as storage. 
+                wantdir = pwd;
+                cd ..
+                % table to storage
+                sto = Storage();
+                % solutionstatestable = solution.exportToStatesTable();
+                temptable = tabletrimming(full_dest);
+                % labels = solutionstatestable.getColumnLabels();
+                labels = temptable.getColumnLabels();
+                numlabels = labels.size();
+                properlabels = org.opensim.modeling.ArrayStr();
+                properlabels.set(0,"time");
+                for i=0:numlabels-1
+            %         templabel = labels.get(i)
+                    properlabels.set(i+1,labels.get(i));
+                end
+                sto.setColumnLabels(properlabels);
+                
+                % statetime = solutionstatestable.getIndependentColumn();
+                statetime = temptable.getIndependentColumn();
+                timelength = statetime.size();
+                
+                for i=0:timelength-1
+                    % temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
+                    temprow = temptable.getRowAtIndex(i).getAsMat();
+                    temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
+                    sto.append(statetime.get(i), temprow2);
+                end
+
+                % save the new version of the file
+                sto.print(full_dest_short);
+                cd(wantdir)
             end
         elseif contains(tempfile, 'ik_solution') || contains(tempfile, 'results_ik') || contains(tempfile, 'results_IK')
             % copy ik file
@@ -75,5 +111,4 @@ function renameExperimentalData()
         cd ..
     catch
         % there is no IK folder
-    end 
-end
+    end
