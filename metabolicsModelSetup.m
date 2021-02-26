@@ -270,15 +270,15 @@ function metabolicsModelSetup()
     % now to do stuff with the model
     modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
-    weldem = StdVectorString();
-    weldem.add('subtalar_r');
-    weldem.add('mtp_r');
-    weldem.add('subtalar_l');
-    weldem.add('mtp_l');
+    % weldem = StdVectorString();
+    % weldem.add('subtalar_r');
+    % weldem.add('mtp_r');
+    % weldem.add('subtalar_l');
+    % weldem.add('mtp_l');
     % weldem.add('radius_hand_r');
     % weldem.add('radius_hand_l');
     
-    modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
+    % modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     model = modelProcessor.process();
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % might not work
