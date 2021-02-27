@@ -31,8 +31,12 @@ end
 renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
-% close all;
+close all;
 metabolicsModelSetup();
+close all;
+runRRA('./RRAfiles/RRA_Setup_1.xml');
+close all;
+runRRA('./RRAfiles/RRA_Setup_2.xml');
 % close all;
 % torqueMarkerTrackGRFPrescribe();
 close all;
