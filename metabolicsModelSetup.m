@@ -1123,7 +1123,6 @@ function metabolicsModelSetup()
     % %}
     
     model.finalizeConnections();
+    model.print('simple_model_all_the_probes.osim');
 
-
-    model.print('simple_model_all_the_probes.osim');  
 end

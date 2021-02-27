@@ -23,6 +23,7 @@ templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
 templategrf_welk = os.path.join(repodir,'templates\\moco\\welk_grf_walk.xml')
 geometrydir = os.path.join(repodir,'Geometry\\')
+template_RRA_dir = os.path.join(repodir, 'RRAfiles\\')
 # backpackdir = os.path.join(geometrydir, 'backpack0.vtp')
 
 
@@ -163,13 +164,19 @@ for subj in subjects:
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetgeometry = os.path.join(trialdir, 'Geometry')
-
+                targetRRA = os.path.join(trialdir, 'RRAfiles')
                 copy(templateanalysis, targetfile)
                 copy(templategrf_welk, targetfile2)
-
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
+                except:
+                    pass
+                try:
                     copytree(geometrydir, targetgeometry)
+                except:
+                    pass
+                try:
+                    copytree(template_RRA_dir, targetRRA)
                 except:
                     pass
 
