@@ -299,8 +299,6 @@ function metabolicsModelSetup()
 
     model.updProbeSet();
 
-    % need to somehow save the model here
-    % then remove the bodies for the end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % actually works
 
@@ -374,12 +372,13 @@ function metabolicsModelSetup()
     muscleset = model.getMuscles();
     % add muscles to each probe setup
     numMuscle = muscleset.getSize();
+
     if strcmp(char(muscleset.get(0).getName()),'addbrev_r')
         for m = 0:numMuscle-1
             musc = muscleset.get(m);
             muscName = musc.getName();
             muscName = char(muscName);
-            if strcmp(muscName(end),'r')
+            if strcmp(muscName(end),'r') % only probing one leg
                 probe_all.addMuscle(muscName, muscleRatio(muscName));
                 % probe_all.setSpecificTension(muscName, 300000);    
                 probe_act.addMuscle(muscName, muscleRatio(muscName));
@@ -411,7 +410,7 @@ function metabolicsModelSetup()
             musc = muscleset.get(m);
             muscName = musc.getName();
             muscName = char(muscName);
-            if strcmp(muscName(end),'r')
+            if strcmp(muscName(end),'r') % only probing one leg
                 probe_all.addMuscle(muscName, muscleRatio_long(muscName));
                 % probe_all.setSpecificTension(muscName, 300000);
                 probe_act.addMuscle(muscName, muscleRatio_long(muscName));
@@ -509,19 +508,26 @@ function metabolicsModelSetup()
     end
 
 
-    %{
-        % save this for later when everything is actually working
-        
-        for m = 0:numMuscles-1
-            musc = muscleSet.get(m);
-            muscName = musc.getName();
-            muscName = char(muscName);
-            
+
+    % save this for later when everything is actually working
+    % going to add an individual probe for each muscle
+    % muscle naming scheme should not matter for this
+    for m = 0:numMuscle-1
+        musc = muscleset.get(m);
+        muscName = musc.getName();
+        muscName = char(muscName);
+        % only want the one leg
+        if strcmp(muscName(end),'r')
+            % need to do all the stuff
+
             % add a probe for each muscle
             probe = Umberger2010MuscleMetabolicsProbe();
-            probe.setName(strcat("metabolics_", muscName));
+            probe.setName(strcat("metabolics_combined_", muscName));
+            probe.set_basal_rate_on(false);
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
+            model.finalizeConnections();
+            probe.setSpecificTension(muscName, 600000);
             
             probe = Umberger2010MuscleMetabolicsProbe();
             probe.setName(strcat('activation_maintenance_rate_',muscName));
@@ -531,6 +537,8 @@ function metabolicsModelSetup()
             probe.set_mechanical_work_rate_on(false);
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
+            model.finalizeConnections();
+            probe.setSpecificTension(muscName, 600000);
             
             probe = Umberger2010MuscleMetabolicsProbe();
             probe.setName(strcat("shortening_rate_",muscName));
@@ -540,15 +548,17 @@ function metabolicsModelSetup()
             probe.set_mechanical_work_rate_on(false);
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
+            model.finalizeConnections();
+            probe.setSpecificTension(muscName, 600000);
             
-            probe = Umberger2010MuscleMetabolicsProbe();
-            probe.setName(strcat("basal_rate_",muscName));
-            probe.set_activation_maintenance_rate_on(false);
-            probe.set_shortening_rate_on(false);
-            probe.set_basal_rate_on(true);
-            probe.set_mechanical_work_rate_on(false);
-            probe.addMuscle(muscName, muscleRatio(muscName));
-            model.addProbe(probe);
+            % probe = Umberger2010MuscleMetabolicsProbe();
+            % probe.setName(strcat("basal_rate_",muscName));
+            % probe.set_activation_maintenance_rate_on(false);
+            % probe.set_shortening_rate_on(false);
+            % probe.set_basal_rate_on(true);
+            % probe.set_mechanical_work_rate_on(false);
+            % probe.addMuscle(muscName, muscleRatio(muscName));
+            % model.addProbe(probe);
             
             probe = Umberger2010MuscleMetabolicsProbe();
             probe.setName(strcat("mechanical_work_rate_",muscName));
@@ -558,9 +568,13 @@ function metabolicsModelSetup()
             probe.set_mechanical_work_rate_on(true);
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
-            
+            model.finalizeConnections();
+            probe.setSpecificTension(muscName, 600000);
+
+            % TODO figure out changing the specific tension, and if the muscle ratio is correct
         end
-    %}
+    end
+
     
     model.finalizeConnections();
     model.print('pre_simple_model_all_the_probes.osim');  
