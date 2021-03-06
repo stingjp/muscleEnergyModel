@@ -9,6 +9,8 @@ import os
 from shutil import copyfile
 from shutil import copy
 from shutil import copytree
+from shutil import rmtree
+import distutils
 
 
 print('Creating all the file directories...\n')
@@ -172,13 +174,17 @@ for subj in subjects:
                 except:
                     pass
                 try:
+                    # distutils.dir_util.copy_tree(geometrydir, targetgeometry)
                     copytree(geometrydir, targetgeometry)
                 except:
-                    pass
+                    rmtree(targetgeometry)
+                    copytree(geometrydir, targetgeometry)
                 try:
+                    # distutils.dir_util.copy_tree(template_RRA_dir, targetRRA)
                     copytree(template_RRA_dir, targetRRA)
                 except:
-                    pass
+                    rmtree(targetRRA)
+                    copytree(template_RRA_dir, targetRRA)
 
     elif subj[0:4] == 'jack':
         # make the directories
@@ -227,16 +233,24 @@ for subj in subjects:
                 copy(templateanalysis, targetfile)
                 copy(templategrf, targetfile2)
                 
-                # if not os.path.exists(targetfile):
-                #     copyfile(templateanalysis, targetfile)
-                # if not os.path.exists(targetfile2):
-                #     copyfile(templategrf, targetfile2)
                 try:
-                    # copy(backpackdir, targetbackpack)
                     os.mkdir(os.path.join(trialdir, 'expdata'))
-                    copytree(geometrydir, targetgeometry)
                 except:
                     pass
+                try:
+                    # distutils.dir_util.copy_tree(geometrydir, targetgeometry)
+                    copytree(geometrydir, targetgeometry)
+                except:
+                    rmtree(targetgeometry)
+                    copytree(geometrydir, targetgeometry)
+                try:
+                    # distutils.dir_util.copy_tree(template_RRA_dir, targetRRA)
+                    copytree(template_RRA_dir, targetRRA)
+                except:
+                    rmtree(targetRRA)
+                    copytree(template_RRA_dir, targetRRA)
+
+
     elif subj[0:4] == 'sild':
         # make the directories
         tempdir = os.path.join(resultbasedir,subj) 
