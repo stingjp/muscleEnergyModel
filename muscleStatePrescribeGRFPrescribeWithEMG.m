@@ -4,9 +4,22 @@ function [Issues] = muscleStatePrescribeGRFPrescribeWithEMG(Issues)
     
     % setting up model and the kinematics
     inverse = MocoInverse();
-    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
 
+    % now to do stuff with the model
+    % modelProcessor = ModelProcessor(model);
+    % need to adjust some of the joints - weld them
+    weldem = StdVectorString();
+    weldem.add('subtalar_r');
+    weldem.add('mtp_r');
+    weldem.add('subtalar_l');
+    weldem.add('mtp_l');
+    % weldem.add('radius_hand_r');
+    % weldem.add('radius_hand_l');
+    
+    modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
+    % model = modelProcessor.process();
     % set up the base model
     modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
@@ -15,8 +28,13 @@ function [Issues] = muscleStatePrescribeGRFPrescribeWithEMG(Issues)
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
 
+
     % now do tweaks to get tendon compliance
     basemodel = modelProcessor.process();
+    
+    % turn on the probes for the study
+    basemodel = probeActivate(basemodel);
+
     basemodel.initSystem();
     basemuscles = basemodel.updMuscles();
     numBaseMuscles = basemuscles.getSize();
