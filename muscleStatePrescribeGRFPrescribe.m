@@ -8,8 +8,21 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
+    % now to do stuff with the model
+    % modelProcessor = ModelProcessor(model);
+    % need to adjust some of the joints - weld them
+    weldem = StdVectorString();
+    weldem.add('subtalar_r');
+    weldem.add('mtp_r');
+    weldem.add('subtalar_l');
+    weldem.add('mtp_l');
+    % weldem.add('radius_hand_r');
+    % weldem.add('radius_hand_l');
+    
+    modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
+    % model = modelProcessor.process();
 
     % set up the base model
     modelProcessor.append(ModOpIgnoreTendonCompliance());
@@ -20,8 +33,16 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
     
+
+
+
     % now do tweaks to get tendon compliance
     basemodel = modelProcessor.process();
+
+    % turn on the probes for the study
+    basemodel = probeActivate(basemodel);
+
+    % updates
     basemodel.initSystem();
     basemuscles = basemodel.updMuscles();
     numBaseMuscles = basemuscles.getSize();
@@ -84,27 +105,17 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set time and intervals
     inverse.set_initial_time(gait_start);
     inverse.set_final_time(gait_end);
-    inverse.set_mesh_interval(0.02);
+    inverse.set_mesh_interval(0.02); % may need to adjust this
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(1000);% 30 %20 10
+    inverse.set_reserves_weight(30);% 30 %20 10
 
     study = inverse.initialize();
     problem = study.updProblem();
-
-    % add goals to the problem and scale them to get close to ~1
-    % effortgoal = MocoControlGoal('effort');
-    % effortgoal.setWeight(100);
-    % problem.addGoal(effortgoal);
-
-    % initactivationgoal = MocoInitialActivationGoal('init_activation');
-    % initactivationgoal.setWeight(1);
-    % problem.addGoal(initactivationgoal);
-    
 
     % TODO test
     % excitation_effort goal
@@ -112,7 +123,17 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     excitegoal.setWeight(5e-4); % 5e-4 % 1e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
-    % activegoal.setWeight(1e-4);
+    % activegoal.setWeight(1e-0);
+
+    % add goals to the problem and scale them to get close to ~1
+    % effortgoal = MocoControlGoal('effort');
+    % effortgoal.setWeight(100);
+    % problem.addGoal(effortgoal);
+
+    initactivationgoal = MocoInitialActivationGoal('init_activation');
+    initactivationgoal.setWeight(1);
+    problem.addGoal(initactivationgoal);
+    
     
 
 
