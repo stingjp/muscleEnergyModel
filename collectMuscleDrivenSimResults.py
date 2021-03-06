@@ -76,6 +76,39 @@ dembtrials = {'demb005dembnoloadfree':['trial02','trial03','trial06'],
               'demb014dembloadedmatched':[]
               }
 
+welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexo':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk001welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk002welknatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexo':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk002welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk003welknatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexo':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk003welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk004welknatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexo':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk004welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexofast':['trial01','trial02','trial03','trial04'],
+              }
 
 ## navigate to the results directory
 os.chdir(resultsbasedir)
@@ -85,6 +118,12 @@ os.chdir(resultsbasedir)
 # TODO loop through everything and actually gather data!
 # going for a datastructure
 
+### for simple scratch work not wanting to go through every single subject and study,
+# specify a subset of subjects here and override the above
+subjects = ['welk001']
+welkconditions = ['welknatural','welkexo','welknaturalnatural','welkexoexo']
+
+
 
 ########################################## 
 ## needs changed from the old script to the new function
@@ -92,12 +131,30 @@ for subj in subjects:
     if subj[0:4] == 'wals':
         # make the directories
         tempdir = os.path.join(resultsbasedir,subj) 
-        # TODO: copy and edit for these subjects
+        # TODO
     
     elif subj[0:4] == 'welk':
         # make the directories
         tempdir = os.path.join(resultsbasedir,subj) 
-        # TODO: copy and edit for these subjects
+        # loop each condition
+        for cond in welkconditions:
+          tempdir_2 = os.path.join(tempdir, cond)
+          # loop through each trial
+          for keys in welktrials[subj+cond]:
+                # get the trial dir
+                trialdir = os.path.join(tempdir_2, keys)                
+                # file we are going for
+                musclestatesfile = os.path.join(trialdir, 'muscle_stateprescribe_grfprescribe_solution.sto')
+                # new name for file
+                newname = subj+'_'+cond+'_'+keys+'_muscledrivenresult.sto'
+                # target path
+                target = os.path.join(targetmuscleresults, newname)
+                # copy
+                try:
+                  copy(musclestatesfile, target)
+                except:
+                  pass
+
 
     elif subj[0:4] == 'jack':
         # make the directories
