@@ -76,6 +76,41 @@ dembtrials = {'demb005dembnoloadfree':['trial02','trial03','trial06'],
               'demb014dembloadedmatched':[]
               }
 
+welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexo':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk001welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk001welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk001welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk002welknatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexo':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk002welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk002welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk002welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk003welknatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexo':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk003welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk003welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk003welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk004welknatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexo':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk004welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk004welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk004welkexofast':['trial01','trial02','trial03','trial04'],
+              }
+
+
 
 ## navigate to the results directory
 os.chdir(resultsbasedir)
@@ -84,6 +119,12 @@ os.chdir(resultsbasedir)
 ## loop through all the directories
 # TODO loop through everything and actually gather data!
 # going for a datastructure
+
+### workspace ####
+# overwrite for a smaller subset
+subjects = ['welk001']
+welkconditions = ['welknatural','welkexo','welknaturalnatural','welkexoexo']
+
 
 
 ########################################## 
@@ -97,8 +138,25 @@ for subj in subjects:
     elif subj[0:4] == 'welk':
         # make the directories
         tempdir = os.path.join(resultsbasedir,subj) 
-        # TODO: copy and edit for these subjects
-
+        # loop each condition
+        for cond in welkconditions:
+            tempdir_2 = os.path.join(tempdir, cond)
+            # loop through each trial
+            for keys in welktrials[subj+cond]:
+                # get the trial dir
+                trialdir = os.path.join(tempdir_2, keys)                
+                # directory for each metabolic result file
+                grffile1 = os.path.join(trialdir, 'ground_reaction.mot')
+                # new names for when they are copied
+                newname1 = subj+'_'+cond+'_'+keys+'grf.mot'
+                # target location paths
+                target1 = os.path.join(grfbasedir,newname1)
+                # copy the files
+                try:
+                    copy(grffile1,target1)
+                except:
+                    pass
+                    
     elif subj[0:4] == 'jack':
         # make the directories
         tempdir = os.path.join(resultsbasedir,subj) 
