@@ -34,12 +34,12 @@ renameExperimentalData();
 close all;
 metabolicsModelSetup();
 close all;
-runRRA('./RRAfiles/RRA_Setup_1.xml');
+runRRA_1('./RRAfiles/RRA_Setup_1.xml');
 close all;
-runRRA('./RRAfiles/RRA_Setup_2.xml');
-% close all;
+runRRA_2('./RRAfiles/RRA_Setup_2.xml');
+close all;
 % torqueMarkerTrackGRFPrescribe();
-close all;
+% close all;
 torqueStateTrackGRFPrescribe();
 close all;
 Issues = muscleStatePrescribeGRFPrescribe(Issues);
@@ -52,12 +52,12 @@ close all;
 % solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 
-% analyzeMetabolicCost(solution1);
 % Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution1);
-% analyzeMetabolicCostWithEMG(solution2);
+% analyzeMetabolicCost(solution1);
 % Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution2);
+% analyzeMetabolicCostWithEMG(solution2);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
