@@ -194,11 +194,11 @@ function metabolicsModelSetup()
         0.5, ...
         0.49249999999999999, ...
         0.42499999999999999, ...
-        0.80300000000000005, ...
+        0.80350000000000005, ...
         0.5, ...
         0.69999999999999996, ...
         0.59999999999999998, ...
-        0.54300000000000004, ...
+        0.54350000000000004, ...
         0.45500000000000002, ...
         0.503, ...
         0.5, ...
@@ -234,11 +234,11 @@ function metabolicsModelSetup()
         0.5, ...
         0.49249999999999999, ...
         0.42499999999999999, ...
-        0.80300000000000005, ...
+        0.80350000000000005, ...
         0.5, ...
         0.69999999999999996, ...
         0.59999999999999998, ...
-        0.54300000000000004, ...
+        0.54350000000000004, ...
         0.45500000000000002, ...
         0.503];
 
@@ -380,15 +380,15 @@ function metabolicsModelSetup()
             muscName = char(muscName);
             if strcmp(muscName(end),'r') % only probing one leg
                 probe_all.addMuscle(muscName, muscleRatio(muscName));
-                % probe_all.setSpecificTension(muscName, 300000);    
+                % probe_all.setSpecificTension(muscName, 350000);    
                 probe_act.addMuscle(muscName, muscleRatio(muscName));
-                % probe_act.setSpecificTension(muscName, 300000);
+                % probe_act.setSpecificTension(muscName, 350000);
                 probe_short.addMuscle(muscName, muscleRatio(muscName));
-                % probe_short.setSpecificTension(muscName, 300000);
+                % probe_short.setSpecificTension(muscName, 350000);
                 probe_basal.addMuscle(muscName, muscleRatio(muscName));
-                % probe_basal.setSpecificTension(muscName, 300000);
+                % probe_basal.setSpecificTension(muscName, 350000);
                 probe_mech.addMuscle(muscName, muscleRatio(muscName));
-                % probe_mech.setSpecificTension(muscName, 300000);
+                % probe_mech.setSpecificTension(muscName, 350000);
 
                 % now handle the individual cases
                 if strcmp(muscName, 'bflh_r')
@@ -412,15 +412,15 @@ function metabolicsModelSetup()
             muscName = char(muscName);
             if strcmp(muscName(end),'r') % only probing one leg
                 probe_all.addMuscle(muscName, muscleRatio_long(muscName));
-                % probe_all.setSpecificTension(muscName, 300000);
+                % probe_all.setSpecificTension(muscName, 350000);
                 probe_act.addMuscle(muscName, muscleRatio_long(muscName));
-                % probe_act.setSpecificTension(muscName, 300000);
+                % probe_act.setSpecificTension(muscName, 350000);
                 probe_short.addMuscle(muscName, muscleRatio_long(muscName));
-                % probe_short.setSpecificTension(muscName, 300000);
+                % probe_short.setSpecificTension(muscName, 350000);
                 probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
-                % probe_basal.setSpecificTension(muscName, 300000);
+                % probe_basal.setSpecificTension(muscName, 350000);
                 probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
-                % probe_mech.setSpecificTension(muscName, 300000);
+                % probe_mech.setSpecificTension(muscName, 350000);
 
                 % handle individual muscle probes
                 if strcmp(muscName, 'bifemlh_r')
@@ -449,27 +449,27 @@ function metabolicsModelSetup()
             muscName = char(muscName);
             if strcmp(muscName(end),'r')
                 % probe_all.addMuscle(muscName, muscleRatio(muscName));
-                probe_all.setSpecificTension(muscName, 600000);    
+                probe_all.setSpecificTension(muscName, 350000);    
                 % probe_act.addMuscle(muscName, muscleRatio(muscName));
-                probe_act.setSpecificTension(muscName, 600000);
+                probe_act.setSpecificTension(muscName, 350000);
                 % probe_short.addMuscle(muscName, muscleRatio(muscName));
-                probe_short.setSpecificTension(muscName, 600000);
+                probe_short.setSpecificTension(muscName, 350000);
                 % probe_basal.addMuscle(muscName, muscleRatio(muscName));
-                probe_basal.setSpecificTension(muscName, 600000);
+                probe_basal.setSpecificTension(muscName, 350000);
                 % probe_mech.addMuscle(muscName, muscleRatio(muscName));
-                probe_mech.setSpecificTension(muscName, 600000);
+                probe_mech.setSpecificTension(muscName, 350000);
                 % handle individual muscle probes
                 if strcmp(muscName, 'bflh_r')
-                    probe_bifemlh.setSpecificTension(muscName, 600000);
+                    probe_bifemlh.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'gasmed_r')
-                    probe_gas.setSpecificTension(muscName, 600000);
+                    probe_gas.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'recfem_r')
-                    probe_recfem.setSpecificTension(muscName, 600000);
+                    probe_recfem.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'soleus_r')
-                    probe_sol.setSpecificTension(muscName, 600000);
+                    probe_sol.setSpecificTension(muscName, 350000);
                 end
             end
         end
@@ -480,28 +480,28 @@ function metabolicsModelSetup()
             muscName = char(muscName);
             if strcmp(muscName(end),'r')
                 % probe_all.addMuscle(muscName, muscleRatio_long(muscName));
-                probe_all.setSpecificTension(muscName, 600000);
+                probe_all.setSpecificTension(muscName, 350000);
                 % probe_act.addMuscle(muscName, muscleRatio_long(muscName));
-                probe_act.setSpecificTension(muscName, 600000);
+                probe_act.setSpecificTension(muscName, 350000);
                 % probe_short.addMuscle(muscName, muscleRatio_long(muscName));
-                probe_short.setSpecificTension(muscName, 600000);
+                probe_short.setSpecificTension(muscName, 350000);
                 % probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
-                probe_basal.setSpecificTension(muscName, 600000);
+                probe_basal.setSpecificTension(muscName, 350000);
                 % probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
-                probe_mech.setSpecificTension(muscName, 600000);
+                probe_mech.setSpecificTension(muscName, 350000);
 
                 % handle individual muscle probes
                 if strcmp(muscName, 'bifemlh_r')
-                    probe_bifemlh.setSpecificTension(muscName, 600000);
+                    probe_bifemlh.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'med_gas_r')
-                    probe_gas.setSpecificTension(muscName, 600000);
+                    probe_gas.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'rect_fem_r')
-                    probe_recfem.setSpecificTension(muscName, 600000);
+                    probe_recfem.setSpecificTension(muscName, 350000);
                 end
                 if strcmp(muscName, 'soleus_r')
-                    probe_sol.setSpecificTension(muscName, 600000);
+                    probe_sol.setSpecificTension(muscName, 350000);
                 end
             end
         end
@@ -527,7 +527,7 @@ function metabolicsModelSetup()
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
             model.finalizeConnections();
-            probe.setSpecificTension(muscName, 600000);
+            probe.setSpecificTension(muscName, 350000);
             
             probe = Umberger2010MuscleMetabolicsProbe();
             probe.setName(strcat('activation_maintenance_rate_',muscName));
@@ -538,7 +538,7 @@ function metabolicsModelSetup()
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
             model.finalizeConnections();
-            probe.setSpecificTension(muscName, 600000);
+            probe.setSpecificTension(muscName, 350000);
             
             probe = Umberger2010MuscleMetabolicsProbe();
             probe.setName(strcat("shortening_rate_",muscName));
@@ -549,7 +549,7 @@ function metabolicsModelSetup()
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
             model.finalizeConnections();
-            probe.setSpecificTension(muscName, 600000);
+            probe.setSpecificTension(muscName, 350000);
             
             % probe = Umberger2010MuscleMetabolicsProbe();
             % probe.setName(strcat("basal_rate_",muscName));
@@ -569,7 +569,7 @@ function metabolicsModelSetup()
             probe.addMuscle(muscName, muscleRatio(muscName));
             model.addProbe(probe);
             model.finalizeConnections();
-            probe.setSpecificTension(muscName, 600000);
+            probe.setSpecificTension(muscName, 350000);
 
             % TODO figure out changing the specific tension, and if the muscle ratio is correct
         end
@@ -962,15 +962,15 @@ function metabolicsModelSetup()
     %         muscName = musc.getName();
     %         muscName = char(muscName);
     %         probe_all.addMuscle(muscName, muscleRatio(muscName));
-    %         % probe_all.setSpecificTension(muscName, 300000);    
+    %         % probe_all.setSpecificTension(muscName, 350000);    
     %         probe_act.addMuscle(muscName, muscleRatio(muscName));
-    %         % probe_act.setSpecificTension(muscName, 300000);
+    %         % probe_act.setSpecificTension(muscName, 350000);
     %         probe_short.addMuscle(muscName, muscleRatio(muscName));
-    %         % probe_short.setSpecificTension(muscName, 300000);
+    %         % probe_short.setSpecificTension(muscName, 350000);
     %         probe_basal.addMuscle(muscName, muscleRatio(muscName));
-    %         % probe_basal.setSpecificTension(muscName, 300000);
+    %         % probe_basal.setSpecificTension(muscName, 350000);
     %         probe_mech.addMuscle(muscName, muscleRatio(muscName));
-    %         % probe_mech.setSpecificTension(muscName, 300000);
+    %         % probe_mech.setSpecificTension(muscName, 350000);
 
     %         % now handle the individual cases
     %         if strcmp(muscName, 'bflh_r')
@@ -992,15 +992,15 @@ function metabolicsModelSetup()
     %         muscName = musc.getName();
     %         muscName = char(muscName);
     %         probe_all.addMuscle(muscName, muscleRatio_long(muscName));
-    %         % probe_all.setSpecificTension(muscName, 300000);
+    %         % probe_all.setSpecificTension(muscName, 350000);
     %         probe_act.addMuscle(muscName, muscleRatio_long(muscName));
-    %         % probe_act.setSpecificTension(muscName, 300000);
+    %         % probe_act.setSpecificTension(muscName, 350000);
     %         probe_short.addMuscle(muscName, muscleRatio_long(muscName));
-    %         % probe_short.setSpecificTension(muscName, 300000);
+    %         % probe_short.setSpecificTension(muscName, 350000);
     %         probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
-    %         % probe_basal.setSpecificTension(muscName, 300000);
+    %         % probe_basal.setSpecificTension(muscName, 350000);
     %         probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
-    %         % probe_mech.setSpecificTension(muscName, 300000);
+    %         % probe_mech.setSpecificTension(muscName, 350000);
 
     %         % handle individual muscle probes
     %         if strcmp(muscName, 'bifemlh_r')
@@ -1027,27 +1027,27 @@ function metabolicsModelSetup()
     %         muscName = musc.getName();
     %         muscName = char(muscName);
     %         % probe_all.addMuscle(muscName, muscleRatio(muscName));
-    %         probe_all.setSpecificTension(muscName, 600000);    
+    %         probe_all.setSpecificTension(muscName, 350000);    
     %         % probe_act.addMuscle(muscName, muscleRatio(muscName));
-    %         probe_act.setSpecificTension(muscName, 600000);
+    %         probe_act.setSpecificTension(muscName, 350000);
     %         % probe_short.addMuscle(muscName, muscleRatio(muscName));
-    %         probe_short.setSpecificTension(muscName, 600000);
+    %         probe_short.setSpecificTension(muscName, 350000);
     %         % probe_basal.addMuscle(muscName, muscleRatio(muscName));
-    %         probe_basal.setSpecificTension(muscName, 600000);
+    %         probe_basal.setSpecificTension(muscName, 350000);
     %         % probe_mech.addMuscle(muscName, muscleRatio(muscName));
-    %         probe_mech.setSpecificTension(muscName, 600000);
+    %         probe_mech.setSpecificTension(muscName, 350000);
     %         % handle individual muscle probes
     %         if strcmp(muscName, 'bflh_r')
-    %             probe_bifemlh.setSpecificTension(muscName, 600000);
+    %             probe_bifemlh.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'gasmed_r')
-    %             probe_gas.setSpecificTension(muscName, 600000);
+    %             probe_gas.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'recfem_r')
-    %             probe_recfem.setSpecificTension(muscName, 600000);
+    %             probe_recfem.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'soleus_r')
-    %             probe_sol.setSpecificTension(muscName, 600000);
+    %             probe_sol.setSpecificTension(muscName, 350000);
     %         end
     %     end
     % else
@@ -1056,28 +1056,28 @@ function metabolicsModelSetup()
     %         muscName = musc.getName();
     %         muscName = char(muscName);
     %         % probe_all.addMuscle(muscName, muscleRatio_long(muscName));
-    %         probe_all.setSpecificTension(muscName, 600000);
+    %         probe_all.setSpecificTension(muscName, 350000);
     %         % probe_act.addMuscle(muscName, muscleRatio_long(muscName));
-    %         probe_act.setSpecificTension(muscName, 600000);
+    %         probe_act.setSpecificTension(muscName, 350000);
     %         % probe_short.addMuscle(muscName, muscleRatio_long(muscName));
-    %         probe_short.setSpecificTension(muscName, 600000);
+    %         probe_short.setSpecificTension(muscName, 350000);
     %         % probe_basal.addMuscle(muscName, muscleRatio_long(muscName));
-    %         probe_basal.setSpecificTension(muscName, 600000);
+    %         probe_basal.setSpecificTension(muscName, 350000);
     %         % probe_mech.addMuscle(muscName, muscleRatio_long(muscName));
-    %         probe_mech.setSpecificTension(muscName, 600000);
+    %         probe_mech.setSpecificTension(muscName, 350000);
 
     %         % handle individual muscle probes
     %         if strcmp(muscName, 'bifemlh_r')
-    %             probe_bifemlh.setSpecificTension(muscName, 600000);
+    %             probe_bifemlh.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'med_gas_r')
-    %             probe_gas.setSpecificTension(muscName, 600000);
+    %             probe_gas.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'rect_fem_r')
-    %             probe_recfem.setSpecificTension(muscName, 600000);
+    %             probe_recfem.setSpecificTension(muscName, 350000);
     %         end
     %         if strcmp(muscName, 'soleus_r')
-    %             probe_sol.setSpecificTension(muscName, 600000);
+    %             probe_sol.setSpecificTension(muscName, 350000);
     %         end
     %     end
     % end

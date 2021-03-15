@@ -121,13 +121,108 @@ function analyzeMetabolicCost(solution)
 
     % fix the basal stuff
     metabolics_basal_old = metabolics_basal;
-    basal_coef = 2;
+    basal_coef = 1.2;
     basal_exp = 1;
     for i=1:length(metabolics_basal)
         metabolics_all(i) = metabolics_all(i) - metabolics_basal(i);
         metabolics_basal(i) = basal_coef*(model_mass^basal_exp);
         % metabolics_all(i) = metabolics_all(i) + metabolics_basal(i)
     end
+
+    %%% workspace %%%
+    % TODO figure out how to get all the muscles averages
+    
+    table_musc_metabolics = table_metabolics;
+    table_musc_metabolics.removeColumn('all_metabolics_TOTAL');
+    table_musc_metabolics.removeColumn('all_activation_maintenance_rate_TOTAL');
+    table_musc_metabolics.removeColumn('all_shortening_rate_TOTAL');
+    table_musc_metabolics.removeColumn('all_basal_rate_TOTAL');
+    table_musc_metabolics.removeColumn('all_mechanical_work_rate_TOTAL');
+    table_musc_metabolics.removeColumn('soleus_metabolics_TOTAL');
+    table_musc_metabolics.removeColumn('gastroc_metabolics_TOTAL');
+    table_musc_metabolics.removeColumn('bifemlh_metabolics_TOTAL');
+    table_musc_metabolics.removeColumn('recfem_metabolics_TOTAL');
+    
+    
+    
+    % now it is each probe type for each muscle - hella probes
+    nummuscmet = table_musc_metabolics.getNumColumns();
+    muscmetlabels = table_musc_metabolics.getColumnLabels();
+    muscMetabolicsMat = [];
+    muscMetabolicsLabels = [];
+    
+    muscMetTime = table_musc_metabolics.getIndependentColumn();
+    for i=0:nummuscmet-1
+        templabel = muscmetlabels.get(i);
+        tempcolumn = table_musc_metabolics.getDependentColumn(templabel);
+        muscMetabolicsMat = [muscMetabolicsMat, tempcolumn.getAsMat()];
+        muscMetabolicsLabels = [muscMetabolicsLabels, templabel(1,1)];
+    end
+    
+    muscMetabolicsMat;
+    avgMuscMetMat = [];
+    
+    % loop through to average each over the gait cycle
+    for i = 1:nummuscmet
+        tempinteg = ((trapz(time, muscMetabolicsMat(:,i))) / (time(end)-time(1))) / model_mass;
+        avgMuscMetMat = [avgMuscMetMat, tempinteg];
+    end
+    
+    % write them all to a file that I can pull later to get differences
+    % get everything set up for the table printout
+    % met_rows = {'trial'};
+    musc_table = table(avgMuscMetMat.', string(muscMetabolicsLabels));        
+    writetable(musc_table, 'muscleMetabolicsALL.csv');% ,'WriteRowNames',true);
+    
+    
+    % look through the GRF file?
+    % get grf for residual comparisons
+    table_grf = TimeSeriesTable('analyzemuscles_ForceReporter_forces.sto');
+    grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
+    grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
+    grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
+    grf_l_Fx = table_grf.getDependentColumn('calcn_l_Left_GRF_Fx').getAsMat();
+    grf_l_Fy = table_grf.getDependentColumn('calcn_l_Left_GRF_Fy').getAsMat();
+    grf_l_Fz = table_grf.getDependentColumn('calcn_l_Left_GRF_Fz').getAsMat();
+    grf_r_Tx = table_grf.getDependentColumn('calcn_r_Right_GRF_Tx').getAsMat();
+    grf_r_Ty = table_grf.getDependentColumn('calcn_r_Right_GRF_Ty').getAsMat();
+    grf_r_Tz = table_grf.getDependentColumn('calcn_r_Right_GRF_Tz').getAsMat();
+    grf_l_Tx = table_grf.getDependentColumn('calcn_l_Left_GRF_Tx').getAsMat();
+    grf_l_Ty = table_grf.getDependentColumn('calcn_l_Left_GRF_Ty').getAsMat();
+    grf_l_Tz = table_grf.getDependentColumn('calcn_l_Left_GRF_Tz').getAsMat();
+
+    
+    % grab a list of indices that are nonzero in the Fy direction, indicating stance. 
+    % get the corresponding others for swing of that leg. 
+    tempstanceix = find(grf_r_Fy);
+    % loop through these and grab the metabolic cost values
+    met_stance = [];
+    met_swing = metabolics_all;
+    popped = 0;
+
+
+
+    for i = 1:length(tempstanceix)
+        tempix = tempstanceix(i);
+        tempmet = metabolics_all(tempix);
+        met_stance = [met_stance, tempmet];
+        met_swing(tempix-popped) = [];
+        popped = popped + 1;
+    end
+    % going to need time vecs for the integration: actual time does not matter, only amount
+    time_max = time(end);
+    time_min = time(1);
+    time_diff = time_max - time_min;
+    time_step = time_diff / length(time);
+    stance_time = time_step*linspace(1, length(met_stance),length(met_stance));
+    swing_time = time_step*linspace(1, length(met_swing), length(met_swing));
+
+
+    % now actually get average values for each stance and swing for one leg
+    metabolics_stance_avg = ((trapz(stance_time, met_stance)) / (stance_time(end)-stance_time(1))) / model_mass;
+    metabolics_swing_avg = ((trapz(swing_time, met_swing)) / (swing_time(end)-swing_time(1))) / model_mass;
+    % TODO do this analysis for stance and swing for all the types of metabolics, not just full
+
 
     % individual muscles
     metabolics_gas = metabolics_gas_os.getAsMat;
@@ -156,6 +251,7 @@ function analyzeMetabolicCost(solution)
     met_table = table(metabolics_all_avg, metabolics_act_avg, metabolics_short_avg,...
                 metabolics_basal_avg, metabolics_mech_avg,...
                 metabolics_gas_avg, metabolics_sol_avg, metabolics_bifemlh_avg, metabolics_recfem_avg,... 
+                metabolics_swing_avg, metabolics_stance_avg,...
                 model_mass, subjectname,condname,...
                 experimentname,trialname,'RowNames', met_rows);
             

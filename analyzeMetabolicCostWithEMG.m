@@ -8,6 +8,10 @@ function analyzeMetabolicCostWithEMG(solution)
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
     
+    keyboard
+    %%%% TODO include the new stance and swing things for this script
+
+
     % get the subject name and mass
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
     
