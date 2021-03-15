@@ -6,7 +6,7 @@ function torqueStateTrackGRFPrescribe()
     track.setName("torque_statetrack_grfprescribe");
     
     % construct a ModelProcessor and add it to the tool.
-    modelProcessor = ModelProcessor("simple_model_all_the_probes_adjusted.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
@@ -30,15 +30,18 @@ function torqueStateTrackGRFPrescribe()
     track.setModel(modelProcessor);
     
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
+    % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
+    % 2 
     % tableProcessor = TableProcessor('coordinates_updated.mot');
+    % 3
+    tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot')); %***
+    tableProcessor.append(TabOpLowPassFilter(6));
+    % 4 
+    % tempTable = TimeSeriesTable('./ResultsRRA_2/subject01_walk1_RRA_Kinematics_q.sto');
+    % tableProcessor = TableProcessor(tempTable);
     
-    % tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot')); %***
-    
-    tempTable = TimeSeriesTable('./ResultsRRA_2/subject01_walk1_RRA_Kinematics_q.sto');
-    tableProcessor = TableProcessor(tempTable);
     tableProcessor.append(TabOpUseAbsoluteStateNames());
-    % tableProcessor.append(TabOpLowPassFilter(6));
     
     track.setStatesReference(tableProcessor);
     track.set_states_global_tracking_weight(10);
