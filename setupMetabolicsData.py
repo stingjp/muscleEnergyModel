@@ -97,6 +97,9 @@ pd.set_option('display.max_rows',None) #,'display.max_columns',None)
 bothtrim_df = both_df.dropna()
 print(bothtrim_df)
 
+pdb.set_trace()
+
+
 
 # make a figure for the simulations vs exp
 f, ax = plt.subplots()
