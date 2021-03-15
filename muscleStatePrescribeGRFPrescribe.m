@@ -8,7 +8,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
@@ -182,7 +182,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
    
     % post analysis and validation
-    analyzeMetabolicCost(solution);
+    analyzeMetabolicCost(solution, false);
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
     Issues = computeIDFromResult(Issues, solution);
    
