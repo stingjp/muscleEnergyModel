@@ -182,7 +182,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
    
     % post analysis and validation
-    analyzeMetabolicCost(solution, false);
+    analyzeMetabolicCost(solution);
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
     Issues = computeIDFromResult(Issues, solution);
    
