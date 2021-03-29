@@ -1,6 +1,4 @@
-clear all
-clc
-
+% written by Jon Stingel
 
 repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
