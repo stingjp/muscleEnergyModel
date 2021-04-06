@@ -123,7 +123,7 @@ os.chdir(resultsbasedir)
 
 #### 
 # scratch space overwrite for subsets of subj and conditions
-subjects = ['welk001']
+subjects = ['welk001','welk002']
 welkconditions = ['welknatural','welkexo','welknaturalnatural','welkexoexo']
 
 
