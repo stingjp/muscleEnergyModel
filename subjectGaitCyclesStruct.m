@@ -152,6 +152,151 @@ subjectgaitcycles.welk002.welkexonatural.trial03.final = 56.011;
 subjectgaitcycles.welk002.welkexonatural.trial04.initial = 56.011;
 subjectgaitcycles.welk002.welkexonatural.trial04.final = 56.695;
 
+% subject 03
+subjectgaitcycles.welk003.welknatural.trial01.initial = 0.782;
+subjectgaitcycles.welk003.welknatural.trial01.final = 1.502;
+subjectgaitcycles.welk003.welknatural.trial02.initial = 1.502;
+subjectgaitcycles.welk003.welknatural.trial02.final = 2.217;
+subjectgaitcycles.welk003.welknatural.trial03.initial = 58.123;
+subjectgaitcycles.welk003.welknatural.trial03.final = 58.841;
+subjectgaitcycles.welk003.welknatural.trial04.initial = 58.841;
+subjectgaitcycles.welk003.welknatural.trial04.final = 59.551;
+
+subjectgaitcycles.welk003.welknaturalnatural.trial01.initial = 6.236;
+subjectgaitcycles.welk003.welknaturalnatural.trial01.final = 6.949;
+subjectgaitcycles.welk003.welknaturalnatural.trial02.initial = 6.949;
+subjectgaitcycles.welk003.welknaturalnatural.trial02.final = 7.671;
+subjectgaitcycles.welk003.welknaturalnatural.trial03.initial = 54.786;
+subjectgaitcycles.welk003.welknaturalnatural.trial03.final = 55.501;
+subjectgaitcycles.welk003.welknaturalnatural.trial04.initial = 55.501;
+subjectgaitcycles.welk003.welknaturalnatural.trial04.final = 56.22;
+
+subjectgaitcycles.welk003.welknaturalexo.trial01.initial = 5.027;
+subjectgaitcycles.welk003.welknaturalexo.trial01.final = 5.703;
+subjectgaitcycles.welk003.welknaturalexo.trial02.initial = 5.703;
+subjectgaitcycles.welk003.welknaturalexo.trial02.final = 6.385;
+subjectgaitcycles.welk003.welknaturalexo.trial03.initial = 56.57;
+subjectgaitcycles.welk003.welknaturalexo.trial03.final = 57.251;
+subjectgaitcycles.welk003.welknaturalexo.trial04.initial = 57.251;
+subjectgaitcycles.welk003.welknaturalexo.trial04.final = 57.923;
+
+subjectgaitcycles.welk003.welknaturalslow.trial01.initial = 1.804;
+subjectgaitcycles.welk003.welknaturalslow.trial01.final = 2.557;
+subjectgaitcycles.welk003.welknaturalslow.trial02.initial = 2.557;
+subjectgaitcycles.welk003.welknaturalslow.trial02.final = 3.304;
+subjectgaitcycles.welk003.welknaturalslow.trial03.initial = 53.554;
+subjectgaitcycles.welk003.welknaturalslow.trial03.final = 54.31;
+subjectgaitcycles.welk003.welknaturalslow.trial04.initial = 54.31;
+subjectgaitcycles.welk003.welknaturalslow.trial04.final = 55.058;
+
+subjectgaitcycles.welk003.welkexo.trial01.initial = 3.006;
+subjectgaitcycles.welk003.welkexo.trial01.final = 3.696;
+subjectgaitcycles.welk003.welkexo.trial02.initial = 3.696;
+subjectgaitcycles.welk003.welkexo.trial02.final = 4.378;
+subjectgaitcycles.welk003.welkexo.trial03.initial = 58.043;
+subjectgaitcycles.welk003.welkexo.trial03.final = 58.718;
+subjectgaitcycles.welk003.welkexo.trial04.initial = 58.718;
+subjectgaitcycles.welk003.welkexo.trial04.final = 59.388;
+
+subjectgaitcycles.welk003.welkexoexo.trial01.initial = 2.367;
+subjectgaitcycles.welk003.welkexoexo.trial01.final = 3.047;
+subjectgaitcycles.welk003.welkexoexo.trial02.initial = 3.047;
+subjectgaitcycles.welk003.welkexoexo.trial02.final = 3.735;
+subjectgaitcycles.welk003.welkexoexo.trial03.initial = 55.251;
+subjectgaitcycles.welk003.welkexoexo.trial03.final = 55.917;
+subjectgaitcycles.welk003.welkexoexo.trial04.initial = 55.917;
+subjectgaitcycles.welk003.welkexoexo.trial04.final = 56.597;
+
+subjectgaitcycles.welk003.welkexofast.trial01.initial = 2.198;
+subjectgaitcycles.welk003.welkexofast.trial01.final = 2.848;
+subjectgaitcycles.welk003.welkexofast.trial02.initial = 2.848;
+subjectgaitcycles.welk003.welkexofast.trial02.final = 3.494;
+subjectgaitcycles.welk003.welkexofast.trial03.initial = 51.886;
+subjectgaitcycles.welk003.welkexofast.trial03.final = 52.532;
+subjectgaitcycles.welk003.welkexofast.trial04.initial = 52.532;
+subjectgaitcycles.welk003.welkexofast.trial04.final = 53.169;
+
+subjectgaitcycles.welk003.welkexonatural.trial01.initial = 5.234;
+subjectgaitcycles.welk003.welkexonatural.trial01.final = 5.944;
+subjectgaitcycles.welk003.welkexonatural.trial02.initial = 5.944;
+subjectgaitcycles.welk003.welkexonatural.trial02.final = 6.658;
+subjectgaitcycles.welk003.welkexonatural.trial03.initial = 52.111;
+subjectgaitcycles.welk003.welkexonatural.trial03.final = 52.811;
+subjectgaitcycles.welk003.welkexonatural.trial04.initial = 52.811;
+subjectgaitcycles.welk003.welkexonatural.trial04.final = 53.527;
+
+% subject 04
+subjectgaitcycles.welk004.welknatural.trial01.initial = 3.572;
+subjectgaitcycles.welk004.welknatural.trial01.final = 4.277;
+subjectgaitcycles.welk004.welknatural.trial02.initial = 4.277;
+subjectgaitcycles.welk004.welknatural.trial02.final = 4.965;
+subjectgaitcycles.welk004.welknatural.trial03.initial = 49.2;
+subjectgaitcycles.welk004.welknatural.trial03.final = 49.893;
+subjectgaitcycles.welk004.welknatural.trial04.initial = 49.893;
+subjectgaitcycles.welk004.welknatural.trial04.final = 50.597;
+
+subjectgaitcycles.welk004.welknaturalnatural.trial01.initial = 6.402;
+subjectgaitcycles.welk004.welknaturalnatural.trial01.final = 7.099;
+subjectgaitcycles.welk004.welknaturalnatural.trial02.initial = 7.099;
+subjectgaitcycles.welk004.welknaturalnatural.trial02.final = 7.79;
+subjectgaitcycles.welk004.welknaturalnatural.trial03.initial = 52.195;
+subjectgaitcycles.welk004.welknaturalnatural.trial03.final = 52.884;
+subjectgaitcycles.welk004.welknaturalnatural.trial04.initial = 52.884;
+subjectgaitcycles.welk004.welknaturalnatural.trial04.final = 53.562;
+
+subjectgaitcycles.welk004.welknaturalexo.trial01.initial = 9.473;
+subjectgaitcycles.welk004.welknaturalexo.trial01.final = 10.124;
+subjectgaitcycles.welk004.welknaturalexo.trial02.initial = 10.124;
+subjectgaitcycles.welk004.welknaturalexo.trial02.final = 10.789;
+subjectgaitcycles.welk004.welknaturalexo.trial03.initial = 58.389;
+subjectgaitcycles.welk004.welknaturalexo.trial03.final = 59.037;
+subjectgaitcycles.welk004.welknaturalexo.trial04.initial = 59.037;
+subjectgaitcycles.welk004.welknaturalexo.trial04.final = 59.692;
+
+subjectgaitcycles.welk004.welknaturalslow.trial01.initial = 1.161;
+subjectgaitcycles.welk004.welknaturalslow.trial01.final = 1.893;
+subjectgaitcycles.welk004.welknaturalslow.trial02.initial = 1.893;
+subjectgaitcycles.welk004.welknaturalslow.trial02.final = 2.619;
+subjectgaitcycles.welk004.welknaturalslow.trial03.initial = 54.139;
+subjectgaitcycles.welk004.welknaturalslow.trial03.final = 54.87;
+subjectgaitcycles.welk004.welknaturalslow.trial04.initial = 54.87;
+subjectgaitcycles.welk004.welknaturalslow.trial04.final = 55.61;
+
+subjectgaitcycles.welk004.welkexo.trial01.initial = 9.281;
+subjectgaitcycles.welk004.welkexo.trial01.final = 9.945;
+subjectgaitcycles.welk004.welkexo.trial02.initial = 9.945;
+subjectgaitcycles.welk004.welkexo.trial02.final = 10.586;
+subjectgaitcycles.welk004.welkexo.trial03.initial = 50.286;
+subjectgaitcycles.welk004.welkexo.trial03.final = 50.931;
+subjectgaitcycles.welk004.welkexo.trial04.initial = 50.931;
+subjectgaitcycles.welk004.welkexo.trial04.final = 51.582;
+
+subjectgaitcycles.welk004.welkexoexo.trial01.initial = 5.596;
+subjectgaitcycles.welk004.welkexoexo.trial01.final = 6.242;
+subjectgaitcycles.welk004.welkexoexo.trial02.initial = 6.242;
+subjectgaitcycles.welk004.welkexoexo.trial02.final = 6.892;
+subjectgaitcycles.welk004.welkexoexo.trial03.initial = 56.432;
+subjectgaitcycles.welk004.welkexoexo.trial03.final = 57.09;
+subjectgaitcycles.welk004.welkexoexo.trial04.initial = 57.09;
+subjectgaitcycles.welk004.welkexoexo.trial04.final = 57.729;
+
+subjectgaitcycles.welk004.welkexofast.trial01.initial = 7.833;
+subjectgaitcycles.welk004.welkexofast.trial01.final = 8.443;
+subjectgaitcycles.welk004.welkexofast.trial02.initial = 8.443;
+subjectgaitcycles.welk004.welkexofast.trial02.final = 9.059;
+subjectgaitcycles.welk004.welkexofast.trial03.initial = 54.593;
+subjectgaitcycles.welk004.welkexofast.trial03.final = 55.207;
+subjectgaitcycles.welk004.welkexofast.trial04.initial = 55.207;
+subjectgaitcycles.welk004.welkexofast.trial04.final = 55.822;
+
+subjectgaitcycles.welk004.welkexonatural.trial01.initial = 3.437;
+subjectgaitcycles.welk004.welkexonatural.trial01.final = 4.12;
+subjectgaitcycles.welk004.welkexonatural.trial02.initial = 4.12;
+subjectgaitcycles.welk004.welkexonatural.trial02.final = 4.829;
+subjectgaitcycles.welk004.welkexonatural.trial03.initial = 49.327;
+subjectgaitcycles.welk004.welkexonatural.trial03.final = 50.03;
+subjectgaitcycles.welk004.welkexonatural.trial04.initial = 50.03;
+subjectgaitcycles.welk004.welkexonatural.trial04.final = 50.722;
 
 
 %% jackson experiments
