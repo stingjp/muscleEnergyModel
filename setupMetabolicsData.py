@@ -111,7 +111,7 @@ ax.scatter(tempx, tempy, marker='o', alpha=0.6, c='blue', label='MSE = %f'%mse)
 # transform = ax.transAxes
 # line.set_transform(transform)
 # ax.add_line(line)
-unitx = np.linspace(9,13,100)
+unitx = np.linspace(5,13,100)
 ax.plot(unitx,unitx,color='red',alpha=0.5, label='y = x')
 # some nice 
 ax.set_title('Simulation vs Experimental')
@@ -153,26 +153,32 @@ for i, row in stance_df.iterrows():
 
 # function for setting the colors of the box plots pairs
 def setBoxColors(bp):
-    setp(bp['boxes'][0], color='blue')
-    setp(bp['caps'][0], color='blue')
-    setp(bp['caps'][1], color='blue')
-    setp(bp['whiskers'][0], color='blue')
-    setp(bp['whiskers'][1], color='blue')
+
+    setp(bp['boxes'][1], color='blue')
+    setp(bp['caps'][2], color='blue')
+    setp(bp['caps'][3], color='blue')
+    setp(bp['whiskers'][2], color='blue')
+    setp(bp['whiskers'][3], color='blue')
     setp(bp['fliers'][0], color='blue')
     setp(bp['fliers'][1], color='blue')
-    setp(bp['medians'][0], color='blue')
+    setp(bp['medians'][1], color='blue')
 
-    setp(bp['boxes'][1], color='red')
-    setp(bp['caps'][2], color='red')
-    setp(bp['caps'][3], color='red')
-    setp(bp['whiskers'][2], color='red')
-    setp(bp['whiskers'][3], color='red')
+    setp(bp['boxes'][0], color='red')
+    setp(bp['caps'][0], color='red')
+    setp(bp['caps'][1], color='red')
+    setp(bp['whiskers'][0], color='red')
+    setp(bp['whiskers'][1], color='red')
     setp(bp['fliers'][0], color='red')
     setp(bp['fliers'][1], color='red')
-    setp(bp['medians'][1], color='red')
+    setp(bp['medians'][0], color='red')
 
 swings = [swingnatural, swingexo]
 stances = [stancenatural, stanceexo]
+
+# now to do some statistics for them 
+pdb.set_trace()
+
+
 
 # pdb.set_trace()
 fig = figure()
@@ -187,18 +193,18 @@ bp = boxplot(swings, positions=[4,5], widths=1)
 setBoxColors(bp)
 # set axes limits and labels
 xlim(0,6)
-ylim(2,7)
+ylim(2,9)
 ax.set_xticklabels(['Stance', 'Swing'])
 ax.set_xticks([1.5, 4.5])
 # draw temporary red and blue lines and use them to create a legend
-hB, = plot([1,1],'b-')
-hR, = plot([1,1],'r-')
+hB, = plot([1,1],'r-')
+hR, = plot([1,1],'b-')
 plt.legend((hB, hR),('Natural', 'Exo'))
 plt.ylabel('Metabolic Cost [W/kg]')
 hB.set_visible(False)
 hR.set_visible(False)
 plt.grid()
-colorsjit = ['blue', 'red']
+colorsjit = ['red', 'blue']
 for i in [1,2]: # ,4,5]:
     y = stances[i-1] # titanic.age[titanic.pclass==i].dropna()
     # Add some random "jitter" to the x-axis
@@ -212,6 +218,7 @@ for i in [4,5]:
 show()
 
 pdb.set_trace()
+
 
 # figure out how to split them
 # bothtrim_df.plot(kind='scatter',x='metabolics_all_avg_mean_x',y='metabolics_all_avg_mean_y')
