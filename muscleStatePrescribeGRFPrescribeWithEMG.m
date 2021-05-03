@@ -263,8 +263,9 @@ function [Issues] = muscleStatePrescribeGRFPrescribeWithEMG(Issues)
     % open(pdfFilePath);   
 
     % post analysis and validation
-    analyzeMetabolicCostWithEMG(solution);
     Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
-
+    analyzeMetabolicCostWithEMG(solution);
     Issues = computeIDFromResult(Issues, solution);
+    analyzeMetabolicCostWithEMG(solution);
+    
 end
