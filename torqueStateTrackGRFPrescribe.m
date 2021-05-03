@@ -11,9 +11,9 @@ function torqueStateTrackGRFPrescribe()
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
     weldem = StdVectorString();
-    weldem.add('subtalar_r');
+    % weldem.add('subtalar_r');
     weldem.add('mtp_r');
-    weldem.add('subtalar_l');
+    % weldem.add('subtalar_l');
     weldem.add('mtp_l');
     % weldem.add('radius_hand_r');
     % weldem.add('radius_hand_l');
@@ -82,7 +82,7 @@ function torqueStateTrackGRFPrescribe()
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.01); % may regret later
+    track.set_mesh_interval(0.01); %.01% may regret later
 
     % instead of calling solve, call initialize to get pre-configured
     % MocoStudy object, that can be further customized
