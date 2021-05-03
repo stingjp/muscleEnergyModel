@@ -20,17 +20,23 @@ cd(resultsdir)
 welkconditions = {'welkexo','welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural','welknaturalnatural'};
-welksubjects = {'welk001'};
+welksubjects = {'welk001','welk002','welk003','welk004'};
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
-exoMetabolicsInd = [];
-exoNames = [];
+
+
+exoMetabolicsAvg_new = [];
+naturalMetabolicsAvg_new = [];
 
 % loop through subjects
 for subj=1:length(welksubjects)
     subject = char(welksubjects(subj));
     subjdir = strcat(resultsdir, strcat('/',subject));
+    
+    exoMetabolicsInd = [];
+    exoNames = [];
+    
     % loop through conditions
     for cond=1:length(welkconditions)
        condition = char(welkconditions(cond));
@@ -85,63 +91,131 @@ for subj=1:length(welksubjects)
     
     % lets loop through and get rid of the ones that we don't want right
     % now
-    exoMetabolicsAvg_new = [];
-    naturalMetabolicsAvg_new = [];
-    names_new = [];
-    for i=1:length(exoNames)
-       if contains(char(exoNames(i)), 'combined')
-           exoMetabolicsAvg_new = [exoMetabolicsAvg_new, exoMetabolicsAvg(i)];
-           naturalMetabolicsAvg_new = [naturalMetabolicsAvg_new, naturalMetabolicsAvg(i)];
-           names_new = [names_new, exoNames(i)];
-       end
-    end
-    keyboard
-    % look at differences for the values that we care about and some how
-    % save them for printing
-    exoMinusNatural = exoMetabolicsAvg_new - naturalMetabolicsAvg_new;
-    exoMinusNatural_percDiff = (exoMetabolicsAvg_new - naturalMetabolicsAvg_new) ./ (naturalMetabolicsAvg_new) .*100;
-    
-    [smallissaving, savingix] = sort(exoMinusNatural);
-    names_ordered = [];
-    for i=1:length(savingix)
-        names_ordered = [names_ordered, names_new(savingix(i))];
-    end
-    names_ordered_2 = string(names_ordered);
-    names_ordered_3 = categorical(names_ordered_2);
-    names_ordered_4 = reordercats(names_ordered_3, names_ordered);
-    bar(names_ordered_4, smallissaving)
-    
-    % do the same for the percent change
-    [smallissaving_perc, savingix_perc] = sort(exoMinusNatural_percDiff);
-    names_ordered_perc = [];
-    for i=1:length(savingix)
-        names_ordered_perc = [names_ordered_perc, names_new(savingix(i))];
-    end
-    names_ordered_perc_2 = string(names_ordered_perc);
-    names_ordered_perc_3 = categorical(names_ordered_perc_2);
-    names_ordered_perc_4 = reordercats(names_ordered_perc_3, names_ordered_perc);
-    bar(names_ordered_perc_4, smallissaving_perc)
 
-    % make a figure with the biggest savers but the whole values
-    savecompare1 = [];
-    savecompare2 = [];
-    savecomparenames = [];
-    for i=1:4
-        savecompare1 = [savecompare1, naturalMetabolicsAvg_new(savingix(i))];
-        savecompare2 = [savecompare2, exoMetabolicsAvg_new(savingix(i))];
-        savecomparenames = [savecomparenames, names_new(savingix(i))];
+    names_new = [];
+    tempnew = [];
+    tempnew2 = [];
+    for i=1:length(exoNames)
+        if contains(char(exoNames(i)), 'combined')
+%            exoMetabolicsAvg_new = [exoMetabolicsAvg_new, exoMetabolicsAvg(i)];
+%            naturalMetabolicsAvg_new = [naturalMetabolicsAvg_new, naturalMetabolicsAvg(i)];
+%            names_new = [names_new, exoNames(i)];
+            tempnew = [tempnew, exoMetabolicsAvg(i)];
+            tempnew2 = [tempnew2, naturalMetabolicsAvg(i)];
+            names_new = [names_new, exoNames(i)];    
+        end
     end
     
-    y = [savecompare1;savecompare2];
-    x = [savecomparenames;savecomparenames];
-    bar(y.','stacked')
-    xticklabels({'Vas. Lat.','Gas. Med.','Add. Long.','Semimem.'})
-    ylabel('Metabolic Cost [W/kg]')
-    legend('Exotendon Running','Natural Running')
+    if size(exoMetabolicsAvg_new, 1) == 0
+        exoMetabolicsAvg_new = tempnew;
+        naturalMetabolicsAvg_new = tempnew2;
+    else
+        exoMetabolicsAvg_new = [exoMetabolicsAvg_new; tempnew];
+        naturalMetabolicsAvg_new = [naturalMetabolicsAvg_new; tempnew2];
+    end
+    
+    
+%     % look at differences for the values that we care about and some how
+%     % save them for printing
+%     exoMinusNatural = exoMetabolicsAvg_new - naturalMetabolicsAvg_new;
+%     exoMinusNatural_percDiff = (exoMetabolicsAvg_new - naturalMetabolicsAvg_new) ./ (naturalMetabolicsAvg_new) .*100;
+%     
+%     [smallissaving, savingix] = sort(exoMinusNatural);
+%     names_ordered = [];
+%     for i=1:length(savingix)
+%         names_ordered = [names_ordered, names_new(savingix(i))];
+%     end
+%     names_ordered_2 = string(names_ordered);
+%     names_ordered_3 = categorical(names_ordered_2);
+%     names_ordered_4 = reordercats(names_ordered_3, names_ordered);
+%     bar(names_ordered_4, smallissaving)
+%     
+%     % do the same for the percent change
+%     [smallissaving_perc, savingix_perc] = sort(exoMinusNatural_percDiff);
+%     names_ordered_perc = [];
+%     for i=1:length(savingix)
+%         names_ordered_perc = [names_ordered_perc, names_new(savingix(i))];
+%     end
+%     names_ordered_perc_2 = string(names_ordered_perc);
+%     names_ordered_perc_3 = categorical(names_ordered_perc_2);
+%     names_ordered_perc_4 = reordercats(names_ordered_perc_3, names_ordered_perc);
+%     bar(names_ordered_perc_4, smallissaving_perc)
+% 
+%     % make a figure with the biggest savers but the whole values
+%     savecompare1 = [];
+%     savecompare2 = [];
+%     savecomparenames = [];
+%     for i=1:4
+%         savecompare1 = [savecompare1, naturalMetabolicsAvg_new(savingix(i))];
+%         savecompare2 = [savecompare2, exoMetabolicsAvg_new(savingix(i))];
+%         savecomparenames = [savecomparenames, names_new(savingix(i))];
+%     end
+%     
+%     y = [savecompare1;savecompare2];
+%     x = [savecomparenames;savecomparenames];
+%     bar(y.','stacked')
+%     xticklabels({'Vas. Lat.','Gas. Med.','Add. Long.','Semimem.'})
+%     ylabel('Metabolic Cost [W/kg]')
+%     legend('Exotendon Running','Natural Running')
 
 end
 
-disp('finished all the sims!')
-cd(resultsdir)
-save('bigissuesfile.mat','Issues');
-disp('end')
+
+exoMetabolicsAvg_new = mean(exoMetabolicsAvg_new,1);
+naturalMetabolicsAvg_new = mean(naturalMetabolicsAvg_new,1);
+
+% look at differences for the values that we care about and some how
+% save them for printing
+exoMinusNatural = exoMetabolicsAvg_new - naturalMetabolicsAvg_new;
+exoMinusNatural_percDiff = (exoMetabolicsAvg_new - naturalMetabolicsAvg_new) ./ (naturalMetabolicsAvg_new) .*100;
+
+
+
+
+
+[smallissaving, savingix] = sort(exoMinusNatural);
+names_ordered = [];
+for i=1:length(savingix)
+    names_ordered = [names_ordered, names_new(savingix(i))];
+end
+names_ordered_2 = string(names_ordered);
+names_ordered_3 = categorical(names_ordered_2);
+names_ordered_4 = reordercats(names_ordered_3, names_ordered);
+figure();
+bar(names_ordered_4, smallissaving)
+
+% do the same for the percent change
+[smallissaving_perc, savingix_perc] = sort(exoMinusNatural_percDiff);
+names_ordered_perc = [];
+for i=1:length(savingix)
+    names_ordered_perc = [names_ordered_perc, names_new(savingix_perc(i))];
+end
+names_ordered_perc_2 = string(names_ordered_perc);
+names_ordered_perc_3 = categorical(names_ordered_perc_2);
+names_ordered_perc_4 = reordercats(names_ordered_perc_3, names_ordered_perc);
+figure();
+bar(names_ordered_perc_4, smallissaving_perc)
+
+% make a figure with the biggest savers 
+savecompare1 = [];
+savecompare2 = [];
+savecomparenames = [];
+for i=1:4
+    savecompare1 = [savecompare1, naturalMetabolicsAvg_new(savingix(i))];
+    savecompare2 = [savecompare2, exoMetabolicsAvg_new(savingix(i))];
+    savecomparenames = [savecomparenames, names_new(savingix(i))];
+end
+
+figure();
+y = [savecompare1;savecompare2];
+x = [savecomparenames;savecomparenames];
+bar(y.','stacked')
+xticklabels({'Vas. Lat.','Glut. Med.','Gas. Med.','Semimem.'})
+ylabel('Metabolic Cost [W/kg]')
+legend('Exotendon Running','Natural Running')
+keyboard
+
+% disp('finished all the sims!')
+% cd(resultsdir)
+% save('bigissuesfile.mat','Issues');
+% disp('end')

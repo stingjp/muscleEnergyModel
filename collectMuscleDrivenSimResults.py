@@ -120,7 +120,7 @@ os.chdir(resultsbasedir)
 
 ### for simple scratch work not wanting to go through every single subject and study,
 # specify a subset of subjects here and override the above
-subjects = ['welk001']
+subjects = ['welk001','welk002']
 welkconditions = ['welknatural','welkexo','welknaturalnatural','welkexoexo']
 
 
