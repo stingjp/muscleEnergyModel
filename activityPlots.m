@@ -147,7 +147,7 @@ for subj=1:length(welksubjects)
             end            
         end
         % done with the exo conditions
-        
+
         % loop through conditions - now for the natural
         for cond=1:length(welknaturalconditions)
            condition = char(welknaturalconditions(cond));
@@ -244,14 +244,81 @@ for subj=1:length(welksubjects)
             end
         end
         
+        % now need to loop through both natural and exo to find the 3 glutes
+        labels_nat = fields(welknaturalstruct);
+        glutemax = {'glmax1_r','glmax2_r','glmax3_r'};
+        glutemed = {'glmed1_r','glmed2_r','glmed3_r'};
+        glutemin = {'glmin1_r','glmin2_r','glmin3_r'};
         
+        glutemax_data_nat = [];
+        glutemed_data_nat = [];
+        glutemin_data_nat = [];
+        
+        glutemax_data_exo = [];
+        glutemed_data_exo= [];
+        glutemin_data_exo = [];
+        
+        % loop the naturals first
+        for i=1:length(labels_nat)
+            templabel_nat = string(labels_nat(i));
+            if any(strcmp(glutemax, templabel_nat))
+                tempglute = welknaturalstruct.(genvarname(templabel_nat));
+                glutemax_data_nat = [glutemax_data_nat, tempglute];
+            end
+            if any(strcmp(glutemed, templabel_nat))
+                tempglute = welknaturalstruct.(genvarname(templabel_nat));
+                glutemed_data_nat = [glutemed_data_nat, tempglute];
+            end
+            if any(strcmp(glutemin, templabel_nat))
+                tempglute = welknaturalstruct.(genvarname(templabel_nat));
+                glutemin_data_nat = [glutemin_data_nat, tempglute];
+            end
+        end
+        glutemax_data_nat = mean(glutemax_data_nat, 2);
+        glutemed_data_nat = mean(glutemed_data_nat, 2);
+        glutemin_data_nat = mean(glutemin_data_nat, 2);
+        
+        labels_exo = fields(welkexostruct);
+        % loop the exos now
+        for i=1:length(labels_exo)
+            templabel_exo = string(labels_exo(i));
+            if any(strcmp(glutemax, templabel_exo))
+                tempglute = welkexostruct.(genvarname(templabel_exo));
+                glutemax_data_exo = [glutemax_data_exo, tempglute];
+            end
+            if any(strcmp(glutemed, templabel_exo))
+                tempglute = welkexostruct.(genvarname(templabel_exo));
+                glutemed_data_exo = [glutemed_data_exo, tempglute];
+            end
+            if any(strcmp(glutemin, templabel_exo))
+                tempglute = welkexostruct.(genvarname(templabel_exo));
+                glutemin_data_exo = [glutemin_data_exo, tempglute];
+            end
+        end
+        glutemax_data_exo = mean(glutemax_data_exo, 2);
+        glutemed_data_exo = mean(glutemed_data_exo, 2);
+        glutemin_data_exo = mean(glutemin_data_exo, 2);
+
+        
+        % make sure the new averaged will get into figure
+        welknaturalstruct.glmax_avg_r = glutemax_data_nat;
+        welknaturalstruct.glmed_avg_r = glutemed_data_nat;
+        welknaturalstruct.glmin_avg_r = glutemin_data_nat;
+        
+        welkexostruct.glmax_avg_r = glutemax_data_exo;
+        welkexostruct.glmed_avg_r = glutemed_data_exo;
+        welkexostruct.glmin_avg_r = glutemin_data_exo;
+        
+        % need to get new total labels
+        testlabels_nat = fields(welknaturalstruct);
+        testlabels_exo = fields(welkexostruct);        
+        
+        
+        % now create a figure 
         tempfig = figure('Position',[1,1,1920,1080]);
-        % do more stuff
-        % averaging and whatnot
-        labels = fields(welknaturalstruct);
-        for i=2:length(labels)
-            subplot(7,8,i-1);
-            templabel = char(labels(i));
+        for i=2:length(testlabels_nat)
+            subplot(7,9,i-1);
+            templabel = char(testlabels_nat(i));
             muscleplot1 = welknaturalstruct.(genvarname(templabel));
             plot(welknaturalstruct.time, muscleplot1, ':')
             hold on;
@@ -266,13 +333,11 @@ for subj=1:length(welksubjects)
             '-dpng', '-r500')
         disp('print 1')
         
+        
         tempfig2 = figure('Position',[1,1,1920,1080]);
-        % do more stuff
-        % averaging and whatnot
-        labels = fields(welkexostruct);
-        for i=2:length(labels)
-            subplot(7,8,i-1);
-            templabel = char(labels(i));
+        for i=2:length(testlabels_exo)
+            subplot(7,9,i-1);
+            templabel = char(testlabels_exo(i));
             muscleplot2 = welkexostruct.(genvarname(templabel));
             plot(welkexostruct.time, muscleplot2, ':')
             hold on;
@@ -291,11 +356,9 @@ for subj=1:length(welksubjects)
         % combined exo and natural fig
         combineexonaturalfig = figure('Position',[1,1,1920,1080]);
         title('red=natural, blue=exo');
-        % do more stuff
-        % averaging and whatnot
         labels = fields(welkexostruct);
         for i=2:length(labels)
-            subplot(7,8,i-1);
+            subplot(7,9,i-1);
             templabel = char(labels(i));
             muscleplot2 = welkexostruct.(genvarname(templabel));
             muscleplot1 = welknaturalstruct.(genvarname(templabel));
@@ -341,7 +404,7 @@ title('red=natural, blue=exo');
 
 for i=1:length(excitelabels)-1    
     % make a subplot
-    subplot(7,8,i);
+    subplot(7,9,i);
     templabel = char(excitelabels(i+1));
     hold on;
     tempsubjavgs1 = [];
@@ -386,7 +449,7 @@ title('red=natural, blue=exo');
     
 for i=1:length(activelabels)-1   
     % make a subplot
-    subplot(7,8,i);
+    subplot(7,9,i);
     templabel = char(activelabels(i+1));
     hold on;
     tempsubjavgs1 = [];
