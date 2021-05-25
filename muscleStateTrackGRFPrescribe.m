@@ -85,7 +85,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % modelmet.finalizeConnections();
     % modelProcessorDC2 = ModelProcessor(modelmet);
     % inverse.setModel(modelProcessorDC2);
-
+    
     track.setModel(modelProcessorDC)
 
 
@@ -144,7 +144,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.set_mesh_interval(0.05); %.01% 
 
     % initialize and set goals
-    study = track.initialize();
+    study = track.initialize();    
+
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
@@ -173,14 +174,26 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
            effort.setWeightForControl(forcePath, 10);
         end
     end
+    
 
-
-    % track.set_guess_file('muscle_stateprescribe_grfprescribe_solution.sto');
-    solver = study.initCasADiSolver();
-    solver.createGuess('bounds');
-    keyboard
+%     track.set_guess_file('muscle_stateprescribe_grfprescribe_solution.sto');
+%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     solver.setGuess(twosteptraj);
 %     solver.setGuessFile('muscle_stateprescribe_grfprescribe_solution.sto');
-    solver.set_optim_convergence_tolerance(1e-4);
+%     solver.set_optim_convergence_tolerance(1e-4);
+
+
+%     solver = study.initCasADiSolver();
+%     guess = solver.createGuess('bounds'); % bounds or random
+%     solver.setGuess(guess);
+
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    solver.resetProblem(problem)
+%     guess = solver.createGuess('bounds'); % bounds or random  
+%     solver.setGuess(guess);
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    solver.setGuess(twosteptraj);
+
 
     % solve and visualize
     solution = study.solve();
