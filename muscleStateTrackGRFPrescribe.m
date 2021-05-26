@@ -149,6 +149,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
+    effort.setWeight(1e-0);
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -187,12 +188,71 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 %     guess = solver.createGuess('bounds'); % bounds or random
 %     solver.setGuess(guess);
 
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    steps = twosteptraj.getNumTimes();
+
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
-%     guess = solver.createGuess('bounds'); % bounds or random  
+%     solver.set_num_mesh_intervals(steps);
+
+    guess = solver.createGuess('bounds'); % bounds or random  
+    guess.write('boundsguess.sto');
 %     solver.setGuess(guess);
-    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    solver.setGuess(twosteptraj);
+
+%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    randomguess = MocoTrajectory('boundsguess.sto');
+    randomguess.resampleWithNumTimes(steps);
+    
+    % go through and overwrite the states first
+    randomstatenames = randomguess.getStateNames();
+    % this will cover joint values, speeds, muscle activations, and norm
+    % tendon force
+    for s = 0:randomstatenames.size()-1
+        statename = randomstatenames.get(s);
+        % temprandom = randomguess.getStateMat(statename);
+        temp2step = twosteptraj.getStateMat(statename);
+        randomguess.setState(statename,temp2step);       
+    end
+    
+    % go through all the controls - excitations
+    randomcontrolnames = randomguess.getControlNames();
+    % this covers all excitations and reserves
+    for c = 0:randomcontrolnames.size()-1
+        controlname = randomcontrolnames.get(c);
+        % temprandom = randomguess.getControlMat(controlname);
+        temp2step = twosteptraj.getControlMat(controlname);
+        randomguess.setControl(controlname, temp2step);
+    end
+    
+    % go through others??
+    % randomparamnames = randomguess.getParameterNames();
+    % this is empty in the normal condition
+        
+    % multipliers
+    randommultnames = randomguess.getMultiplierNames();
+    for m = 0:randommultnames.size()-1
+        multname = randommultnames.get(m);
+        % temprandom = randomguess.getMultiplierMat(multname)
+        try
+            temp2step = twosteptraj.getMultiplierMat(mutlname);
+            randomguess.setMultiplier(multname, temp2step);
+        catch
+            disp('did not have the multiplier in the 2 step problem solution');
+        end
+    end
+    
+    % now for the implicit derivatives
+    randomderivnames = randomguess.getDerivativeNames();
+    for d = 0:randomderivnames.size()-1
+        derivname = randomderivnames.get(d);
+        % temprandom = randomguess.getDerivativeMat(derivname);
+        temp2step = twosteptraj.getDerivativeMat(derivname);
+        randomguess.setDerivative(derivname, temp2step);
+    end    
+    
+    
+    % now set the guess for the solver
+    solver.setGuess(randomguess);
 
 
     % solve and visualize
