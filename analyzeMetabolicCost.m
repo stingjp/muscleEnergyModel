@@ -5,7 +5,7 @@ function analyzeMetabolicCost(solution)
     % for the unconstrained solution
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Conduct an analysis using MuscleAnalysis and ProbeReporter.
-%     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    % solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
     
