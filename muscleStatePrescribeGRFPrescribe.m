@@ -14,9 +14,9 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
     weldem = StdVectorString();
-%     weldem.add('subtalar_r');
+    % weldem.add('subtalar_r');
     weldem.add('mtp_r');
-%     weldem.add('subtalar_l');
+    % weldem.add('subtalar_l');
     weldem.add('mtp_l');
     % weldem.add('radius_hand_r');
     % weldem.add('radius_hand_l');
@@ -46,21 +46,21 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     basemodel.initSystem();
     basemuscles = basemodel.updMuscles();
     numBaseMuscles = basemuscles.getSize();
-%     for m = 0:numBaseMuscles-1
-        % set tendon compliance on for certain muscles
-        % if lopt > lst want stiff (ignore)
+    % for m = 0:numBaseMuscles-1
+    %     set tendon compliance on for certain muscles
+    %     if lopt > lst want stiff (ignore)
 
-        % get the muscle
-%         basemusc = basemuscles.get(m);
-        % get lopt
-%         baselopt = basemusc.getOptimalFiberLength();
-        % get lst
-%         baselst = basemusc.getTendonSlackLength();
-        % set compliance if lopt > lst
-%         if baselopt < baselst
-%             basemusc.set_ignore_tendon_compliance(false)
-%         end
-%     end
+    %     get the muscle
+    %     basemusc = basemuscles.get(m);
+    %     get lopt
+    %     baselopt = basemusc.getOptimalFiberLength();
+    %     get lst
+    %     baselst = basemusc.getTendonSlackLength();
+    %     set compliance if lopt > lst
+    %     if baselopt < baselst
+    %         basemusc.set_ignore_tendon_compliance(false)
+    %     end
+    % end
 
     %% do more model processor stuff
     modelProcessorDC = ModelProcessor(basemodel);
@@ -69,23 +69,23 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     modelProcessorDC.append(ModOpTendonComplianceDynamicsModeDGF('implicit'));
 
     % need to add the bhargava metabolics probe for cost function
-%     bhargmet = Bhargava2004SmoothedMuscleMetabolics();
-%     bhargmet.setName("simmetabolics");
-%     bhargmet.set_use_smoothing(true);
-%     modelmet = modelProcessorDC.process();
-%     modelmetMuscles = modelmet.getMuscles();
-%     nummodelmetMuscles = modelmetMuscles.getSize();
-%     for m = 0:nummodelmetMuscles-1
-%         musc = modelmetMuscles.get(m);
-%         muscName = musc.getName();
-%         muscName = char(muscName);
-%         bhargmet.addMuscle(muscName, musc);
-%     end
-%     
-%     modelmet.addComponent(bhargmet);
-%     modelmet.finalizeConnections();
-%     modelProcessorDC2 = ModelProcessor(modelmet);
-%     inverse.setModel(modelProcessorDC2);
+    % bhargmet = Bhargava2004SmoothedMuscleMetabolics();
+    % bhargmet.setName("simmetabolics");
+    % bhargmet.set_use_smoothing(true);
+    % modelmet = modelProcessorDC.process();
+    % modelmetMuscles = modelmet.getMuscles();
+    % nummodelmetMuscles = modelmetMuscles.getSize();
+    % for m = 0:nummodelmetMuscles-1
+    %     musc = modelmetMuscles.get(m);
+    %     muscName = musc.getName();
+    %     muscName = char(muscName);
+    %     bhargmet.addMuscle(muscName, musc);
+    % end
+    
+    % modelmet.addComponent(bhargmet);
+    % modelmet.finalizeConnections();
+    % modelProcessorDC2 = ModelProcessor(modelmet);
+    % inverse.setModel(modelProcessorDC2);
 
     inverse.setModel(modelProcessorDC);
 
@@ -147,11 +147,11 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % add metabolic cost goal
    
-%     metGoal = MocoOutputGoal("met", 0.01);
-%     metGoal.setOutputPath("/simmetabolics|total_metabolic_rate");
-%     metGoal.setDivideByDisplacement(true);
-%     metGoal.setDivideByMass(true);
-%     problem.addGoal(metGoal);
+    % metGoal = MocoOutputGoal("met", 0.01);
+    % metGoal.setOutputPath("/simmetabolics|total_metabolic_rate");
+    % metGoal.setDivideByDisplacement(true);
+    % metGoal.setDivideByMass(true);
+    % problem.addGoal(metGoal);
 
 
     % add goals to the problem and scale them to get close to ~1
@@ -172,16 +172,16 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
     
-%     solution = study.solve();
-    % solution.write('muscletestingforcontrols.sto')
-%     solution.insertStatesTrajectory(tempkintable);
+    solution = study.solve();
+    solution.write('muscleguess.sto');
+    solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
 
 
     % post processing
-%     solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
-%     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
-%     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
+    solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
 
 
     % Solve the problem and write the solution to a Storage file.
@@ -190,7 +190,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % solution.getMocoSolution().write('muscle_stateprescribe_grfprescribe_solution.sto');
     % STOFileAdapter.write(solution.getMocoSolution().exportToControlsTable(), 'muscleprescribe_controls.sto')
     % STOFileAdapter.write(solution.getMocoSolution().exportToStatesTable(), 'muscleprescribe_states.sto')
-    keyboard
+    
     
     % Generate a report with plots for the solution trajectory.
     % model = modelProcessor.process();

@@ -37,7 +37,7 @@ function plotCMCStates_activations(filename, outputname)
                         % fix the naming
                         tempstruct.(genvarname(templab))=[]; % (11:length(templab)-11))) = [];
                     end
-    %                 welkexostruct.(genvarname(templab(11:length(templab)-11))) = [welkexostruct.(genvarname(templab(11:length(templab)-11))), tempcolinterp]; 
+                    % welkexostruct.(genvarname(templab(11:length(templab)-11))) = [welkexostruct.(genvarname(templab(11:length(templab)-11))), tempcolinterp]; 
                     tempstruct.(genvarname(templab)) = [tempstruct.(genvarname(templab)), tempcolinterp];
                 end
             end
@@ -54,7 +54,7 @@ function plotCMCStates_activations(filename, outputname)
         subplot(7,8,i);
         templabel = char(labels(i));
         muscleplot1 = tempstruct.(genvarname(templabel));
-%         plot(timespercent101, muscleplot1, ':')
+        % plot(timespercent101, muscleplot1, ':')
         hold on;
         plot(timespercent101, mean(muscleplot1,2), 'k-', 'LineWidth', 2)
         title(templabel)
