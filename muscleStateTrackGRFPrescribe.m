@@ -13,9 +13,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
     weldem = StdVectorString();
-%     weldem.add('subtalar_r');
+    % weldem.add('subtalar_r');
     weldem.add('mtp_r');
-%     weldem.add('subtalar_l');
+    % weldem.add('subtalar_l');
     weldem.add('mtp_l');
     % weldem.add('radius_hand_r');
     % weldem.add('radius_hand_l');
@@ -105,7 +105,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(10);
+    track.set_states_global_tracking_weight(50);
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -149,7 +149,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(1e-0);
+    effort.setWeight(5);
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -167,9 +167,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
             effort.setWeightForControl(forcePath, 10); % here 1000
-%             if contains(string(forcePath), 'pelvis_ty')
-%                 effort.setWeightForControl(forcePath, 1e8);
-%             end
+            % if contains(string(forcePath), 'pelvis_ty')
+            %     effort.setWeightForControl(forcePath, 1e8);
+            % end
         end
         if contains(string(forcePath), 'hip_rotation')
            effort.setWeightForControl(forcePath, 10);
@@ -177,29 +177,29 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     end
     
 
-%     track.set_guess_file('muscle_stateprescribe_grfprescribe_solution.sto');
-%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-%     solver.setGuess(twosteptraj);
-%     solver.setGuessFile('muscle_stateprescribe_grfprescribe_solution.sto');
-%     solver.set_optim_convergence_tolerance(1e-4);
+    % track.set_guess_file('muscle_stateprescribe_grfprescribe_solution.sto');
+    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    % solver.setGuess(twosteptraj);
+    % solver.setGuessFile('muscle_stateprescribe_grfprescribe_solution.sto');
+    % solver.set_optim_convergence_tolerance(1e-4);
 
 
-%     solver = study.initCasADiSolver();
-%     guess = solver.createGuess('bounds'); % bounds or random
-%     solver.setGuess(guess);
+    % solver = study.initCasADiSolver();
+    % guess = solver.createGuess('bounds'); % bounds or random
+    % solver.setGuess(guess);
 
     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
-%     solver.set_num_mesh_intervals(steps);
+    % solver.set_num_mesh_intervals(steps);
 
     guess = solver.createGuess('bounds'); % bounds or random  
     guess.write('boundsguess.sto');
-%     solver.setGuess(guess);
+    % solver.setGuess(guess);
 
-%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     randomguess = MocoTrajectory('boundsguess.sto');
     randomguess.resampleWithNumTimes(steps);
     
@@ -254,15 +254,21 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % now set the guess for the solver
     solver.setGuess(randomguess);
 
-
+    
     % solve and visualize
     solution = study.solve();
     % study.visualize(solution);
     % generate a report and save
     solution.write('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
+    
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
+
         
-    report = osimMocoTrajectoryReport(model, 'muscle_statetrack_grfprescribe_solution.sto');
+    report = osimMocoTrajectoryReport(model, ...
+                                    'muscle_statetrack_grfprescribe_solution.sto', ...
+                                    'bilateral', true);
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
     pdfFilePath = strcat(pdfFilePath, 'pdf');
@@ -277,7 +283,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
 
     % post analysis and validation
-    Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+    Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution);
     Issues = computeIDFromResult(Issues, solution);
     analyzeMetabolicCost(solution);
