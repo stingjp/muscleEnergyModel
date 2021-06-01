@@ -117,51 +117,6 @@ for subj=1:length(welksubjects)
         exoMetabolicsAvg_new = [exoMetabolicsAvg_new; tempnew];
         naturalMetabolicsAvg_new = [naturalMetabolicsAvg_new; tempnew2];
     end
-    
-    
-    % % look at differences for the values that we care about and some how
-    % % save them for printing
-    % exoMinusNatural = exoMetabolicsAvg_new - naturalMetabolicsAvg_new;
-    % exoMinusNatural_percDiff = (exoMetabolicsAvg_new - naturalMetabolicsAvg_new) ./ (naturalMetabolicsAvg_new) .*100;
-    
-    % [smallissaving, savingix] = sort(exoMinusNatural);
-    % names_ordered = [];
-    % for i=1:length(savingix)
-    %     names_ordered = [names_ordered, names_new(savingix(i))];
-    % end
-    % names_ordered_2 = string(names_ordered);
-    % names_ordered_3 = categorical(names_ordered_2);
-    % names_ordered_4 = reordercats(names_ordered_3, names_ordered);
-    % bar(names_ordered_4, smallissaving)
-    
-    % % do the same for the percent change
-    % [smallissaving_perc, savingix_perc] = sort(exoMinusNatural_percDiff);
-    % names_ordered_perc = [];
-    % for i=1:length(savingix)
-    %     names_ordered_perc = [names_ordered_perc, names_new(savingix(i))];
-    % end
-    % names_ordered_perc_2 = string(names_ordered_perc);
-    % names_ordered_perc_3 = categorical(names_ordered_perc_2);
-    % names_ordered_perc_4 = reordercats(names_ordered_perc_3, names_ordered_perc);
-    % bar(names_ordered_perc_4, smallissaving_perc)
-
-    % % make a figure with the biggest savers but the whole values
-    % savecompare1 = [];
-    % savecompare2 = [];
-    % savecomparenames = [];
-    % for i=1:4
-    %     savecompare1 = [savecompare1, naturalMetabolicsAvg_new(savingix(i))];
-    %     savecompare2 = [savecompare2, exoMetabolicsAvg_new(savingix(i))];
-    %     savecomparenames = [savecomparenames, names_new(savingix(i))];
-    % end
-    
-    % y = [savecompare1;savecompare2];
-    % x = [savecomparenames;savecomparenames];
-    % bar(y.','stacked')
-    % xticklabels({'Vas. Lat.','Gas. Med.','Add. Long.','Semimem.'})
-    % ylabel('Metabolic Cost [W/kg]')
-    % legend('Exotendon Running','Natural Running')
-
 end
 
 %% have all the values, now have to compute differences
@@ -178,12 +133,19 @@ for s = 1:length(welksubjects)
     muscleDifferences_perc = [muscleDifferences_perc; alldifferences_perc];
 end
 
+
+
 % then average the differences
-
-% should std
-
 muscleDifferencesAvg_raw = mean(muscleDifferences_raw, 1);
 muscleDifferencesAvg_perc = mean(muscleDifferences_perc, 1);
+
+muscleDifferencesSTD_raw = std(muscleDifferences_raw, 0, 1);
+muscleDifferencesSTD_perc = std(muscleDifferences_perc, 0, 1);
+
+
+% take individual condition averages for plots
+naturalMetabolicsAvg_new_avg = mean(naturalMetabolicsAvg_new,1);
+exoMetabolicsAvg_new_avg = mean(exoMetabolicsAvg_new, 1);
 
 
 % now to figure out sorting of the values based on savings
@@ -192,6 +154,8 @@ names_ordered = [];
 for i=1:length(savingix)
     names_ordered = [names_ordered, names_new(savingix(i))];
 end
+
+
 names_ordered_2 = string(names_ordered);
 names_ordered_3 = categorical(names_ordered_2);
 names_ordered_4 = reordercats(names_ordered_3, names_ordered);
@@ -210,27 +174,25 @@ names_ordered_perc_4 = reordercats(names_ordered_perc_3, names_ordered_perc);
 figure();
 bar(names_ordered_perc_4, smallissaving_perc)
 
-% make a figure with the biggest savers 
+
+
+
+%% this figure doesn't really work, I think the averages make it skewed
+% make a figure with the biggest savers - raw savings
 savecompare1 = [];
 savecompare2 = [];
 savecomparenames = [];
 % grab the biggest savers (differences)
 for i=1:4
-    savecompare1 = [savecompare1, naturalMetabolicsAvg_new(savingix(i))];
-    savecompare2 = [savecompare2, exoMetabolicsAvg_new(savingix(i))];
+    savecompare1 = [savecompare1, naturalMetabolicsAvg_new_avg(savingix(i))];
+    savecompare2 = [savecompare2, exoMetabolicsAvg_new_avg(savingix(i))];
     savecomparenames = [savecomparenames, names_new(savingix(i))];
 end
 
 figure();
-y = [savecompare1;savecompare2];
-x = [savecomparenames;savecomparenames];
-bar(y.','stacked')
-xticklabels({'Vas. Lat.','Glut. Med.','Gas. Med.','Semimem.'})
+bar(savecompare1, 'r');
+hold on;
+bar(savecompare2, 'b');
+xticklabels(savecomparenames)
 ylabel('Metabolic Cost [W/kg]')
-legend('Exotendon Running','Natural Running')
-keyboard
-
-% disp('finished all the sims!')
-% cd(resultsdir)
-% save('bigissuesfile.mat','Issues');
-% disp('end')
+legend('Natural Running', 'Exotendon Running')
