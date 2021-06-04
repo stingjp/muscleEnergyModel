@@ -1,0 +1,362 @@
+function [] = computeKinematicDifferences(solution)
+    import org.opensim.modeling.*
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % solution = MocoTrajectory(solution);
+    Time = solution.getTimeMat();
+    numColPoints = solution.getNumTimes();
+
+    workingdir = pwd;
+
+    % try storage instead
+    solutionstatestable = solution.exportToStatesTable();
+    solutionNumRows = solutionstatestable.getNumRows();
+    solutionLabels = solutionstatestable.getColumnLabels();
+    solutionNumLabels = solutionLabels.size();
+    solutionremove = [];
+    % find all the labels that are not jointset
+    for l = 0:solutionNumLabels-1
+        templabel = solutionLabels.get(l);
+        if ~contains(string(templabel), 'jointset')
+            solutionremove = [solutionremove, templabel];
+        end
+    end
+    % remove all the ones that aren't jointset
+    for r = 1:length(solutionremove)
+        solutionstatestable.removeColumn(solutionremove(r));
+    end
+    % overwrite label vector and count
+    solutionLabels = solutionstatestable.getColumnLabels();
+    solutionNumLabels = solutionLabels.size();
+    
+    
+    % load the tracked or original states for comparison
+    trackstatestable = TimeSeriesTable('muscle_statetrack_grfprescribe_tracked_states.sto');
+    trackNumRows = trackstatestable.getNumRows();
+    trackLabels = trackstatestable.getColumnLabels();
+    trackNumLabels = trackLabels.size();
+    trackremove = [];
+    % find all the labels that are not jointset
+    for l = 0:trackNumLabels-1
+        templabel = trackLabels.get(l);
+        if ~contains(string(templabel), 'jointset')
+            trackremove = [trackremove, templabel];
+        end
+    end
+    % remove all the ones that aren't jointset
+    for r = 1:length(trackremove)
+        trackstatestable.removeColumn(trackremove(r));
+    end
+    % overwrite label vector and count
+    trackLabels = trackstatestable.getColumnLabels();
+    trackNumLabels = trackLabels.size();
+    
+    % have a matching set of jointset values in the tables 
+    % compare the two trajectories for each of the values that we care
+    % about
+    solutiontime = solutionstatestable.getIndependentColumn();
+    solutiontime2 = [];
+    for t = 0:solutiontime.size()-1
+        solutiontime2 = [solutiontime2, solutiontime.get(t)];
+    end
+    tracktime = trackstatestable.getIndependentColumn();
+    tracktime2 = [];
+    for t = 0:tracktime.size()-1
+        tracktime2 = [tracktime2, tracktime.get(t)];
+    end
+    
+    
+    tempfig = figure('Position',[1,1,1920,1080]);
+    % go through all the joints
+    for l=0:trackNumLabels-1
+        templabel = trackLabels.get(l);
+        temptrack = trackstatestable.getDependentColumn(templabel);
+        temptrack2 = temptrack.getAsMat();
+        tempsolution = solutionstatestable.getDependentColumn(templabel);
+        tempsolution2 = tempsolution.getAsMat();
+        
+        % okay now what...
+        subplot(6,8,l+1);
+        plot(tracktime2, temptrack2);
+        hold on;
+        plot(solutiontime2, tempsolution2);
+        title(string(templabel));
+        xlabel('time [s]');
+        ylabel('[rad or rad/s]');
+        grid on;
+        
+        
+    end
+    
+%     subplot(6,8,l+2);
+    legend('solution','original','location','eastoutside');
+    workingdirlength = length(workingdir);
+    trial = workingdir(workingdirlength-6:workingdirlength);
+    condition = workingdir(workingdirlength-18:workingdirlength-8);
+    subject = workingdir(workingdirlength-26:workingdirlength-20);
+    
+    keyboard
+    print(tempfig, ...
+            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
+            strcat(subject,strcat(strcat('\',trial,'_kinematics_differences.png'))))),...
+            '-dpng', '-r500')
+    disp('print 1')
+    
+    
+    
+    % now want to do the same thing but plot differences between signals
+    % have to figure out the trailing ends on the tracked states
+    
+    
+    
+    
+
+
+
+    keyboard
+
+    % load the net joint moments
+    idresultfile = strcat(workingdir, '\', idresult);
+    netjointmoments = TimeSeriesTable(idresultfile);
+
+    % get the states
+    statestraj = solution.exportToStatesTrajectory(modelid);
+
+
+    %% get some details from the model
+    % muscles
+    muscleset = modelid.getMuscles();
+    nummuscles = muscleset.getSize();
+    tendonforces = zeros(length(Time), nummuscles);
+    musclepaths = [];
+    for m=0:nummuscles-1
+        tempmusc = muscleset.get(m);
+        tempmuscpath = tempmusc.getAbsolutePathString();
+        musclepaths = [musclepaths, tempmuscpath];
+        for t=1:length(Time)
+            tempstate = statestraj.get(t-1);
+            modelid.realizeDynamics(tempstate);
+            tendonforces(t,m+1) = tempmusc.getTendonForce(tempstate);
+        end
+    end
+
+    % coordinates
+    coordinateset = modelid.getCoordinateSet();
+    numcoordinates = coordinateset.getSize();
+    coordinatepaths = [];
+    for c=0:numcoordinates-1
+        tempcoord = coordinateset.get(c);
+        tempcoordpath = tempcoord.getAbsolutePathString();
+        coordinatepaths = [coordinatepaths, tempcoordpath];
+    end
+    
+    
+    % forces in the model
+    forceset = modelid.getForceSet();
+    numforces = forceset.getSize();
+    muscleforcepaths = [];
+    coordactforcepaths = [];
+    coordinatecatch = {'reserve','lumbar'};
+    for f=0:numforces-1
+        tempforce = forceset.get(f);
+        tempforcepath = tempforce.getAbsolutePathString();
+        if any(contains(char(tempforcepath),coordinatecatch))
+            coordactforcepaths = [coordactforcepaths, tempforcepath];
+        else
+            muscleforcepaths = [muscleforcepaths, tempforcepath];
+        end
+    end
+
+    
+    % get the control actuator moments
+    controlstable = solution.exportToControlsTable();
+    numcoordact = length(coordactforcepaths);
+    tempmoments = zeros(length(Time), numcoordact);
+    coordactmoments = struct();
+    coordactmoments.time = Time;
+    for c=0:numcoordact-1
+        tempcoordact = CoordinateActuator().safeDownCast(modelid.getComponent(coordactforcepaths(c+1)));
+        tempcoordact_forcemultiply = tempcoordact.getOptimalForce();
+        tempcontrols = controlstable.getDependentColumn(coordactforcepaths(c+1));
+        for t=0:length(Time)-1
+            tempcontrol = tempcontrols.get(t);
+            tempmoments(t+1,c+1) = tempcoordact_forcemultiply*tempcontrol;
+        end
+        tempcoordactname = coordactforcepaths(c+1);
+        tempcoordactname = tempcoordactname.split('/');
+        tempcoordactname = char(tempcoordactname(end));
+        coordactmoments.(genvarname(tempcoordactname)) = tempmoments(:,c+1);
+    end
+    coordactmomentstable = osimTableFromStruct(coordactmoments);
+
+    
+    % get moment arms, and plot stuff
+    % aim for 5% of net joint moment or less for reserves
+    % lots for residuals
+    % get grf for residual comparisons
+    table_grf = TimeSeriesTable('analyzemuscles_ForceReporter_forces.sto');
+    grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
+    grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
+    grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
+    grf_l_Fx = table_grf.getDependentColumn('calcn_l_Left_GRF_Fx').getAsMat();
+    grf_l_Fy = table_grf.getDependentColumn('calcn_l_Left_GRF_Fy').getAsMat();
+    grf_l_Fz = table_grf.getDependentColumn('calcn_l_Left_GRF_Fz').getAsMat();
+    grf_r_Tx = table_grf.getDependentColumn('calcn_r_Right_GRF_Tx').getAsMat();
+    grf_r_Ty = table_grf.getDependentColumn('calcn_r_Right_GRF_Ty').getAsMat();
+    grf_r_Tz = table_grf.getDependentColumn('calcn_r_Right_GRF_Tz').getAsMat();
+    grf_l_Tx = table_grf.getDependentColumn('calcn_l_Left_GRF_Tx').getAsMat();
+    grf_l_Ty = table_grf.getDependentColumn('calcn_l_Left_GRF_Ty').getAsMat();
+    grf_l_Tz = table_grf.getDependentColumn('calcn_l_Left_GRF_Tz').getAsMat();
+
+    table_com = TimeSeriesTable('analyzemuscles_BodyKinematics_pos_global.sto');
+    com_x = table_com.getDependentColumn('center_of_mass_X').getAsMat();
+    com_y = table_com.getDependentColumn('center_of_mass_Y').getAsMat();
+    com_z = table_com.getDependentColumn('center_of_mass_Z').getAsMat();
+    
+    forcecheck = {'tx','ty','tz'};
+    templabels = coordactmomentstable.getColumnLabels();
+    for i=1:length(coordinatepaths);
+        tempcoordinate = coordinatepaths(i);
+        coord = Coordinate.safeDownCast(modelid.getComponent(tempcoordinate));
+        
+        % skip the patella coordinate, loop others
+        if ~any(contains(char(tempcoordinate),'beta'))
+            % compare the reserve for each coordinate to the net joint moment
+            tempmomentname = tempcoordinate.split('/');
+            tempmomentname = char(tempmomentname(end));
+                        
+            % figure out how to get the reserve ones here
+            matched = false;
+            c = 0;
+            while ~matched
+                tempcoordact = templabels.get(c);
+                if any(contains(char(tempcoordact), tempmomentname)) || any(contains(tempmomentname, char(tempcoordact))) 
+                    matched = true;
+                else
+                    c = c+1;
+                end
+            end
+
+
+            % need condition to get the full net moment or force name
+            if any(contains(char(tempcoordinate),forcecheck))
+                % this is a translational force
+                tempmomentname = strcat(tempmomentname,'_force');
+
+                if contains(char(tempmomentname),'pelvis')
+                    % do the residual force stuff
+                    tempnetexternal = sqrt(grf_r_Fx.^2 + grf_r_Fy.^2 + grf_r_Fz.^2);
+                    tempnetexternal_peak = max(abs(tempnetexternal));
+                    tempnetexternal_rms = rms(tempnetexternal);
+
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+
+                    ratio_peak = tempind_peak/tempnetexternal_peak;
+                    ratio_rms = tempind_rms/tempnetexternal_rms;
+                    
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end 
+                
+                else
+                    % do the reserve force stuff
+                    disp('need to figure this out');
+                end
+            else
+                tempmomentname = strcat(tempmomentname,'_moment');
+            
+                if contains(char(tempmomentname),'pelvis')
+                    % do the residual moment stuff
+                    %residual moments that are less than 1% of COM height times the magni- tude of the measured net external force
+                    tempnetexternal = sqrt(grf_r_Fx.^2 + grf_r_Fy.^2 + grf_r_Fz.^2);
+                    tempnetexternalcom = com_y .* tempnetexternal;
+                    tempnetexternalcom_peak = max(abs(tempnetexternalcom));
+                    tempnetexternalcom_rms = rms(tempnetexternalcom);
+
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+ 
+                    ratio_peak = tempind_peak/tempnetexternalcom_peak;
+                    ratio_rms = tempind_rms/tempnetexternalcom_rms;
+
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end 
+
+                else
+                    % do the reserve moment stuff
+                    tempnet = netjointmoments.getDependentColumn(tempmomentname).getAsMat();
+                    tempnet_peak = max(abs(tempnet));
+                    tempnet_rms = rms(tempnet);
+                    
+                    tempind = coordactmomentstable.getDependentColumn(tempcoordact).getAsMat();
+                    tempind_peak = max(abs(tempind));
+                    tempind_rms = rms(tempind);
+
+                    ratio_peak = tempind_peak/tempnet_peak;
+                    ratio_rms = tempind_rms/tempnet_rms;
+
+                    if ratio_peak > 0.05
+                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                    end
+                    if ratio_rms > 0.05
+                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                    end
+                end
+            end
+            
+
+            % % loop through time to find the largest instantaneous ratio
+            % instmaxratio = 0;
+            % for n=1:length(Time)
+            %     instnet = tempnet(n);
+            %     instind = tempind(n);
+            %     instratio = instind/instnet;
+            %     if instratio > instmaxratio
+            %         instmaxratio = instratio;
+            %     end
+            % end
+            % if instmaxratio > .05
+            %     Issues = [Issues; [tempcoordact, java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
+            % end
+            % get the peak of each and compare:
+            % maybe talk to Scott or Jen about this? Nick?
+        end
+    end
+        
+        
+    % now need moment arms I think and then we should be good
+    momentarms = zeros(length(Time), nummuscles);
+    for m=1:length(muscleforcepaths)
+        if ~any(contains(char(muscleforcepaths(m)),'exotendon')) && ~any(contains(char(muscleforcepaths(m)),'HOBL'))
+            muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
+            
+            for t=1:length(Time)
+                state = statestraj.get(t-1);
+                momentarms(t,m) = muscle.computeMomentArm(state, coord);
+            end
+        end
+    end
+
+    %% TODO
+    % here is where I should do any plotting of specific things 
+    % that I want to plot for moments
+
+
+    
+
+
+%     figure(1);
+
+end
