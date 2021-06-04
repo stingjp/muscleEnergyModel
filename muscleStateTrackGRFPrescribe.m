@@ -284,6 +284,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % post analysis and validation
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
+    computeKinematicDifferences(solution);
     analyzeMetabolicCost(solution);
     Issues = computeIDFromResult(Issues, solution);
     analyzeMetabolicCost(solution);
