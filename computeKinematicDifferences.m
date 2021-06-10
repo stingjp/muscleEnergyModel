@@ -3,7 +3,7 @@ function [] = computeKinematicDifferences(solution)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+    
     % solution = MocoTrajectory(solution);
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
@@ -107,7 +107,7 @@ function [] = computeKinematicDifferences(solution)
 %     
 %     print(tempfig1, ...
 %             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-%             strcat(subject,strcat(strcat('\',trial,'_kinematics_differences.png'))))),...
+%             strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences.png'))))))),...
 %             '-dpng', '-r500')
 %     disp('print 1')
 %     
@@ -147,7 +147,7 @@ function [] = computeKinematicDifferences(solution)
 %     
 %     print(tempfig2, ...
 %             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-%             strcat(subject,strcat(strcat('\',trial,'_kinematics_differences_adj.png'))))),...
+%             strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences_adj.png'))))))),...
 %             '-dpng', '-r500')
 %     disp('print 1')
     
@@ -180,17 +180,22 @@ function [] = computeKinematicDifferences(solution)
     legend('solution','original','location','eastoutside');
     workingdirlength = length(workingdir);
     trial = workingdir(workingdirlength-6:workingdirlength);
-    condition = workingdir(workingdirlength-18:workingdirlength-8);
-    subject = workingdir(workingdirlength-26:workingdirlength-20);
+    if strcmp(workingdir(workingdirlength-15), '\') % welkexo
+        condition = workingdir(workingdirlength-14:workingdirlength-8);
+        subject = workingdir(workingdirlength-22:workingdirlength-16);
+    end
+    if strcmp(workingdir(workingdirlength-19),'\') % welknatural
+        condition = workingdir(workingdirlength-18:workingdirlength-8);
+        subject = workingdir(workingdirlength-26:workingdirlength-20);
+    end
     
     print(tempfig3, ...
             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-            strcat(subject,strcat(strcat('\',trial,'_kinematics_differences_adj_deg.png'))))),...
+            strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences_adj_deg.png'))))))),...
             '-dpng', '-r500')
     disp('print 1')
 
-    
-    
+
     % now a figure that actually takes the differences between them, or the
     % deviation in the tracking problem from the IK angles
     % same figure but in degrees
@@ -220,14 +225,20 @@ function [] = computeKinematicDifferences(solution)
 %     subplot(6,8,l+2);
     legend('solution-original','location','eastoutside');
     workingdirlength = length(workingdir);
-    trial = workingdir(workingdirlength-6:workingdirlength);
-    condition = workingdir(workingdirlength-18:workingdirlength-8);
-    subject = workingdir(workingdirlength-26:workingdirlength-20);
+    if strcmp(workingdir(workingdirlength-15), '\') % welkexo
+        condition = workingdir(workingdirlength-14:workingdirlength-8);
+        subject = workingdir(workingdirlength-22:workingdirlength-16);
+    end
+    if strcmp(workingdir(workingdirlength-19),'\') % welknatural
+        condition = workingdir(workingdirlength-18:workingdirlength-8);
+        subject = workingdir(workingdirlength-26:workingdirlength-20);
+    end
     
     print(tempfig4, ...
             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-            strcat(subject,strcat(strcat('\',trial,'_kinematics_differences_adj_deg_dif.png'))))),...
+            strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences_adj_deg_diff.png'))))))),...
             '-dpng', '-r500')
     disp('print 1')
 
+    close all
 end
