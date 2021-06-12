@@ -105,7 +105,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(50);
+    track.set_states_global_tracking_weight(10); % 50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -114,16 +114,18 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-    % coordinateweights = MocoWeightSet();
+    coordinateweights = MocoWeightSet();
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    % track.set_states_weight_set(coordinateweights);
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1000));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1000));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
+    track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
@@ -141,7 +143,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.05); %.01% 
+    track.set_mesh_interval(0.1); %.05 % .01% 
 
     % initialize and set goals
     study = track.initialize();    
@@ -149,7 +151,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(5);
+    effort.setWeight(0.01);
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -279,7 +281,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % open(pdfFilePath);
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle track')
-
 
 
     % post analysis and validation
