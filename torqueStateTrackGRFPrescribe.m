@@ -108,9 +108,9 @@ function torqueStateTrackGRFPrescribe()
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
             effort.setWeightForControl(forcePath, 1000); % here
-%             if contains(string(forcePath), 'pelvis_ty')
-%                 effort.setWeightForControl(forcePath, 1e8);
-%             end
+            % if contains(string(forcePath), 'pelvis_ty')
+            %     effort.setWeightForControl(forcePath, 1e8);
+            % end
         end
         % if contains(string(forcePath), 'hip_rotation')
         %    effort.setWeightForControl(forcePath, 1e4);
