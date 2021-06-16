@@ -105,7 +105,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(1); % 50 % need to weigh benefit of higher global vs specific coordinate
+    track.set_states_global_tracking_weight(50); % 50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -114,18 +114,18 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-    coordinateweights = MocoWeightSet();
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 10000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 10000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 10000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 10000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 10000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 10000));
+%     coordinateweights = MocoWeightSet();
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1000000));
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1000000));
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1000000));
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
+%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
-    track.set_states_weight_set(coordinateweights);
+%     track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
@@ -152,8 +152,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem = study.updProblem();
 
     % set a constraint so that the model doesnt overlap feet
+%     distance = MocoPathConstraint.safeDownCast(MocoFrameDistanceConstraint());
+    distance = MocoFrameDistanceConstraint();
     
-    distance = MocoFrameDistanceConstraint.safeDownCast(MocoFrameDistanceConstraint());
     distance.setName('minimum_distance');
     distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.22, Inf);
     distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.22, Inf);
@@ -163,7 +164,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(0.001);
+    effort.setWeight(5); %0.1 for the new
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -185,9 +186,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
         end
-%         if contains(string(forcePath), 'hip_rotation')
-%            effort.setWeightForControl(forcePath, 10);
-%         end
+        if contains(string(forcePath), 'hip_rotation')
+           effort.setWeightForControl(forcePath, 10);
+        end
     end
     
 
