@@ -74,7 +74,14 @@ function [] = computeKinematicDifferences(solution)
     timesplit1 = length(find(tracktime2 < solutiontime2(1)));
     timesplit2 = find(tracktime2 > solutiontime2(end));
     timesplit2 = timesplit2(1);
-    temptracktime = tracktime2(timesplit1:timesplit2);
+    
+    if timesplit1 == 0
+        timesplit1 = 1;
+        temptracktime = tracktime2(timesplit1:timesplit2);
+    else
+        temptracktime = tracktime2(timesplit1:timesplit2);
+    end
+%     temptracktime = tracktime2(timesplit1:timesplit2);
     
 %     tempfig1 = figure('Position',[1,1,1920,1080]);
 %     % go through all the joints
