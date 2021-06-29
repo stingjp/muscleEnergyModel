@@ -8,7 +8,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
@@ -91,6 +91,8 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
 
     tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
+%     tempkintable = TableProcessor('./ResultsRRA_1/subject01_walk1_RRA_states.sto').process();
+%     tempkintable = TableProcessor('./coordinates_updated.mot').process();
     templabels_os = tempkintable.getColumnLabels();
     % templabels = []
     for i=0:templabels_os.size()-1
@@ -125,7 +127,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set time and intervals
     inverse.set_initial_time(gait_start);
     inverse.set_final_time(gait_end);
-    inverse.set_mesh_interval(0.020); % .02, .01% may need to adjust this
+    inverse.set_mesh_interval(0.010); % .02, .01% may need to adjust this
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
@@ -173,6 +175,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     solver.resetProblem(problem);
     
     solution = study.solve();
+%     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     solution.write('muscleguess.sto');
     solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
@@ -201,13 +204,13 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     pdfFilePath = reportFilePath(1:end-2);
     pdfFilePath = strcat(pdfFilePath, 'pdf');
     ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-        'gscommand','C:\Program Files\gs\gs9.52\bin\gswin64.exe', ...
-        'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
-        'gslibpath','C:\Program Files\gs\gs9.52\lib');
+        'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
+        'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
+        'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
     %  open(pdfFilePath);
-
-
-   
+    
+    
+    
     % post analysis and validation
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
     analyzeMetabolicCost(solution);
