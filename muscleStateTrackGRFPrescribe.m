@@ -7,7 +7,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
@@ -94,18 +94,24 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
     % 2 
-    % tableProcessor = TableProcessor('coordinates_updated.mot');
+%     tableProcessor = TableProcessor('coordinates_updated.mot');
     % 3
     tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot')); %***
     tableProcessor.append(TabOpLowPassFilter(6));
     % 4 
-    % tempTable = TimeSeriesTable('./ResultsRRA_2/subject01_walk1_RRA_Kinematics_q.sto');
-    % tableProcessor = TableProcessor(tempTable);
+%     tempTable =
+%     TimeSeriesTable('./ResultsRRA_1/subject01_walk1_RRA_Kinematics_q.sto');
+%     % was using these!!!
+%     tableProcessor = TableProcessor(tempTable);
+%     tableProcessor.append(TabOpLowPassFilter(6));
+
     
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(50); % 50 % need to weigh benefit of higher global vs specific coordinate
+    
+%     track.set_kinematics_allow_extra_columns(true);
+    track.set_states_global_tracking_weight(10); % 50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -114,18 +120,20 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-%     coordinateweights = MocoWeightSet();
+    coordinateweights = MocoWeightSet();
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
-%     track.set_states_weight_set(coordinateweights);
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1000000));
+    track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
@@ -143,7 +151,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.1); %.05 % .01% 
+    track.set_mesh_interval(0.05); %.05 % .01% 
 
     % initialize and set goals
     study = track.initialize();    
@@ -152,19 +160,17 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem = study.updProblem();
 
     % set a constraint so that the model doesnt overlap feet
-%     distance = MocoPathConstraint.safeDownCast(MocoFrameDistanceConstraint());
     distance = MocoFrameDistanceConstraint();
-    
     distance.setName('minimum_distance');
-    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.22, Inf);
-    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.22, Inf);
-    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.22, Inf);
-    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.22, Inf);
+    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
+    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
     problem.addPathConstraint(distance);
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(5); %0.1 for the new
+    effort.setWeight(.1); %0.1 for the new
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -186,9 +192,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
         end
-        if contains(string(forcePath), 'hip_rotation')
-           effort.setWeightForControl(forcePath, 10);
-        end
+%         if contains(string(forcePath), 'hip_rotation')
+%            effort.setWeightForControl(forcePath, 10);
+%         end
     end
     
 
@@ -301,8 +307,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % post analysis and validation
     
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
-    computeKinematicDifferences(solution);
     analyzeMetabolicCost(solution);
     Issues = computeIDFromResult(Issues, solution);
     analyzeMetabolicCost(solution);
+    computeKinematicDifferences(solution);
+
 end
