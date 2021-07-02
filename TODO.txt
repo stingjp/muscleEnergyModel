@@ -12,3 +12,23 @@ seeing what including the passive fiber forces does to the results of the sims
 7. figure out muscle masses -> utilities.py has stuff on muscle masses and setting up probes! may be incorrect masses - although if they are all referencing the same mass, then wouldn't it be a smaller cost???
 
 
+TODO:
+- update the rest of the subject models (rra mods)
+- run the rest of them
+- explore results and validation for the subject one sims of all the new sims
+
+
+06302021 
+TODO
+X- welk001 update the exo and check on the masses
+X- sim welk001 all new constraint 0.15
+X- welk002 all update, masses and exo
+
+07022021
+- check/v&v welk001 sims
+- try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
+- try one sim with higher effort weight
+- welk003 update mass/exo/etc
+- run welk002 sims
+- run welk003 sims
+- welk004 figure out the issue with RRA
