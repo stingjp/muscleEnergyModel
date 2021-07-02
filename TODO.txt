@@ -23,12 +23,12 @@ TODO
 X- welk001 update the exo and check on the masses
 X- sim welk001 all new constraint 0.15
 X- welk002 all update, masses and exo
+X- welk003 update mass/exo/etc
 
 07022021
-- check/v&v welk001 sims
+- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity)
 - try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
 - try one sim with higher effort weight
-- welk003 update mass/exo/etc
 - run welk002 sims
 - run welk003 sims
 - welk004 figure out the issue with RRA
