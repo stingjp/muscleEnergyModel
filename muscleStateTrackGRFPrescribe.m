@@ -151,7 +151,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.05); %.05 % .01% 
+    track.set_mesh_interval(0.03); %.05 % .01% 
 
     % initialize and set goals
     study = track.initialize();    
@@ -170,7 +170,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(.1); %0.1 for the new
+    effort.setWeight(.5); %0.1 for the new
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
