@@ -26,7 +26,7 @@ X- welk002 all update, masses and exo
 X- welk003 update mass/exo/etc
 
 07022021
-- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity)
+X- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity, kinematic matching) -- some potential mesh artifacts at the beginning, recfem issues possibly
 - try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
 - try one sim with higher effort weight
 - run welk002 sims
