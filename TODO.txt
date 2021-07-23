@@ -13,7 +13,7 @@ seeing what including the passive fiber forces does to the results of the sims
 
 
 TODO:
-- update the rest of the subject models (rra mods)
+X- update the rest of the subject models (rra mods)
 - run the rest of them
 - explore results and validation for the subject one sims of all the new sims
 
@@ -29,6 +29,21 @@ X- welk003 update mass/exo/etc
 X- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity, kinematic matching) -- some potential mesh artifacts at the beginning, recfem issues possibly
 - try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
 - try one sim with higher effort weight
-- run welk002 sims
-- run welk003 sims
-- welk004 figure out the issue with RRA
+X- run welk002 sims
+X- run welk003 sims
+X- welk004 figure out the issue with RRA
+
+
+07162021
+- rerun rest of welk004 with the torque driven method first (new model)
+- V&V for all the sims
+- fix up metabolic plotting 
+- start working into the metabolics
+
+20210722
+- need to fix welk004 welkexo trial03, wont solve despite obv converging and reshuffling of the optim
+- trying coarser mesh interval
+- chat with nick about sensitivity study on the sims that I have done
+- chat with nick on the V&V
+- METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
+- Get down to business on the muscle analysis, why are we saving?
