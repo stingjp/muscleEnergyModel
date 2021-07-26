@@ -21,7 +21,7 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
-welksubjects = {'welk001'};%,'welk002','welk003','welk004'};
+welksubjects = {'welk001','welk002','welk003','welk004'};
 
 thingstoplot = {'excitation','activation'};
 
