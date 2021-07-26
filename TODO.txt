@@ -41,9 +41,14 @@ X- welk004 figure out the issue with RRA
 - start working into the metabolics
 
 20210722
-- need to fix welk004 welkexo trial03, wont solve despite obv converging and reshuffling of the optim
-- trying coarser mesh interval (0.03 no, 0.04 no, 0.1 )
+X- need to fix welk004 welkexo trial03, wont solve despite obv converging and reshuffling of the optim
+X- trying coarser mesh interval (0.03 no, 0.04 no, 0.1 ) solution was to step down in size 0.1, 0.05, 0.03
+
+
+20210726
+X- add percent and raw analysis to the metabolic setup script
+- add the values ^ to the figures
+- Get down to business on the muscle analysis, why are we saving?
+- METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
 - chat with nick about sensitivity study on the sims that I have done
 - chat with nick on the V&V
-- METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
-- Get down to business on the muscle analysis, why are we saving?
