@@ -27,7 +27,7 @@ X- welk003 update mass/exo/etc
 
 07022021
 X- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity, kinematic matching) -- some potential mesh artifacts at the beginning, recfem issues possibly
-- try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
+X- try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
 - try one sim with higher effort weight
 X- run welk002 sims
 X- run welk003 sims
@@ -35,8 +35,7 @@ X- welk004 figure out the issue with RRA
 
 
 07162021
-- rerun rest of welk004 with the torque driven method first (new model)
-- V&V for all the sims
+X- rerun rest of welk004 with the torque driven method first (new model)
 - fix up metabolic plotting 
 - start working into the metabolics
 
@@ -47,7 +46,8 @@ X- trying coarser mesh interval (0.03 no, 0.04 no, 0.1 ) solution was to step do
 
 20210726
 X- add percent and raw analysis to the metabolic setup script
-- add the values ^ to the figures
+X- add the values ^ to the figures
+- V&V for all the sims
 - Get down to business on the muscle analysis, why are we saving?
 - METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
 - chat with nick about sensitivity study on the sims that I have done
