@@ -12,3 +12,43 @@ seeing what including the passive fiber forces does to the results of the sims
 7. figure out muscle masses -> utilities.py has stuff on muscle masses and setting up probes! may be incorrect masses - although if they are all referencing the same mass, then wouldn't it be a smaller cost???
 
 
+TODO:
+X- update the rest of the subject models (rra mods)
+- run the rest of them
+- explore results and validation for the subject one sims of all the new sims
+
+
+06302021 
+TODO
+X- welk001 update the exo and check on the masses
+X- sim welk001 all new constraint 0.15
+X- welk002 all update, masses and exo
+X- welk003 update mass/exo/etc
+
+07022021
+X- check/v&v welk001 sims (Xvideos, passive force, active force, fiber stuff, activity, kinematic matching) -- some potential mesh artifacts at the beginning, recfem issues possibly
+X- try one sim at higher mesh density (0.05 ~ 3 hrs, 0.01 ~ ?)
+- try one sim with higher effort weight
+X- run welk002 sims
+X- run welk003 sims
+X- welk004 figure out the issue with RRA
+
+
+07162021
+X- rerun rest of welk004 with the torque driven method first (new model)
+- fix up metabolic plotting 
+- start working into the metabolics
+
+20210722
+X- need to fix welk004 welkexo trial03, wont solve despite obv converging and reshuffling of the optim
+X- trying coarser mesh interval (0.03 no, 0.04 no, 0.1 ) solution was to step down in size 0.1, 0.05, 0.03
+
+
+20210726
+X- add percent and raw analysis to the metabolic setup script
+X- add the values ^ to the figures
+- V&V for all the sims
+- Get down to business on the muscle analysis, why are we saving?
+- METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
+- chat with nick about sensitivity study on the sims that I have done
+- chat with nick on the V&V

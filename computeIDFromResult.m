@@ -13,7 +13,8 @@ function [Issues] = computeIDFromResult(Issues, solution)
     workingdir = pwd;
 
     idtool = InverseDynamicsTool();
-    modelid = Model('post_simple_model_all_the_probes.osim');
+    modelid = Model('post_simple_model_all_the_probes_muscletrack.osim');
+%     modelid = Model('simple_model_all_the_probes_adjusted.osim');
     idtool.setModel(modelid);
 
     % % get the coordinates and all the states

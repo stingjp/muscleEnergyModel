@@ -17,10 +17,10 @@ cd(resultsdir)
 %%%%% - remember to only put in the exo conditions that you are looking to see the reductions from
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkconditions = {'welkexo','welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
-welkaltconditions = {'welknatural','welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk004'};
+welkaltconditions = {'welknatural'};
+welksubjects = {'welk001','welk002','welk003','welk004'};
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 

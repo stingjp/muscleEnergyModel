@@ -39,28 +39,28 @@ end
 % runRRA_2('./RRAfiles/RRA_Setup_2.xml');
 % close all;
 % torqueMarkerTrackGRFPrescribe();
-% close all;
-% torqueStateTrackGRFPrescribe();
-% close all;
-% Issues = muscleStatePrescribeGRFPrescribe(Issues);
-% close all;
+close all;
+torqueStateTrackGRFPrescribe();
+close all;
+Issues = muscleStatePrescribeGRFPrescribe(Issues);
+close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
-% close all;
-% Issues = muscleStateTrackGRFPrescribe(Issues);
-% close all;
+close all;
+Issues = muscleStateTrackGRFPrescribe(Issues);
+close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
 % solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
-solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+% solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
 
 
-Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
-analyzeMetabolicCost(solution1);
-Issues = computeIDFromResult(Issues, solution1);
-analyzeMetabolicCost(solution1);
-computeKinematicDifferences(solution1);
+% Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+% analyzeMetabolicCost(solution1);
+% Issues = computeIDFromResult(Issues, solution1);
+% analyzeMetabolicCost(solution1);
+% computeKinematicDifferences(solution1);
 % Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution2);
 % analyzeMetabolicCostWithEMG(solution2);
