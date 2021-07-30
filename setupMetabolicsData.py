@@ -97,7 +97,32 @@ pd.set_option('display.max_rows',None) #,'display.max_columns',None)
 bothtrim_df = both_df.dropna()
 print(bothtrim_df)
 
-pdb.set_trace()
+
+### going to make a print out of the actual reductions for swing and stance, as well as percent 
+# grab the raw differences between them
+stance_means = stance_df.groupby(['condname']).agg({'metabolics_stance_avg_mean':['mean']})
+swing_means = swing_df.groupby(['condname']).agg({'metabolics_swing_avg_mean':['mean']})
+
+print(stance_means)
+print(swing_means)
+
+# get all the values in a workable format
+swings_exo = swing_df.loc[swing_df['condname'] == 'welkexo']
+swings_natural = swing_df.loc[swing_df['condname'] == 'welknatural']
+stances_exo = stance_df.loc[stance_df['condname'] == 'welkexo']
+stances_natural = stance_df.loc[stance_df['condname'] == 'welknatural']
+
+# get the average raw differences for both stance and swing - check with above
+stance_change = np.mean(stances_exo) - np.mean(stances_natural)
+swing_change = np.mean(swings_exo) - np.mean(swings_natural)
+# now to get the percent changes for stance and swing
+stance_perc_change = (np.mean(stances_exo) - np.mean(stances_natural)) / np.mean(stances_natural) * 100
+swing_perc_change = (np.mean(swings_exo) - np.mean(swings_natural)) / np.mean(swings_natural) * 100
+
+print("Raw stance difference: %f" % stance_change)
+print('Raw swing  difference: %f' % swing_change)
+print('Percent Difference stance: %f' % stance_perc_change)
+print('Percent Difference swing: %f' % swing_perc_change)
 
 
 
@@ -111,7 +136,7 @@ ax.scatter(tempx, tempy, marker='o', alpha=0.6, c='blue', label='MSE = %f'%mse)
 # transform = ax.transAxes
 # line.set_transform(transform)
 # ax.add_line(line)
-unitx = np.linspace(5,13,100)
+unitx = np.linspace(8,12,100)
 ax.plot(unitx,unitx,color='red',alpha=0.5, label='y = x')
 # some nice 
 ax.set_title('Simulation vs Experimental')
@@ -175,10 +200,6 @@ def setBoxColors(bp):
 swings = [swingnatural, swingexo]
 stances = [stancenatural, stanceexo]
 
-# now to do some statistics for them 
-pdb.set_trace()
-
-
 
 # pdb.set_trace()
 fig = figure()
@@ -194,8 +215,10 @@ setBoxColors(bp)
 # set axes limits and labels
 xlim(0,6)
 ylim(2,9)
-ax.set_xticklabels(['Stance', 'Swing'])
+
+
 ax.set_xticks([1.5, 4.5])
+ax.set_xticklabels(['Stance\n12% Reduction', 'Swing\n6% Reduction'])
 # draw temporary red and blue lines and use them to create a legend
 hB, = plot([1,1],'r-')
 hR, = plot([1,1],'b-')
@@ -215,9 +238,15 @@ for i in [4,5]:
     x = np.random.normal(i, 0.04, size=len(y))
     plot(x, y, '.', alpha=0.2, color=colorsjit[i-4])
 
-show()
+plt.text(0.5,8.5,'Mean: %.1f' % np.mean(stances_natural),fontsize=10)
+plt.text(1.75,8.5,'Mean: %.1f' % np.mean(stances_exo),fontsize=10)
+plt.text(3.5,5.5,'Mean: %.1f' % np.mean(swings_natural),fontsize=10)
+plt.text(4.75,5.5,'Mean: %.1f' % np.mean(swings_exo),fontsize=10)
 
+show()
 pdb.set_trace()
+pdb.set_trace()
+
 
 
 # figure out how to split them

@@ -6,7 +6,7 @@ function torqueStateTrackGRFPrescribe()
     track.setName("torque_statetrack_grfprescribe");
     
     % construct a ModelProcessor and add it to the tool.
-    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes_adjusted.osim");
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
@@ -44,7 +44,7 @@ function torqueStateTrackGRFPrescribe()
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(10);
+    track.set_states_global_tracking_weight(1);
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -53,16 +53,16 @@ function torqueStateTrackGRFPrescribe()
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-    % coordinateweights = MocoWeightSet();
+    coordinateweights = MocoWeightSet();
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    % track.set_states_weight_set(coordinateweights);
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
+    track.set_states_weight_set(coordinateweights);
     
     
 
@@ -91,7 +91,7 @@ function torqueStateTrackGRFPrescribe()
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-
+%     effort.setWeight(0.1);
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
     problem.addGoal(initactivationgoal);
@@ -112,9 +112,9 @@ function torqueStateTrackGRFPrescribe()
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
         end
-        % if contains(string(forcePath), 'hip_rotation')
-        %    effort.setWeightForControl(forcePath, 1e4);
-        % end
+        if contains(string(forcePath), 'hip_rotation')
+           effort.setWeightForControl(forcePath, 1e4);
+        end
     end
 
     % solve and visualize
@@ -129,9 +129,9 @@ function torqueStateTrackGRFPrescribe()
     pdfFilePath = reportFilePath(1:end-2);
     pdfFilePath = strcat(pdfFilePath, 'pdf');
     ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-        'gscommand','C:\Program Files\gs\gs9.52\bin\gswin64.exe', ...
-        'gsfontpath','C:\Program Files\gs\gs9.52\Resource\Font', ...
-        'gslibpath','C:\Program Files\gs\gs9.52\lib');
+        'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
+        'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
+        'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
     % open(pdfFilePath);
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state torque track')
