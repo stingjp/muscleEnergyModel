@@ -220,12 +220,12 @@ ylim(2,9)
 
 
 ax.set_xticks([1.5, 4.5])
-ax.set_xticklabels(['Stance\n12% Reduction', 'Swing\n6% Reduction'])
+ax.set_xticklabels(['Stance\n12% Reduction', 'Swing\n6% Reduction'],fontsize=16)
 # draw temporary red and blue lines and use them to create a legend
 hB, = plot([1,1],'r-')
 hR, = plot([1,1],'b-')
-plt.legend((hB, hR),('Natural', 'Exo'))
-plt.ylabel('Metabolic Cost [W/kg]')
+plt.legend((hB, hR),('Natural', 'Exo'),fontsize=16)
+plt.ylabel('Metabolic Cost [W/kg]',fontsize=16)
 hB.set_visible(False)
 hR.set_visible(False)
 plt.grid()
@@ -240,10 +240,10 @@ for i in [4,5]:
     x = np.random.normal(i, 0.04, size=len(y))
     plot(x, y, '.', alpha=0.2, color=colorsjit[i-4])
 
-plt.text(0.5,8.5,'Mean: %.1f' % np.mean(stances_natural),fontsize=10)
-plt.text(1.75,8.5,'Mean: %.1f' % np.mean(stances_exo),fontsize=10)
-plt.text(3.5,5.5,'Mean: %.1f' % np.mean(swings_natural),fontsize=10)
-plt.text(4.75,5.5,'Mean: %.1f' % np.mean(swings_exo),fontsize=10)
+plt.text(0.5,8.5,'Mean: %.1f' % np.mean(stances_natural),fontsize=16)
+plt.text(1.75,8.5,'Mean: %.1f' % np.mean(stances_exo),fontsize=16)
+plt.text(3.5,5.5,'Mean: %.1f' % np.mean(swings_natural),fontsize=16)
+plt.text(4.75,5.5,'Mean: %.1f' % np.mean(swings_exo),fontsize=16)
 
 show()
 pdb.set_trace()
