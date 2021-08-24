@@ -220,12 +220,14 @@ ylim(2,9)
 
 
 ax.set_xticks([1.5, 4.5])
-ax.set_xticklabels(['Stance\n12% Reduction', 'Swing\n6% Reduction'],fontsize=16)
+ax.set_xticklabels(['Stance\n13% Reduction Avg.', 'Swing\n1% Increase Avg.'],fontsize=16)
+# ax.yticks(fontsize=16)
 # draw temporary red and blue lines and use them to create a legend
 hB, = plot([1,1],'r-')
 hR, = plot([1,1],'b-')
 plt.legend((hB, hR),('Natural', 'Exo'),fontsize=16)
 plt.ylabel('Metabolic Cost [W/kg]',fontsize=16)
+plt.yticks(fontsize=16)
 hB.set_visible(False)
 hR.set_visible(False)
 plt.grid()
