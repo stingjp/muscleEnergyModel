@@ -20,7 +20,7 @@ cd(resultsdir)
 welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural'};
-welksubjects = {'welk001','welk002','welk003','welk004'};
+welksubjects = {'welk002'};%,'welk003'};
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
@@ -89,6 +89,14 @@ for subj=1:length(welksubjects)
         naturalMetabolicsAvg = [naturalMetabolicsAvg, mean(naturalMetabolicsInd(i,:))];
     end
     
+
+    keyboard
+    % if you want to look at individual values and cycles. 
+    % exoNames or natural names
+    % exoMetabolicsInd and naturalMetabolicsInd will give all the different values for 4 cycles
+    % exoMetabolicsAvg and naturalMetabolicsAvg will give the values averaged for 4 cycles
+
+
     % lets loop through and get rid of the ones that we don't want right
     % now
     
@@ -120,7 +128,7 @@ for subj=1:length(welksubjects)
 end
 
 %% have all the values, now have to compute differences
-
+keyboard
 % first take the difference between exo and natural for each subject
 muscleDifferences_raw = [];
 muscleDifferences_perc = [];
