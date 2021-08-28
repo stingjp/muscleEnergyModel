@@ -151,8 +151,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
-
+    track.set_mesh_interval(0.01); % 0.03 for all current subjects %.05 % .01% 
+    
     % initialize and set goals
     study = track.initialize();    
 
@@ -214,6 +214,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
+    keyboard
+%     solver.set_optim_convergence_tolerance(1e-4); % 1e-2
+%     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     % solver.set_num_mesh_intervals(steps);
 
     guess = solver.createGuess('bounds'); % bounds or random  
