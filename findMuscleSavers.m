@@ -20,7 +20,7 @@ cd(resultsdir)
 welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural'};
-welksubjects = {'welk002'};%,'welk003'};
+welksubjects = {'welk002','welk003'};
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
