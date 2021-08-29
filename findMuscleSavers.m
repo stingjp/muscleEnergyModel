@@ -25,7 +25,6 @@ load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyM
 
 
 
-
 exoMetabolicsAvg_new = [];
 naturalMetabolicsAvg_new = [];
 
