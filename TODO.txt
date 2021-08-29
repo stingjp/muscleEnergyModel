@@ -52,3 +52,7 @@ X- add the values ^ to the figures
 - METABOLIC COST ANALYSIS - get to the bottom of how we feel about the weird trends in the experimental values that we have recorded
 - chat with nick about sensitivity study on the sims that I have done
 - chat with nick on the V&V
+
+
+20210828
+- need to come up with a script that for each muscle, plots the components for both the natural and the exo case. start with metabolic cost and then maybe expand to other things. could do a live plot of the met cost rather than the average value, that would lend the structure to other values better (same time axis)
