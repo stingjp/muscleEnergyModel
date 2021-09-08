@@ -5,6 +5,7 @@ resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
 
+
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
@@ -27,6 +28,9 @@ load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyM
 
 exoMetabolicsAvg_new = [];
 naturalMetabolicsAvg_new = [];
+
+exoMetabolicsInd_allsubj = [];
+naturalMetabolicsInd_allsubj = [];
 
 % loop through subjects
 for subj=1:length(welksubjects)
@@ -75,6 +79,11 @@ for subj=1:length(welksubjects)
         end
     end
 
+    % add the individual subject gait cycles to the full matrix
+    exoMetabolicsInd_allsubj = [exoMetabolicsInd_allsubj, exoMetabolicsInd(:,1:4)];
+    naturalMetabolicsInd_allsubj = [naturalMetabolicsInd_allsubj, naturalMetabolicsInd(:,1:4)];
+
+    keyboard
     % need to average for the two different conditions across the trials
     % for each 
     % then compute the differences between the exo and natural
