@@ -200,15 +200,30 @@ savecompare2 = [];
 savecomparenames = [];
 % grab the biggest savers (differences)
 for i=1:4
+    % for the savers
     savecompare1 = [savecompare1, naturalMetabolicsAvg_new_avg(savingix(i))];
     savecompare2 = [savecompare2, exoMetabolicsAvg_new_avg(savingix(i))];
     savecomparenames = [savecomparenames, names_new(savingix(i))];
+    
+    % for the spenders
+%     savecompare1 = [savecompare1, naturalMetabolicsAvg_new_avg(savingix(end-i+1))];
+%     savecompare2 = [savecompare2, exoMetabolicsAvg_new_avg(savingix(end-i+1))];
+%     savecomparenames = [savecomparenames, names_new(savingix(end-i+1))];
 end
 
 figure();
+% for savers
 bar(savecompare1, 'r');
 hold on;
 bar(savecompare2, 'b');
+
+% for spenders
+% bar(savecompare2, 'b');
+% hold on;
+% bar(savecompare1, 'r');
+
+
+
 xticklabels(savecomparenames)
 ylabel('Metabolic Cost [W/kg]')
 legend('Natural Running', 'Exotendon Running')
