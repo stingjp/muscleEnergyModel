@@ -201,19 +201,31 @@ function analyzeMetabolicCost(solution)
     popped = 0;
 
 
-
+    % loop through the number of steps we have in stance phase
     for i = 1:length(tempstanceix)
+        % get the index corresponding to the next stance phase timestep
         tempix = tempstanceix(i);
+        % get the metabolic rate at that time step - again in stance
         tempmet = metabolics_all(tempix);
+        % add the metabolic rate to the vector
         met_stance = [met_stance, tempmet];
+        % pop out a value from the swing vector that is at the same index as the stance one we just specified
         met_swing(tempix-popped) = [];
+        % add one to popped
         popped = popped + 1;
     end
+
     % going to need time vecs for the integration: actual time does not matter, only amount
+    % get the end time
     time_max = time(end);
+    % get initial time
     time_min = time(1);
+    % time difference
     time_diff = time_max - time_min;
+    % get the time step size
     time_step = time_diff / length(time);
+    % create a time vector that is the same length as the stance and swing vectors,
+    % multiply by step size to get actual time spacing normalized
     stance_time = time_step*linspace(1, length(met_stance),length(met_stance));
     swing_time = time_step*linspace(1, length(met_swing), length(met_swing));
 
@@ -222,6 +234,7 @@ function analyzeMetabolicCost(solution)
     metabolics_stance_avg = ((trapz(stance_time, met_stance)) / (stance_time(end)-stance_time(1))) / model_mass;
     metabolics_swing_avg = ((trapz(swing_time, met_swing)) / (swing_time(end)-swing_time(1))) / model_mass;
     % TODO do this analysis for stance and swing for all the types of metabolics, not just full
+    
 
 
     % individual muscles
