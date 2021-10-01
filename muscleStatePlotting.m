@@ -114,65 +114,70 @@ for subj=1:length(welksubjects)
     numMuscles = 40;
     f = 1;
     target = size(exoMetabolicsInd,1);
-%     while f<=target
-% 
-%         % loop each muscle and make a figure
-%         tempfig = figure(f); 
-%         set(tempfig, 'Position', [1,1,1920,1080]);
-%         % x axis is going to be the 4 gait cycles
-%         % will do subplots for the different metabolic components
-%         % also have multiple conditions (double bar)
-%         
-%         % y axis is going to be metabolic cost
-%         tempvec_exo = exoMetabolicsInd(f:f+3,:);
-%         tempvec_nat = naturalMetabolicsInd(f:f+3,:);
-%         
-%         subplot(2,2,1);
-%         % combined metabolics
-%         bar([tempvec_nat(1,:); tempvec_exo(1,:)]');
-%         xlabel('Gait cycle #')
-%         ylabel('Total Metabolic Cost [W/kg]')
-% %         ylim([0,max([tempvec_nat(1,:), tempvec_exo(1,:)])+.03]);
-%         legend('Natural Running', 'Exotendon Running','location','northoutside')
-%         
-%         
-%         % now for the activation cost
-%         subplot(2,2,2);
-%         bar([tempvec_nat(2,:); tempvec_exo(2,:)]')
-%         xlabel('Gait cycle #');
-%         ylabel('Activation Cost [W/kg]');
-% %         ylim([0,max([tempvec_nat(2,:), tempvec_exo(2,:)])+.03]);
-%         legend('Natural Running', 'Exotendon Running','location','northoutside')
-% 
-%         % now for the shortening and lengthening cost
-%         subplot(2,2,3);
-%         bar([tempvec_nat(3,:); tempvec_exo(3,:)]')
-%         xlabel('Gait cycle #');
-%         ylabel('Shortening/Lengthening Cost [W/kg]');
-% %         ylim([0,max([tempvec_nat(3,:), tempvec_exo(3,:)])+.03]);
-%         legend('Natural Running', 'Exotendon Running','location','northoutside')
-% 
-%         % now for the mechanical work rate
-%         subplot(2,2,4);
-%         bar([tempvec_nat(4,:); tempvec_exo(4,:)]')
-%         xlabel('Gait cycle #');
-%         ylabel('Mechanical Work rate [W/kg]');
-% %         ylim([0,max([tempvec_nat(4,:), tempvec_exo(4,:)])+.03]);
-%         legend('Natural Running', 'Exotendon Running','location','northoutside')
-%         
-%         musc = char(exoNames(f));
-%         suptitle([subject, ' ', musc(21:end-6)]);
-%         print(tempfig, ...
-%             strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\',subject,'\',musc(21:end-6), '_metabolicBreakdown.png'),...
-%             '-dpng', '-r500')
-%         %%% oh crap need to do this for each of the muscles... need the
-%         %%% title to be the muscle... 
-%         
-%         %%% TODO fix 4 indexing
-%         f = f+4;
-%         f
-%         close
-%     end
+    while f<=target
+
+        % loop each muscle and make a figure
+        tempfig = figure(f); 
+        set(tempfig, 'Position', [1,1,1920,1080]);
+        % x axis is going to be the 4 gait cycles
+        % will do subplots for the different metabolic components
+        % also have multiple conditions (double bar)
+        
+        % y axis is going to be metabolic cost
+        tempvec_exo = exoMetabolicsInd(f:f+3,:);
+        tempvec_nat = naturalMetabolicsInd(f:f+3,:);
+        
+        subplot(2,2,1);
+        % combined metabolics
+        bar([tempvec_nat(1,:); tempvec_exo(1,:)]');
+%         yl = ylim;
+        xlabel('Gait cycle #')
+        ylabel('Total Metabolic Cost [W/kg]')
+%         ylim([0,max([tempvec_nat(1,:), tempvec_exo(1,:)])+.03]);
+        legend('Natural Running', 'Exotendon Running','location','northoutside')
+        
+        
+        % now for the activation cost
+        subplot(2,2,2);
+        bar([tempvec_nat(2,:); tempvec_exo(2,:)]')
+        xlabel('Gait cycle #');
+        ylabel('Activation Cost [W/kg]');
+%         ylim(yl)
+%         ylim([0,max([tempvec_nat(2,:), tempvec_exo(2,:)])+.03]);
+        legend('Natural Running', 'Exotendon Running','location','northoutside')
+
+        % now for the shortening and lengthening cost
+        subplot(2,2,3);
+        bar([tempvec_nat(3,:); tempvec_exo(3,:)]')
+        xlabel('Gait cycle #');
+        ylabel('Shortening/Lengthening Cost [W/kg]');
+%         ylim(yl)
+%         ylim([0,max([tempvec_nat(3,:), tempvec_exo(3,:)])+.03]);
+        legend('Natural Running', 'Exotendon Running','location','northoutside')
+
+        % now for the mechanical work rate
+        subplot(2,2,4);
+        bar([tempvec_nat(4,:); tempvec_exo(4,:)]')
+        xlabel('Gait cycle #');
+        ylabel('Mechanical Work rate [W/kg]');
+%         ylim(yl)
+%         ylim([0,max([tempvec_nat(4,:), tempvec_exo(4,:)])+.03]);
+        legend('Natural Running', 'Exotendon Running','location','northoutside')
+        
+        musc = char(exoNames(f));
+        suptitle([subject, ' ', musc(21:end-6)]);
+        savefig(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\',subject,'\',musc(21:end-6), '_metabolicBreakdown.fig'));
+        print(tempfig, ...
+            strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\',subject,'\',musc(21:end-6), '_metabolicBreakdown.png'),...
+            '-dpng', '-r500')
+        %%% oh crap need to do this for each of the muscles... need the
+        %%% title to be the muscle... 
+        
+        %%% TODO fix 4 indexing
+        f = f+4;
+        f
+        close
+    end
     
     
     % now to do something with both subjects
@@ -188,7 +193,7 @@ end
 % probably want to average across gait cycles for each subject, 
 % and then plot each of the subjects on x axis
 
-
+keyboard
 numMuscles = 40;
 f = 1;
 target = size(exoMetabolicsInd,1);
@@ -208,10 +213,12 @@ while f<=target
     subplot(2,2,1);
     % combined metabolics
     bar([tempvec_nat(1,:); tempvec_exo(1,:)]');
+%     yl = ylim;
     xlabel('Subject #')
     ylabel('Total Metabolic Cost [W/kg]')
 %         ylim([0,max([tempvec_nat(1,:), tempvec_exo(1,:)])+.03]);
     legend('Natural Running', 'Exotendon Running','location','northoutside')
+    grid on;
 
 
     % now for the activation cost
@@ -219,27 +226,34 @@ while f<=target
     bar([tempvec_nat(2,:); tempvec_exo(2,:)]')
     xlabel('Subject #');
     ylabel('Activation Cost [W/kg]');
+%     ylim(yl);
 %         ylim([0,max([tempvec_nat(2,:), tempvec_exo(2,:)])+.03]);
     legend('Natural Running', 'Exotendon Running','location','northoutside')
+    grid on;
 
     % now for the shortening and lengthening cost
     subplot(2,2,3);
     bar([tempvec_nat(3,:); tempvec_exo(3,:)]')
     xlabel('Subject #');
     ylabel('Shortening/Lengthening Cost [W/kg]');
+%     ylim(yl);
 %         ylim([0,max([tempvec_nat(3,:), tempvec_exo(3,:)])+.03]);
     legend('Natural Running', 'Exotendon Running','location','northoutside')
+    grid on;
 
     % now for the mechanical work rate
     subplot(2,2,4);
     bar([tempvec_nat(4,:); tempvec_exo(4,:)]')
     xlabel('Subject #');
     ylabel('Mechanical Work rate [W/kg]');
+%     ylim(yl);
 %         ylim([0,max([tempvec_nat(4,:), tempvec_exo(4,:)])+.03]);
     legend('Natural Running', 'Exotendon Running','location','northoutside')
+    grid on;
 
     musc = char(exoNames(f));
-    suptitle([subject, ' ', musc(21:end-6)]);
+    suptitle(['Subjects Average ', ' ', musc(21:end-6)]);
+    savefig(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\muscleMetabolics','\',musc(21:end-6), '_metabolicBreakdown_subjects.fig'));
     print(tempfig, ...
         strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\muscleMetabolics','\',musc(21:end-6), '_metabolicBreakdown_subjects.png'),...
         '-dpng', '-r500')
@@ -255,7 +269,7 @@ end
 
 
 %% have all the values, now have to compute differences
-keyboard
+
 
 
 % do we want to plot differences of any kind?
