@@ -224,6 +224,8 @@ bar(savecompare1, 'r');
 
 
 
+>>>>>>> 709e47e1a1398634845ed6ca8a7074acca7255b8
 xticklabels(savecomparenames)
 ylabel('Metabolic Cost [W/kg]')
-legend('Natural Running', 'Exotendon Running')
+legend('Exotendon Running','Natural Running')
+
