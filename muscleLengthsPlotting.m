@@ -1,5 +1,5 @@
 % written by Jon Stingel
-% 20210323
+% 20211002
 import org.opensim.modeling.*
 repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
