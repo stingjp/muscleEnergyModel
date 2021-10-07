@@ -140,28 +140,28 @@ for thing=1:length(thingstoplot)
         
         
 
-        tempfig = figure('Position',[1,1,1920,1080]);
-        % do more stuff
-        % averaging and whatnot
-        for i=0:(labels.size()/2)-1
-            subplot(5,8,i+1);
-            templabel = char(labels.get(i));
-            muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
-            muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
-            plot(welknaturalstruct.time, muscleplot_nat, 'r:')
-            hold on;
-            plot(welkexostruct.time, muscleplot_exo, 'b:')
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
-            title(templabel)
-            xlabel('% gait cycle')
-            ylabel(tempthing)
-            grid on;
-        end
-        print(tempfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
-            '-dpng', '-r500')
-        disp('print 1')
+%         tempfig = figure('Position',[1,1,1920,1080]);
+%         % do more stuff
+%         % averaging and whatnot
+%         for i=0:(labels.size()/2)-1
+%             subplot(5,8,i+1);
+%             templabel = char(labels.get(i));
+%             muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
+%             muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
+%             plot(welknaturalstruct.time, muscleplot_nat, 'r:')
+%             hold on;
+%             plot(welkexostruct.time, muscleplot_exo, 'b:')
+%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
+%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+%             title(templabel)
+%             xlabel('% gait cycle')
+%             ylabel(tempthing)
+%             grid on;
+%         end
+%         print(tempfig, ...
+%             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+%             '-dpng', '-r500')
+%         disp('print 1')
         
 
 
@@ -185,9 +185,9 @@ for thing=1:length(thingstoplot)
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2))
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r')
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2))
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b')
         end
         title(templabel)
         xlabel('% gait cycle')
