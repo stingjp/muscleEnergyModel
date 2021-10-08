@@ -83,7 +83,7 @@ for subj=1:length(welksubjects)
     exoMetabolicsInd_allsubj = [exoMetabolicsInd_allsubj, exoMetabolicsInd(:,1:4)];
     naturalMetabolicsInd_allsubj = [naturalMetabolicsInd_allsubj, naturalMetabolicsInd(:,1:4)];
 
-    keyboard
+%     keyboard
     % need to average for the two different conditions across the trials
     % for each 
     % then compute the differences between the exo and natural
@@ -98,7 +98,7 @@ for subj=1:length(welksubjects)
     end
     
 
-    keyboard
+%     keyboard
     % if you want to look at individual values and cycles. 
     % exoNames or natural names
     % exoMetabolicsInd and naturalMetabolicsInd will give all the different values for 4 cycles
@@ -136,7 +136,7 @@ for subj=1:length(welksubjects)
 end
 
 %% have all the values, now have to compute differences
-keyboard
+% keyboard
 % first take the difference between exo and natural for each subject
 muscleDifferences_raw = [];
 muscleDifferences_perc = [];
@@ -224,7 +224,7 @@ bar(savecompare1, 'r');
 
 
 
->>>>>>> 709e47e1a1398634845ed6ca8a7074acca7255b8
+% >>>>>>> 709e47e1a1398634845ed6ca8a7074acca7255b8
 xticklabels(savecomparenames)
 ylabel('Metabolic Cost [W/kg]')
 legend('Exotendon Running','Natural Running')
