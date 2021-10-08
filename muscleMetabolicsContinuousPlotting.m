@@ -22,7 +22,7 @@ welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknat
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
 welksubjects = {'welk002','welk003'};
 
-thingstoplot = {'NormalizedFiberLength','NormFiberVelocity'};
+thingstoplot = {'probes'};
 
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
@@ -64,7 +64,7 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -75,22 +75,33 @@ for thing=1:length(thingstoplot)
                 timespercent101 = [0:1:100]';
                 welkexostruct.time = timespercent101;
 
-
+                
                 % now for each of the things
                 numCols = tempTimeSeriesTable.getNumColumns(); % including time
                 labels = tempTimeSeriesTable.getColumnLabels();            
 
                 for i=0:labels.size()-1
                     muscle = char(labels.get(i));
-                    tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
-                    tempcolinterp = interp1(timespercent, tempcol, timespercent101);
-
-                    if ~isfield(welkexostruct, muscle)
-                        welkexostruct.(genvarname(muscle)) = [];
+                    % need to screen only the things that we want
+                    if contains(char(muscle), 'metabolics_combined')
+                        % we want these measures
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welkexostruct, muscle)
+                            welkexostruct.(genvarname(muscle)) = [];
+                        end
+                        welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    elseif contains(char(muscle), 'all_metabolics')
+                        % we also want the whole body measure
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welkexostruct, muscle)
+                            welkexostruct.(genvarname(muscle)) = [];
+                        end
+                        welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
                     end
-                    welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
                 end
-            end            
+            end
         end
         % done with the exo conditions
 
@@ -110,7 +121,7 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -125,27 +136,42 @@ for thing=1:length(thingstoplot)
                 numCols = tempTimeSeriesTable.getNumColumns(); % including time
                 labels = tempTimeSeriesTable.getColumnLabels();            
 
+                
                 for i=0:labels.size()-1
                     muscle = char(labels.get(i));
-                    tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
-                    tempcolinterp = interp1(timespercent, tempcol, timespercent101);
-
-                    if ~isfield(welknaturalstruct, muscle)
-                        welknaturalstruct.(genvarname(muscle)) = [];
+                    % need to screen only the things that we want
+                    if contains(char(muscle), 'metabolics_combined')
+                        % we want these measures
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welknaturalstruct, muscle)
+                            welknaturalstruct.(genvarname(muscle)) = [];
+                        end
+                        welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    elseif contains(char(muscle), 'all_metabolics')
+                        % we also want the whole body measure
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welknaturalstruct, muscle)
+                            welknaturalstruct.(genvarname(muscle)) = [];
+                        end
+                        welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
                     end
-                    welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
                 end
             end
         end
         
         
-
+        
+        newlabels = fields(welkexostruct);
+        % need to redo the labels
         tempfig = figure('Position',[1,1,1920,1080]);
         % do more stuff
         % averaging and whatnot
-        for i=0:(labels.size()/2)-1
-            subplot(5,8,i+1);
-            templabel = char(labels.get(i));
+        for i=2:length(newlabels)
+            subplot(5,9,i-1);
+            templabel = newlabels(i);
+            templabel = char(templabel);
             muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
             plot(welknaturalstruct.time, muscleplot_nat, 'r:')
@@ -153,11 +179,18 @@ for thing=1:length(thingstoplot)
             plot(welkexostruct.time, muscleplot_exo, 'b:')
             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+            ylabel('Metabolic rate [W/kg]');
             title(templabel)
             xlabel('% gait cycle')
-            ylabel(tempthing)
+            if i==2
+                title('Total metabolic rate');    
+            else
+                templabel2 = templabel(21:end-6);
+                title(templabel2);
+            end
             grid on;
         end
+        
         print(tempfig, ...
             strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
             '-dpng', '-r500')
@@ -176,9 +209,10 @@ for thing=1:length(thingstoplot)
     % now plot across subjects
     tempfig2 = figure('Position',[1,1,1920,1080]);
         % then loop through the muscles inside each subject
-    for i=0:(labels.size()/2)-1
-        subplot(5,8,i+1);
-        templabel = char(labels.get(i));
+    for i=2:length(newlabels)
+        subplot(5,9,i-1);
+        templabel = newlabels(i);
+        templabel = char(templabel);
         % loop through the subjects
         for subj=1:length(welksubjects)
             subject = char(welksubjects(subj));
@@ -189,9 +223,15 @@ for thing=1:length(thingstoplot)
             hold on;
             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b')
         end
-        title(templabel)
+        if i==2
+            title('Total metabolic rate')
+        else
+            templabel2 = templabel(21:end-6);
+            title(templabel2)
+        end
+        
         xlabel('% gait cycle')
-        ylabel(tempthing)
+        ylabel('Metabolic rate [W/kg]')
         grid on;
     end
 
@@ -200,5 +240,5 @@ for thing=1:length(thingstoplot)
         strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', tempthing, '_combined', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
-
+end
 
