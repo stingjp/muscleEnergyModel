@@ -323,9 +323,7 @@ function metabolicsModelSetup()
     model.addProbe(probe_recfem)
 
 
-
     % now to add probes and things for metabolics
-
     probe_all.setName('all_metabolics');
     % probe_all.set_use_Bhargava_recruitment_model(false);
 
