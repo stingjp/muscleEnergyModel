@@ -83,15 +83,7 @@ for thing=1:length(thingstoplot)
                 for i=0:labels.size()-1
                     muscle = char(labels.get(i));
                     % need to screen only the things that we want
-                    if contains(char(muscle), 'metabolics_combined')
-                        % we want these measures
-                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
-                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
-                        if ~isfield(welkexostruct, muscle)
-                            welkexostruct.(genvarname(muscle)) = [];
-                        end
-                        welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
-                    elseif contains(char(muscle), 'all_metabolics')
+                    if contains(char(muscle), 'all_metabolics')
                         % we also want the whole body measure
                         tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
                         tempcolinterp = interp1(timespercent, tempcol, timespercent101);
@@ -99,6 +91,38 @@ for thing=1:length(thingstoplot)
                             welkexostruct.(genvarname(muscle)) = [];
                         end
                         welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'metabolics_combined')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welkexostruct, muscle)
+                    %         welkexostruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    elseif contains(char(muscle), 'activation_maintenance_rate_')
+                        % we want these measures
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welkexostruct, muscle)
+                            welkexostruct.(genvarname(muscle)) = [];
+                        end
+                        welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'shortening_rate')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welkexostruct, muscle)
+                    %         welkexostruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'mechanical_work_rate')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welkexostruct, muscle)
+                    %         welkexostruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
                     end
                 end
             end
@@ -140,15 +164,7 @@ for thing=1:length(thingstoplot)
                 for i=0:labels.size()-1
                     muscle = char(labels.get(i));
                     % need to screen only the things that we want
-                    if contains(char(muscle), 'metabolics_combined')
-                        % we want these measures
-                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
-                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
-                        if ~isfield(welknaturalstruct, muscle)
-                            welknaturalstruct.(genvarname(muscle)) = [];
-                        end
-                        welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
-                    elseif contains(char(muscle), 'all_metabolics')
+                    if contains(char(muscle), 'all_metabolics')
                         % we also want the whole body measure
                         tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
                         tempcolinterp = interp1(timespercent, tempcol, timespercent101);
@@ -156,6 +172,38 @@ for thing=1:length(thingstoplot)
                             welknaturalstruct.(genvarname(muscle)) = [];
                         end
                         welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'metabolics_combined')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welknaturalstruct, muscle)
+                    %         welknaturalstruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    elseif contains(char(muscle), 'activation_maintenance_rate')
+                        % we want these measures
+                        tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                        tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                        if ~isfield(welknaturalstruct, muscle)
+                            welknaturalstruct.(genvarname(muscle)) = [];
+                        end
+                        welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'shortening_rate')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welknaturalstruct, muscle)
+                    %         welknaturalstruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    % elseif contains(char(muscle), 'mechanical_work_rate')
+                    %     % we want these measures
+                    %     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(muscle)).getAsMat();
+                    %     tempcolinterp = interp1(timespercent, tempcol, timespercent101);
+                    %     if ~isfield(welknaturalstruct, muscle)
+                    %         welknaturalstruct.(genvarname(muscle)) = [];
+                    %     end
+                    %     welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
                     end
                 end
             end
@@ -192,7 +240,7 @@ for thing=1:length(thingstoplot)
         end
         
         print(tempfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions_activation'), '.png')),...
             '-dpng', '-r500')
         disp('print 1')
         
@@ -237,7 +285,7 @@ for thing=1:length(thingstoplot)
 
 
     print(tempfig2, ...
-        strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', tempthing, '_combined', '.png'),...
+        strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', tempthing, '_combined_activation', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 end
