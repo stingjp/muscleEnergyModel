@@ -293,7 +293,7 @@ for thing=1:length(thingstoplot)
         ylabel('Coordinate Value [rad/m]')
         grid on;
     end
-    subplot(3,9,i);
+    subplot(5,7,i);
     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
     hold on;
     plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj-1)))
