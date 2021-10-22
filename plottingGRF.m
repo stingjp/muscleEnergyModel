@@ -84,7 +84,7 @@ for thing=1:length(thingstoplot)
                     coord = char(labels.get(i));
                     
                     % need to screen only the things that we want
-                    if contains(char(coord), 'GRF_F') % 'value' denotes a coordinate value
+                    if contains(char(coord), 'GRF_') % 'value' denotes a coordinate value
                         % tempsplit = split(coord,'/');
                         % coordshort = string(tempsplit(4));
                         
@@ -176,7 +176,7 @@ for thing=1:length(thingstoplot)
                     coord = char(labels.get(i));
                     
                     % need to screen only the things that we want
-                    if contains(char(coord), 'GRF_F')
+                    if contains(char(coord), 'GRF_')
                         % tempsplit = split(coord,'/');
                         % coordshort = string(tempsplit(4));
                         
@@ -242,7 +242,7 @@ for thing=1:length(thingstoplot)
         % do more stuff
         % averaging and whatnot
         for i=2:length(newlabels)
-            subplot(3,3,i-1);
+            subplot(4,5,i-1);
             templabel = newlabels(i);
             templabel = char(templabel);
                         
@@ -300,7 +300,7 @@ for thing=1:length(thingstoplot)
     tempfig2 = figure('Position',[1,1,1920,1080]);
         % then loop through the muscles inside each subject
     for i=2:length(newlabels)
-        subplot(3,3,i-1);
+        subplot(4,5,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         % loop through the subjects
@@ -333,7 +333,7 @@ for thing=1:length(thingstoplot)
         ylabel('Force [N]')
         grid on;
     end
-    subplot(3,3,i);
+    subplot(4,5,i);
     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
     hold on;
     plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj-1)))
