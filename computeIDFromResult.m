@@ -12,10 +12,12 @@ function [Issues] = computeIDFromResult(Issues, solution)
 
     workingdir = pwd;
 
-    idtool = InverseDynamicsTool();
-    modelid = Model('post_simple_model_all_the_probes_muscletrack.osim');
-%     modelid = Model('simple_model_all_the_probes_adjusted.osim');
-    idtool.setModel(modelid);
+    idtool = InverseDynamicsTool(java.lang.String('idguitesting.xml'));
+    modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
+    modelid1.initSystem();
+    modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
+    idtool.setModel(modelid2);
+    idtool.setExternalLoadsFileName('grf_walk.xml')
 
     % % get the coordinates and all the states
     % idtable = solution.exportToStatesTable();
@@ -29,6 +31,7 @@ function [Issues] = computeIDFromResult(Issues, solution)
     % end
 
     % try storage instead
+
     sto = Storage();
     solutionstatestable = solution.exportToStatesTable();
     labels = solutionstatestable.getColumnLabels();
@@ -36,12 +39,25 @@ function [Issues] = computeIDFromResult(Issues, solution)
     properlabels = org.opensim.modeling.ArrayStr();
     properlabels.set(0,"time");
     for i=0:numlabels-1
-%         templabel = labels.get(i)
-        properlabels.set(i+1,labels.get(i));
+        templabel = labels.get(i);
+        if contains(char(templabel),'jointset') && contains(char(templabel),'value')
+            % we want this one
+            templabel2 = char(templabel);
+            tempsplit = split(templabel2,'/');
+            templabel3 = tempsplit(4);
+            
+            properlabels.set(i+1, templabel3);
+        else
+            % get rid of this column
+            solutionstatestable.removeColumn(templabel);
+        % properlabels.set(i+1,labels.get(i));
+        end
     end
     sto.setColumnLabels(properlabels);
     
     statetime = solutionstatestable.getIndependentColumn();
+    starttime = statetime.get(0);
+    endtime = statetime.get(statetime.size()-1);
     timelength = statetime.size();
     
     for i=0:timelength-1
@@ -53,25 +69,34 @@ function [Issues] = computeIDFromResult(Issues, solution)
     % idstorage = solution.exportToStatesStorage();
     % set the tool up
     % idtool.setCoordinateValues(idstorage);
-    idtool.setCoordinateValues(sto);
+    sto.print('muscle_coordinates_short.sto');
+    
+    % idtool.setCoordinateValues(sto);
+    idtool.setCoordinatesFileName('muscle_coordinates_short.sto');
     idresult = 'muscle_joint_moment_breakdown.sto';
     idtool.setResultsDir(workingdir);
     idtool.setOutputGenForceFileName(idresult);
-
+    idtool.setEndTime(endtime);
+    idtool.setStartTime(starttime);
+    idtool.set_results_directory(java.lang.String(workingdir));
+    
     % run the tool
+    idtool.print('idtesting.xml');
     idtool.run();
 
     % load the net joint moments
     idresultfile = strcat(workingdir, '\', idresult);
+    
+    
     netjointmoments = TimeSeriesTable(idresultfile);
 
     % get the states
-    statestraj = solution.exportToStatesTrajectory(modelid);
+    statestraj = solution.exportToStatesTrajectory(modelid1);
 
 
     %% get some details from the model
     % muscles
-    muscleset = modelid.getMuscles();
+    muscleset = modelid1.getMuscles();
     nummuscles = muscleset.getSize();
     tendonforces = zeros(length(Time), nummuscles);
     musclepaths = [];
@@ -81,13 +106,13 @@ function [Issues] = computeIDFromResult(Issues, solution)
         musclepaths = [musclepaths, tempmuscpath];
         for t=1:length(Time)
             tempstate = statestraj.get(t-1);
-            modelid.realizeDynamics(tempstate);
+            modelid1.realizeDynamics(tempstate);
             tendonforces(t,m+1) = tempmusc.getTendonForce(tempstate);
         end
     end
 
     % coordinates
-    coordinateset = modelid.getCoordinateSet();
+    coordinateset = modelid1.getCoordinateSet();
     numcoordinates = coordinateset.getSize();
     coordinatepaths = [];
     for c=0:numcoordinates-1
@@ -98,7 +123,7 @@ function [Issues] = computeIDFromResult(Issues, solution)
     
     
     % forces in the model
-    forceset = modelid.getForceSet();
+    forceset = modelid1.getForceSet();
     numforces = forceset.getSize();
     muscleforcepaths = [];
     coordactforcepaths = [];
@@ -121,7 +146,7 @@ function [Issues] = computeIDFromResult(Issues, solution)
     coordactmoments = struct();
     coordactmoments.time = Time;
     for c=0:numcoordact-1
-        tempcoordact = CoordinateActuator().safeDownCast(modelid.getComponent(coordactforcepaths(c+1)));
+        tempcoordact = CoordinateActuator().safeDownCast(modelid1.getComponent(coordactforcepaths(c+1)));
         tempcoordact_forcemultiply = tempcoordact.getOptimalForce();
         tempcontrols = controlstable.getDependentColumn(coordactforcepaths(c+1));
         for t=0:length(Time)-1
@@ -159,11 +184,15 @@ function [Issues] = computeIDFromResult(Issues, solution)
     com_y = table_com.getDependentColumn('center_of_mass_Y').getAsMat();
     com_z = table_com.getDependentColumn('center_of_mass_Z').getAsMat();
     
+    % check the coordactlabels
+    % check tempcoordinate name
+    
+    
     forcecheck = {'tx','ty','tz'};
     templabels = coordactmomentstable.getColumnLabels();
     for i=1:length(coordinatepaths);
         tempcoordinate = coordinatepaths(i);
-        coord = Coordinate.safeDownCast(modelid.getComponent(tempcoordinate));
+        coord = Coordinate.safeDownCast(modelid1.getComponent(tempcoordinate));
         
         % skip the patella coordinate, loop others
         if ~any(contains(char(tempcoordinate),'beta'))
@@ -284,7 +313,7 @@ function [Issues] = computeIDFromResult(Issues, solution)
     momentarms = zeros(length(Time), nummuscles);
     for m=1:length(muscleforcepaths)
         if ~any(contains(char(muscleforcepaths(m)),'exotendon')) && ~any(contains(char(muscleforcepaths(m)),'HOBL'))
-            muscle = Muscle.safeDownCast(modelid.getComponent(muscleforcepaths(m)));
+            muscle = Muscle.safeDownCast(modelid1.getComponent(muscleforcepaths(m)));
             
             for t=1:length(Time)
                 state = statestraj.get(t-1);
