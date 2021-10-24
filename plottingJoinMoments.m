@@ -150,7 +150,7 @@ for thing=1:length(thingstoplot)
         % do more stuff
         % averaging and whatnot
         for i=2:length(newlabels)
-            subplot(4,6,i-1);
+            subplot(5,6,i-1);
             templabel = newlabels(i);
             templabel = char(templabel);
             % plot each of the gait cycles
@@ -195,7 +195,7 @@ for thing=1:length(thingstoplot)
     tempfig2 = figure('Position',[1,1,1920,1080]);
         % then loop through the muscles inside each subject
     for i=2:length(newlabels)
-        subplot(4,6,i-1);
+        subplot(5,6,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         % loop through the subjects
@@ -216,7 +216,7 @@ for thing=1:length(thingstoplot)
         ylabel('Moment [Nm]')
         grid on;
     end
-    subplot(4,6,i);
+    subplot(5,6,i);
     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
     hold on;
     plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj-1)))
