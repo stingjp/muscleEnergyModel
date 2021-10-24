@@ -25,6 +25,7 @@ templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
 templategrf_welk = os.path.join(repodir,'templates\\moco\\welk_grf_walk.xml')
 geometrydir = os.path.join(repodir,'Geometry\\')
+idtemplate = os.path.join(repodir,'templates\\moco\\idguitesting.xml')
 template_RRA_dir = os.path.join(repodir, 'RRAfiles\\')
 # backpackdir = os.path.join(geometrydir, 'backpack0.vtp')
 
@@ -165,10 +166,12 @@ for subj in subjects:
                 trialdir = os.path.join(tempdir_2, keys)
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
+                targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir, 'Geometry')
                 targetRRA = os.path.join(trialdir, 'RRAfiles')
                 copy(templateanalysis, targetfile)
                 copy(templategrf_welk, targetfile2)
+                copy(idtemplate, targetfile3)
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
                 except:
@@ -227,11 +230,13 @@ for subj in subjects:
                 trialdir = os.path.join(tempdir_2, keys)
                 targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
+                targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir,'Geometry')
                 # targetbackpack = os.path.join(targetgeometry,'backpack0.vtp')
 
                 copy(templateanalysis, targetfile)
                 copy(templategrf, targetfile2)
+                copy(idtemplate, targetfile3)
                 
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
