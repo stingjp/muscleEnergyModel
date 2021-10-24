@@ -20,9 +20,9 @@ cd(resultsdir)
 %%%%%
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkconditions = {'welkexo'}; %'welknatural' ,'welknaturalslow','welknaturalnatural', ...
+welkconditions = {'welkexo','welknatural'}; %'welknatural' ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
-welksubjects = {'welk004'}; %,'welk002','welk003','welk004'}; 
+welksubjects = {'welk002','welk003'}; %,'welk002','welk003','welk004'}; 
 load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 % TODO an issues holder for this script
