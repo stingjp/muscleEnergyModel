@@ -98,7 +98,7 @@ for subj=1:length(welksubjects)
     end
     
 
-%     keyboard
+    
     % if you want to look at individual values and cycles. 
     % exoNames or natural names
     % exoMetabolicsInd and naturalMetabolicsInd will give all the different values for 4 cycles
@@ -136,7 +136,13 @@ for subj=1:length(welksubjects)
 end
 
 %% have all the values, now have to compute differences
-% keyboard
+keyboard
+% going to make a new structure that is the combined muscle paths/groups
+
+
+
+
+
 % first take the difference between exo and natural for each subject
 muscleDifferences_raw = [];
 muscleDifferences_perc = [];
