@@ -55,4 +55,7 @@ X- add the values ^ to the figures
 
 
 20210828
-- need to come up with a script that for each muscle, plots the components for both the natural and the exo case. start with metabolic cost and then maybe expand to other things. could do a live plot of the met cost rather than the average value, that would lend the structure to other values better (same time axis)
+- need to come up with a script that for each muscle, plots the components for both the natural and the exo case. start with metabolic cost and then maybe expand to other things. could do a live plot of the met cost rather than the average value, that would lend the structure to other values better (same time axis)	
+
+
+
