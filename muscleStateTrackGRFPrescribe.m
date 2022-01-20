@@ -39,7 +39,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     basemodel = modelProcessor.process();
     basemodel.print('basemodel_simple_model_all_the_probes.osim');
     
-    % turn on the probes for the study
+    % turn on the probes for the study - I think RRA turns some off?
     basemodel = probeActivate(basemodel);
 
     % updates
