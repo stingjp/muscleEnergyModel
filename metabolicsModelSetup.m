@@ -249,17 +249,24 @@ function metabolicsModelSetup()
     model = Model('subject.osim');
     coordfile = StdVectorString();
     coordfile.add('coordinates.mot');
-    try
-        % the model and coordinates need updated
-        opensimSimulation.updatePre40KinematicsFilesFor40MotionType(model, coordfile);
-        opensimSimulation.updateSocketConnecteesBySearch(model);
-        model.print('subject_updated.osim');
-    catch
-        % just the coordinates need updated
-        oldmodel = Model('subject_old.osim');
-        opensimSimulation.updatePre40KinematicsFilesFor40MotionType(oldmodel, coordfile);
-        model.print('subject_updated.osim');
-    end
+    
+
+    
+    % this is for all the older data
+    % try
+    %     % the model and coordinates need updated
+    %     opensimSimulation.updatePre40KinematicsFilesFor40MotionType(model, coordfile);
+    %     opensimSimulation.updateSocketConnecteesBySearch(model);
+    %     model.print('subject_updated.osim');
+    % catch
+    %     % just the coordinates need updated
+    %     oldmodel = Model('subject_old.osim');
+    %     opensimSimulation.updatePre40KinematicsFilesFor40MotionType(oldmodel, coordfile);
+    %     model.print('subject_updated.osim');
+    % end
+
+    model.print('subject_updated.osim');
+
 
     % scale the max isometric muscle force
     load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
@@ -285,7 +292,7 @@ function metabolicsModelSetup()
     %{}
 
 
-
+    keyboard
     % remove the previous metabolics probes
     probeset = model.getProbeSet();
     numProbes = probeset.getSize();
@@ -760,7 +767,11 @@ function metabolicsModelSetup()
     getrid_marker = {'R.MElbow','L.MElbow','R.Biceps','R.Elbow','R.Forearm','R.Wrist', ...
                     'L.Biceps','L.Elbow','L.Forearm','L.Wrist', ...
                     'R_elbow_medial','R_elbow_lateral','L_elbow_medial','L_elbow_lateral','L_wrist_medial','L_wrist_lateral', ...
-                    'R_wrist_medial','R_wrist_lateral','R_wrist_tracking','L_wrist_tracking'}; %, ...
+                    'R_wrist_medial','R_wrist_lateral','R_wrist_tracking','L_wrist_tracking', ...
+                    'R_elbow_med','R_elbow_lat','L_elbow_med','L_elbow_lat', ...
+                    'L_wrist_radius','L_wrist_ulna','R_wrist_radius','R_wrist_ulna', ...
+                    'R_forearm','L_forearm','R_humerus','L_humerus'};
+
                     % 'L.TH1','L.TH2','L.TH3','L.TH4','L.Knee','L.SH1','L.SH2','L.SH3','L.Ankle','L.Toe','L.Heel','L.MT5', ...
                     % 'L_HJC','L_KJC','L_AJC','L.MKnee','L.MAnkle','L.AnkleJoint','L.KneeJoint','L.HeelGround','L.MT5Ground', ...
                     % 'L.ToeGround','L.AnkleJointGround', ...
