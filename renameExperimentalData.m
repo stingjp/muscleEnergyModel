@@ -6,7 +6,7 @@ function renameExperimentalData()
     old_subject_file = 'subject_old.osim';
     mocap_file = 'motion_capture.trc';
     grf_file = 'ground_reaction.mot';
-    ik_file = 'coordinates.mot';
+    ik_file = 'coordinates_updated.mot';
     emg_file = 'electromyography.sto';
 
     cd expdata;
@@ -74,6 +74,7 @@ function renameExperimentalData()
                 % statetime = solutionstatestable.getIndependentColumn();
                 statetime = temptable.getIndependentColumn();
                 timelength = statetime.size();
+                
                 
                 for i=0:timelength-1
                     % temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
