@@ -292,7 +292,7 @@ function metabolicsModelSetup()
     %{}
 
 
-    keyboard
+    
     % remove the previous metabolics probes
     probeset = model.getProbeSet();
     numProbes = probeset.getSize();
