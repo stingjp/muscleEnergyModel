@@ -52,7 +52,7 @@
 	    with what weights are specified here.-->
 	<task_set_file> gait2354_RRA_Tasks.xml </task_set_file>
 	<!--File containing the constraints on the controls.-->
-	<constraints_file> gait2354_RRA_ControlConstraints.xml </constraints_file>
+	<!-- <constraints_file> gait2354_RRA_ControlConstraints.xml </constraints_file> -->
 		<!--File containing the controls output by RRA. These can be used to place
 		    constraints on the residuals during CMC.-->
 		<rra_controls_file>  </rra_controls_file>
