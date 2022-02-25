@@ -5286,6 +5286,47 @@
 		<!--Forces in the model (includes Actuators).-->
 		<ForceSet name="forceset">
 			<objects>
+				<PathSpring name="HOBL">
+					<!--Flag indicating whether the force is applied or not. If true the forceis applied to the MultibodySystem otherwise the force is not applied.NOTE: Prior to OpenSim 4.0, this behavior was controlled by the 'isDisabled' property, where 'true' meant that force was not being applied. Thus, if 'isDisabled' is true, then 'appliesForce` is false.-->
+					<appliesForce>true</appliesForce>
+					<!--The GeometryPath defines the set of points and wrapping surfaceinteractions that form the path of action of the PathSpring-->
+					<GeometryPath name="geometrypath">
+						<!--The set of points defining the path-->
+						<PathPointSet>
+							<objects>
+								<PathPoint name="HOBL-L">
+									<!--Path to a Component that satisfies the Socket 'parent_frame' of type PhysicalFrame (description: The frame in which this path point is defined.).-->
+									<socket_parent_frame>/bodyset/calcn_l</socket_parent_frame>
+									<!--The fixed location of the path point expressed in its parent frame.-->
+									<location>0.041700000000000001 0.033399999999999999 0.0286</location>
+								</PathPoint>
+								<PathPoint name="HOBL-R">
+									<!--Path to a Component that satisfies the Socket 'parent_frame' of type PhysicalFrame (description: The frame in which this path point is defined.).-->
+									<socket_parent_frame>/bodyset/calcn_r</socket_parent_frame>
+									<!--The fixed location of the path point expressed in its parent frame.-->
+									<location>0.041700000000000001 0.033399999999999999 -0.0286</location>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<!--The wrap objects that are associated with this path-->
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+						<!--Default appearance attributes for this GeometryPath-->
+						<Appearance>
+							<!--The color, (red, green, blue), [0, 1], used to display the geometry. -->
+							<color>0 1 0</color>
+						</Appearance>
+					</GeometryPath>
+					<!--The resting length (m) of the PathSpring-->
+					<resting_length>0.23000000000000001</resting_length>
+					<!--The linear stiffness (N/m) of the PathSpring-->
+					<stiffness>114</stiffness>
+					<!--The dissipation factor (s/m) of the PathSpring-->
+					<dissipation>0</dissipation>
+				</PathSpring>
 				<Millard2012EquilibriumMuscle name="addbrev_r">
 					<!--The set of points defining the path of the actuator.-->
 					<GeometryPath name="geometrypath">
@@ -14977,8 +15018,7 @@
 				</Marker>
 			</objects>
 			<groups />
-		</MarkerSet>
-		<!--Geometry to be used in contact forces.-->
+		</MarkerSet>		<!--Geometry to be used in contact forces.-->
 		<ContactGeometrySet name="contactgeometryset">
 			<objects />
 			<groups />
