@@ -13,6 +13,9 @@ subjectheight.welk002 = 1.765;
 subjectheight.welk003 = 1.760;
 subjectheight.welk004 = 1.905;
 
+
+subjectheight.welk007 = 1.600;
+
 % subjectheight.jack001 = ;
 % subjectheight.jack002 = ;
 % subjectheight.jack003 = ;
