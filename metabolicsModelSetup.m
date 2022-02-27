@@ -269,8 +269,8 @@ function metabolicsModelSetup()
 
 
     % scale the max isometric muscle force
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectheight.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectmass.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectheight.mat';
     model = scaleModelMaxIsometricForces(subjectmass, subjectheight);
 
     
