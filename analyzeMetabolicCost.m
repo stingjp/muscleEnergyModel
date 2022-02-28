@@ -24,7 +24,7 @@ function analyzeMetabolicCost(solution)
     % full moco method
     analyze = AnalyzeTool();
     analyze.setName("analyzemuscles");
-    analyze.setModelFilename("post_simple_model_all_the_probes.osim");
+    analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
     analyze.setStatesFileName("muscleprescribe_states.sto");
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
