@@ -10,7 +10,7 @@ function analyzeMetabolicCost(solution)
     numColPoints = solution.getNumTimes();
     
     % get the subject name and mass
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectmass.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
