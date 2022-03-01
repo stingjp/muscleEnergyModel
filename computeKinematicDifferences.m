@@ -196,10 +196,9 @@ function [] = computeKinematicDifferences(solution)
         subject = workingdir(workingdirlength-26:workingdirlength-20);
     end
     
-    print(tempfig3, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-            strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences_adj_deg.png'))))))),...
-            '-dpng', '-r500')
+    
+    temptarget = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg');
+    print(tempfig3, temptarget, '-dpng', '-r500')
     disp('print 1')
 
 
@@ -241,10 +240,8 @@ function [] = computeKinematicDifferences(solution)
         subject = workingdir(workingdirlength-26:workingdirlength-20);
     end
     
-    print(tempfig4, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', ... 
-            strcat(subject,strcat('\',strcat(string(trial),strcat('_',strcat(condition,'_kinematics_differences_adj_deg_diff.png'))))))),...
-            '-dpng', '-r500')
+    temptarget2 = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_diff');
+    print(tempfig4, temptarget2, '-dpng', '-r500')
     disp('print 1')
 
     close all
