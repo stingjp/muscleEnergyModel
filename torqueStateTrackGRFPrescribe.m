@@ -27,6 +27,8 @@ function torqueStateTrackGRFPrescribe()
     % add CoordinateActuators to the model DOF. 
     % ignores pelvis coordinates with already have. 
     modelProcessor.append(ModOpAddReserves(250));
+    torquemodel = modelProcessor.process();
+    torquemodel.print('torquemodel.osim');
     track.setModel(modelProcessor);
     
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
@@ -116,7 +118,14 @@ function torqueStateTrackGRFPrescribe()
            effort.setWeightForControl(forcePath, 1e4);
         end
     end
-
+    
+    % solver changes
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    solver.resetProblem(problem);
+    solver.set_optim_convergence_tolerance(1e-4); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    
+    
     % solve and visualize
     solution = study.solve();
     % study.visualize(solution);
