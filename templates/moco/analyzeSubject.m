@@ -24,22 +24,23 @@ cd(workingdir)
 if exist('Issues','var')
     Issues = [Issues; [java.lang.String(subjectname); java.lang.String(strcat(condname,trialname))]];
 else
+    global Issues
     Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
 end
 
 % edit experimental data for simulations
-renameExperimentalData();
+% renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
-metabolicsModelSetup();
-close all;
+% metabolicsModelSetup();
+% close all;
 % runRRA_1('./RRAfiles/RRA_Setup_1.xml');
 % close all;
 % runRRA_2('./RRAfiles/RRA_Setup_2.xml');
 % close all;
 % torqueMarkerTrackGRFPrescribe();
-% close all;
+close all;
 torqueStateTrackGRFPrescribe();
 close all;
 Issues = muscleStatePrescribeGRFPrescribe(Issues);
