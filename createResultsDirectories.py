@@ -20,7 +20,7 @@ resultbasedir = os.path.join(repodir,'..\\results\\')
 # print(repodir)
 # print(resultbasedir)
 
-templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
+# templateanalysis = os.path.join(repodir,'templates\\moco\\analyzeSubject.m')
 # print(templateanalysis)
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
 templategrf_welk = os.path.join(repodir,'templates\\moco\\welk_grf_walk.xml')
@@ -245,12 +245,13 @@ for subj in subjects:
                 except:
                     pass
                 trialdir = os.path.join(tempdir_2, keys)
-                targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                # targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir, 'Geometry')
                 targetRRA = os.path.join(trialdir, 'RRAfiles')
-                copy(templateanalysis, targetfile)
+                # copy(templateanalysis, targetfile)
+                print('should do something to delete all the old analyzeSubject files')
                 copy(templategrf_welk, targetfile2)
                 copy(idtemplate, targetfile3)
                 try:
@@ -309,13 +310,14 @@ for subj in subjects:
                     # print('\nTrial directory exists.')
                     pass
                 trialdir = os.path.join(tempdir_2, keys)
-                targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                # targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir,'Geometry')
                 # targetbackpack = os.path.join(targetgeometry,'backpack0.vtp')
 
-                copy(templateanalysis, targetfile)
+                # copy(templateanalysis, targetfile)
+                print('should do something to delete all the old analyzeSubject files')
                 copy(templategrf, targetfile2)
                 copy(idtemplate, targetfile3)
                 
