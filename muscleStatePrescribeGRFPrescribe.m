@@ -98,7 +98,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     for i=0:templabels_os.size()-1
         % templabels = [templabels, templabels_os.get(i)];
         temp = templabels_os.get(i);
-        if ~temp.startsWith('/jointset')
+        if ~startsWith(temp, '/jointset') %~temp.startsWith('/jointset')
             tempkintable.removeColumn(temp);
         end
     end
@@ -112,7 +112,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
 
     % get the subject name and gait timings
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
@@ -173,16 +173,19 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
+    solver.set_optim_convergence_tolerance(1e-4); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
     solution = study.solve();
 %     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    
     solution.write('muscleguess.sto');
     solution.insertStatesTrajectory(tempkintable);
     % study.visualize(solution);
 
 
     % post processing
-    solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution.sto');
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
 
@@ -198,7 +201,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % Generate a report with plots for the solution trajectory.
     % model = modelProcessor.process();
     report = osimMocoTrajectoryReport(model, ...
-            'muscle_stateprescribe_grfprescribe_solution.sto', 'bilateral', true);
+            'muscle_statetrack_grfprescribe_solution.sto', 'bilateral', true);
     % The report is saved to the working directory.
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
