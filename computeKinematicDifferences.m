@@ -20,12 +20,12 @@ function [] = computeKinematicDifferences(solution)
     for l = 0:solutionNumLabels-1
         templabel = solutionLabels.get(l);
         if ~contains(string(templabel), 'jointset')
-            solutionremove = [solutionremove, templabel];
+            solutionremove = [solutionremove, {templabel}];
         end
     end
     % remove all the ones that aren't jointset
     for r = 1:length(solutionremove)
-        solutionstatestable.removeColumn(solutionremove(r));
+        solutionstatestable.removeColumn(solutionremove{r});
     end
     % overwrite label vector and count
     solutionLabels = solutionstatestable.getColumnLabels();
@@ -42,12 +42,12 @@ function [] = computeKinematicDifferences(solution)
     for l = 0:trackNumLabels-1
         templabel = trackLabels.get(l);
         if ~contains(string(templabel), 'jointset')
-            trackremove = [trackremove, templabel];
+            trackremove = [trackremove, {templabel}];
         end
     end
     % remove all the ones that aren't jointset
     for r = 1:length(trackremove)
-        trackstatestable.removeColumn(trackremove(r));
+        trackstatestable.removeColumn(trackremove{r});
     end
     % overwrite label vector and count
     trackLabels = trackstatestable.getColumnLabels();
