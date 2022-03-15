@@ -2,7 +2,7 @@
 % 20210329
 % gather and plot all the muscle activities from simulations. 
 import org.opensim.modeling.*
-repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
+repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -18,14 +18,14 @@ cd(resultsdir)
 %%%%% - remember to only put in the exo conditions that you are looking to see the reductions from
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkexoconditions = {'welknatural'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
-welksubjects = {'welk002','welk003'};
+welksubjects = {'welk007'};
 
 thingstoplot = {'excitation','activation'};
 
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
 
@@ -329,7 +329,7 @@ for subj=1:length(welksubjects)
             grid on;
         end
         print(tempfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_natural'), '.png')),...
+            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_natural', '.png'),...
             '-dpng', '-r500')
         disp('print 1')
         
@@ -348,7 +348,7 @@ for subj=1:length(welksubjects)
             grid on;
         end
         print(tempfig2, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_exo'), '.png')),...
+            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_exo', '.png'),...
             '-dpng', '-r500')
         disp('print 2')
         
@@ -387,7 +387,7 @@ for subj=1:length(welksubjects)
             end
         end
         print(combineexonaturalfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_combined'), '.png')),...
+            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_combined', '.png'),...
             '-dpng', '-r500')
         disp('print combined')
     end
@@ -435,7 +435,7 @@ for i=1:length(excitelabels)-1
 end
 
 print(subjectcombineexonaturalfig1, ...
-    strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', 'excitation_all_subjects_combined.png'),...
+    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined.png'),...
     '-dpng', '-r500')
 disp('print combined')
 
@@ -480,6 +480,6 @@ for i=1:length(activelabels)-1
 end
 
 print(subjectcombineexonaturalfig2, ...
-    strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', 'activation_all_subjects_combined.png'),...
+    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined.png'),...
     '-dpng', '-r500')
 disp('print combined')
