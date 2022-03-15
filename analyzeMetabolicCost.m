@@ -63,7 +63,7 @@ function analyzeMetabolicCost(solution)
     muscles = [];
     labels = table_activefiberforce.getColumnLabels();
     for i=0:labels.size()-1
-        muscles = [muscles, labels.get(i)];
+        muscles = [muscles; {labels.get(i)}];
     end
     numMuscles = length(muscles);
     
@@ -72,11 +72,11 @@ function analyzeMetabolicCost(solution)
     fibervelocity = [];
     fiberlength = [];
     for i=1:length(muscles)
-        temp_activefiberforce = table_activefiberforce.getDependentColumn(muscles(i)).getAsMat();
+        temp_activefiberforce = table_activefiberforce.getDependentColumn(muscles{i}).getAsMat();
         activefiberforce = [activefiberforce, temp_activefiberforce];
-        temp_fibervelocity = table_fibervelocity.getDependentColumn(muscles(i)).getAsMat();
+        temp_fibervelocity = table_fibervelocity.getDependentColumn(muscles{i}).getAsMat();
         fibervelocity = [fibervelocity, temp_fibervelocity];
-        temp_fiberlength = table_fiberlength.getDependentColumn(muscles(i)).getAsMat();
+        temp_fiberlength = table_fiberlength.getDependentColumn(muscles{i}).getAsMat();
         fiberlength = [fiberlength, temp_fiberlength];
     end
     
@@ -156,7 +156,7 @@ function analyzeMetabolicCost(solution)
         templabel = muscmetlabels.get(i);
         tempcolumn = table_musc_metabolics.getDependentColumn(templabel);
         muscMetabolicsMat = [muscMetabolicsMat, tempcolumn.getAsMat()];
-        muscMetabolicsLabels = [muscMetabolicsLabels, templabel(1,1)];
+        muscMetabolicsLabels = [muscMetabolicsLabels, {templabel}];
     end
     
     muscMetabolicsMat;
@@ -171,7 +171,7 @@ function analyzeMetabolicCost(solution)
     % write them all to a file that I can pull later to get differences
     % get everything set up for the table printout
     % met_rows = {'trial'};
-    musc_table = table(avgMuscMetMat.', string(muscMetabolicsLabels));        
+    musc_table = table(avgMuscMetMat, string(muscMetabolicsLabels));        
     writetable(musc_table, 'muscleMetabolicsALL.csv');% ,'WriteRowNames',true);
     
     
