@@ -84,7 +84,7 @@ function torqueStateTrackGRFPrescribe()
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.01); %.01% may regret later
+    track.set_mesh_interval(0.005); %.01% may regret later
 
     % instead of calling solve, call initialize to get pre-configured
     % MocoStudy object, that can be further customized
