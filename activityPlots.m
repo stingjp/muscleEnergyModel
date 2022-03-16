@@ -18,7 +18,7 @@ cd(resultsdir)
 %%%%% - remember to only put in the exo conditions that you are looking to see the reductions from
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkexoconditions = {'welknatural'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
 welksubjects = {'welk007'};
