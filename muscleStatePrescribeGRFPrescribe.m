@@ -186,8 +186,12 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % post processing
     solution.write('muscle_statetrack_grfprescribe_solution.sto');
+    solution.write('muscle_stateprescribe_grfprescribe_solution.sto')
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
+
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls_old.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states_old.sto');
 
 
     % Solve the problem and write the solution to a Storage file.
