@@ -1,7 +1,7 @@
 function [temptable] = tabletrimming(filename)
     
     % get the subject name and gait timings
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
