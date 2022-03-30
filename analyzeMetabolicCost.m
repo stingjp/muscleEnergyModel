@@ -49,14 +49,14 @@ function analyzeMetabolicCost(solution)
     
     % get time
     time_os = table_activefiberforce.getIndependentColumn();
-    time = [];
+    time = zeros(time_os.size(),1);
     for i=0:time_os.size()-1
-        time = [time; time_os.get(i)];
+        time(i+1) = time_os.get(i);
     end
     time_met_os = table_metabolics.getIndependentColumn();
-    time_met = [];
+    time_met = zeros(time_met_os.size(), 1);
     for i=0:time_met_os.size()-1
-        time_met = [time_met; time_met_os.get(i)];
+        time_met(i+1) = time_met_os.get(i);
     end
 
     % get all the muscles
@@ -265,8 +265,8 @@ function analyzeMetabolicCost(solution)
                 metabolics_basal_avg, metabolics_mech_avg,...
                 metabolics_gas_avg, metabolics_sol_avg, metabolics_bifemlh_avg, metabolics_recfem_avg,... 
                 metabolics_swing_avg, metabolics_stance_avg,...
-                model_mass, subjectname,condname,...
-                experimentname,trialname,'RowNames', met_rows);
+                model_mass, {subjectname},{condname},...
+                {experimentname},{trialname},'RowNames', met_rows);
             
     writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
 

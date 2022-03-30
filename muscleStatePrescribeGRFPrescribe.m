@@ -127,7 +127,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set time and intervals
     inverse.set_initial_time(gait_start);
     inverse.set_final_time(gait_end);
-    inverse.set_mesh_interval(0.01); %.05 .02, .01% may need to adjust this
+    inverse.set_mesh_interval(0.05); %.05 .02, .01% may need to adjust this
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
@@ -173,10 +173,10 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-    solver.set_optim_convergence_tolerance(1e-2); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-2); % 1e-2
+    solver.set_optim_convergence_tolerance(1e-4); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
-    solution = study.solve();
+%     solution = study.solve();
 %     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     
     solution.write('muscleguess.sto');
