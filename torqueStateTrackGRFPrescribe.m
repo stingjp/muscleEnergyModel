@@ -69,7 +69,7 @@ function torqueStateTrackGRFPrescribe()
     
 
     % get the subject name and gait timings
-    load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
@@ -122,8 +122,8 @@ function torqueStateTrackGRFPrescribe()
     % solver changes
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-    solver.set_optim_convergence_tolerance(1e-4); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    solver.set_optim_convergence_tolerance(1e-5); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-5); % 1e-2
     
     
     % solve and visualize
