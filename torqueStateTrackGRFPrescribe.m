@@ -46,7 +46,7 @@ function torqueStateTrackGRFPrescribe()
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     
     track.setStatesReference(tableProcessor);
-    track.set_states_global_tracking_weight(1);
+    track.set_states_global_tracking_weight(10);
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
