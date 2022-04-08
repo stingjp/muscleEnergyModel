@@ -134,7 +134,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(30);% 3e-2 30
+    inverse.set_reserves_weight(50);% 3e-2 30
 
     study = inverse.initialize();
     problem = study.updProblem();
