@@ -245,12 +245,17 @@ for subj in subjects:
                 except:
                     pass
                 trialdir = os.path.join(tempdir_2, keys)
-                # targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                
+                targetfile = os.path.join(trialdir, 'analyzeSubject.m') # want to delete if exist
+
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir, 'Geometry')
                 targetRRA = os.path.join(trialdir, 'RRAfiles')
-                # copy(templateanalysis, targetfile)
+                
+                if os.path.exists(targetfile):
+                    os.path.remove(targetfile)
+                
                 print('should do something to delete all the old analyzeSubject files')
                 copy(templategrf_welk, targetfile2)
                 copy(idtemplate, targetfile3)
@@ -310,13 +315,15 @@ for subj in subjects:
                     # print('\nTrial directory exists.')
                     pass
                 trialdir = os.path.join(tempdir_2, keys)
-                # targetfile = os.path.join(trialdir, 'analyzeSubject.m')
+                targetfile = os.path.join(trialdir, 'analyzeSubject.m')
                 targetfile2 = os.path.join(trialdir, 'grf_walk.xml')
                 targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir,'Geometry')
                 # targetbackpack = os.path.join(targetgeometry,'backpack0.vtp')
 
-                # copy(templateanalysis, targetfile)
+                if os.path.exists(targetfile):
+                    os.path.remove(targetfile)
+
                 print('should do something to delete all the old analyzeSubject files')
                 copy(templategrf, targetfile2)
                 copy(idtemplate, targetfile3)
