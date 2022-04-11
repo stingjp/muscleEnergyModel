@@ -1,4 +1,4 @@
-cd 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel'
+cd 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel'
 
 subjectmass = struct();
 subjectmass.wals024 = 63.5;
@@ -14,6 +14,10 @@ subjectmass.welk003 = 64.7;
 subjectmass.welk004 = 93.5;
 
 subjectmass.welk007 = 57.2;
+subjectmass.welk008 = 68.49;
+subjectmass.welk009 = 53.98;
+subjectmass.welk010 = 59.2;
+
 
 subjectmass.jack001 = 79.6;
 subjectmass.jack002 = 79.9;

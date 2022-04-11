@@ -1,4 +1,4 @@
-cd 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel'
+cd 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel'
 
 subjectheight = struct();
 subjectheight.wals024 = 1.740;
@@ -15,6 +15,9 @@ subjectheight.welk004 = 1.905;
 
 
 subjectheight.welk007 = 1.600;
+subjectheight.welk008 = 1.780;
+subjectheight.welk009 = 1.575;
+subjectheight.welk010 = 1.727;
 
 % subjectheight.jack001 = ;
 % subjectheight.jack002 = ;

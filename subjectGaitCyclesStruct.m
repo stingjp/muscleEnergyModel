@@ -1,4 +1,4 @@
-cd 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel'
+cd 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel'
 
 subjectgaitcycles = struct();
 
@@ -317,7 +317,62 @@ subjectgaitcycles.welk007.welknatural.trial03.final = 56.31;
 subjectgaitcycles.welk007.welknatural.trial04.initial = 56.31;
 subjectgaitcycles.welk007.welknatural.trial04.final = 57.016;
 
+% subject 08
+subjectgaitcycles.welk008.welkexo.trial01.initial = 41.961;
+subjectgaitcycles.welk008.welkexo.trial01.final = 42.661;
+subjectgaitcycles.welk008.welkexo.trial02.initial = 42.661;
+subjectgaitcycles.welk008.welkexo.trial02.final = 43.359;
+subjectgaitcycles.welk008.welkexo.trial03.initial = 115.508;
+subjectgaitcycles.welk008.welkexo.trial03.final = 116.221;
+subjectgaitcycles.welk008.welkexo.trial04.initial = 116.221;
+subjectgaitcycles.welk008.welkexo.trial04.final = 116.925;
 
+subjectgaitcycles.welk008.welknatural.trial01.initial = 67.197;
+subjectgaitcycles.welk008.welknatural.trial01.final = 67.965;
+subjectgaitcycles.welk008.welknatural.trial02.initial = 67.965;
+subjectgaitcycles.welk008.welknatural.trial02.final = 68.726;
+subjectgaitcycles.welk008.welknatural.trial03.initial = 113.761;
+subjectgaitcycles.welk008.welknatural.trial03.final = 114.53;
+subjectgaitcycles.welk008.welknatural.trial04.initial = 114.53;
+subjectgaitcycles.welk008.welknatural.trial04.final = 115.299;
+
+% subject 09
+subjectgaitcycles.welk009.welkexo.trial01.initial = 45.963;
+subjectgaitcycles.welk009.welkexo.trial01.final = 46.577;
+subjectgaitcycles.welk009.welkexo.trial02.initial = 46.577;
+subjectgaitcycles.welk009.welkexo.trial02.final = 47.201;
+subjectgaitcycles.welk009.welkexo.trial03.initial = 109.129;
+subjectgaitcycles.welk009.welkexo.trial03.final = 109.754;
+subjectgaitcycles.welk009.welkexo.trial04.initial = 109.754;
+subjectgaitcycles.welk009.welkexo.trial04.final = 110.378;
+
+subjectgaitcycles.welk009.welknatural.trial01.initial = 44.199;
+subjectgaitcycles.welk009.welknatural.trial01.final = 44.908;
+subjectgaitcycles.welk009.welknatural.trial02.initial = 44.908;
+subjectgaitcycles.welk009.welknatural.trial02.final = 45.617;
+subjectgaitcycles.welk009.welknatural.trial03.initial = 100.343;
+subjectgaitcycles.welk009.welknatural.trial03.final = 101.058;
+subjectgaitcycles.welk009.welknatural.trial04.initial = 101.058;
+subjectgaitcycles.welk009.welknatural.trial04.final = 101.77;
+
+% subject 010
+subjectgaitcycles.welk010.welkexo.trial01.initial = 1.222;
+subjectgaitcycles.welk010.welkexo.trial01.final = 1.938;
+subjectgaitcycles.welk010.welkexo.trial02.initial = 1.938;
+subjectgaitcycles.welk010.welkexo.trial02.final = 2.645;
+subjectgaitcycles.welk010.welkexo.trial03.initial = 11.217;
+subjectgaitcycles.welk010.welkexo.trial03.final = 11.915;
+subjectgaitcycles.welk010.welkexo.trial04.initial = 11.915;
+subjectgaitcycles.welk010.welkexo.trial04.final = 12.624;
+
+subjectgaitcycles.welk010.welknatural.trial01.initial = 0.316;
+subjectgaitcycles.welk010.welknatural.trial01.final = 1.082;
+subjectgaitcycles.welk010.welknatural.trial02.initial = 1.082;
+subjectgaitcycles.welk010.welknatural.trial02.final = 1.853;
+subjectgaitcycles.welk010.welknatural.trial03.initial = 6.436;
+subjectgaitcycles.welk010.welknatural.trial03.final = 7.198;
+subjectgaitcycles.welk010.welknatural.trial04.initial = 7.198;
+subjectgaitcycles.welk010.welknatural.trial04.final = 7.963;
 
 
 %% jackson experiments
