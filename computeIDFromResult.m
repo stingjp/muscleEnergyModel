@@ -232,10 +232,10 @@ function [Issues] = computeIDFromResult(Issues, solution)
                     ratio_rms = tempind_rms/tempnetexternal_rms;
                     
                     if ratio_peak > 0.05
-                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
                     if ratio_rms > 0.05
-                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                       Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end 
                 
                 else
@@ -261,10 +261,10 @@ function [Issues] = computeIDFromResult(Issues, solution)
                     ratio_rms = tempind_rms/tempnetexternalcom_rms;
 
                     if ratio_peak > 0.05
-                        Issues = [Issues; [[tempcoordact, java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
                     if ratio_rms > 0.05
-                       Issues = [Issues; [[tempcoordact, java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                       Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end 
 
                 else
@@ -281,10 +281,10 @@ function [Issues] = computeIDFromResult(Issues, solution)
                     ratio_rms = tempind_rms/tempnet_rms;
 
                     if ratio_peak > 0.05
-                        Issues = [Issues; [[java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]]];
+                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
                     if ratio_rms > 0.05
-                       Issues = [Issues; [[java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]]];
+                       Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end
                 end
             end
@@ -301,7 +301,7 @@ function [Issues] = computeIDFromResult(Issues, solution)
             %     end
             % end
             % if instmaxratio > .05
-            %     Issues = [Issues; [tempcoordact, java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
+            %     Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('instant ratio:',string(instmaxratio),'reserve:',string(instind)))]];
             % end
             % get the peak of each and compare:
             % maybe talk to Scott or Jen about this? Nick?
