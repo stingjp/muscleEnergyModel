@@ -7,6 +7,8 @@ function torqueStateTrackGRFPrescribe()
     
     % construct a ModelProcessor and add it to the tool.
     modelProcessor = ModelProcessor("simple_model_all_the_probes_adjusted.osim");
+    
+%     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
