@@ -42,7 +42,6 @@ function [] = computeKinematicDifferences(solution)
     for l = 0:trackNumLabels-1
         templabel = trackLabels.get(l);
         if ~contains(string(templabel), 'jointset') || contains(string(templabel), 'forceset')
-            templabel
             trackremove = [trackremove, {templabel}];
         end
     end
