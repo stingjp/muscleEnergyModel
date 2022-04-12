@@ -56,14 +56,14 @@ function [Issues] = computeIDFromResult(Issues, solution)
     sto.setColumnLabels(properlabels);
     
     statetime = solutionstatestable.getIndependentColumn();
-    starttime = statetime.get(0).doubleValue();
-    endtime = statetime.get(statetime.size()-1).doubleValue();
+    starttime = statetime.get(0); %.doubleValue();
+    endtime = statetime.get(statetime.size()-1); % .doubleValue();
     timelength = statetime.size();
     
     for i=0:timelength-1
         temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
         temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
-        sto.append(statetime.get(i).doubleValue(), temprow2);
+        sto.append(statetime.get(i), temprow2); %.doubleValue(), temprow2);
     end
     
     % idstorage = solution.exportToStatesStorage();
