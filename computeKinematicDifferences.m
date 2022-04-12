@@ -41,7 +41,6 @@ function [] = computeKinematicDifferences(solution)
     % find all the labels that are not jointset
     for l = 0:trackNumLabels-1
         templabel = trackLabels.get(l);
-        templabel
         if ~contains(string(templabel), 'jointset') || contains(string(templabel), 'forceset')
             templabel
             trackremove = [trackremove, {templabel}];
