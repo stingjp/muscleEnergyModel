@@ -1,4 +1,4 @@
-function [] = computeKinematicDifferences(solution)
+function [] = computeKinematicDifferences(solution, trackorprescribe)
     import org.opensim.modeling.*
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 
@@ -7,7 +7,7 @@ function [] = computeKinematicDifferences(solution)
     % solution = MocoTrajectory(solution);
     Time = solution.getTimeMat();
     numColPoints = solution.getNumTimes();
-
+    
     workingdir = pwd;
 
     % try storage instead
@@ -33,7 +33,13 @@ function [] = computeKinematicDifferences(solution)
     
     
     % load the tracked or original states for comparison
-    trackstatestable = TimeSeriesTable('muscle_statetrack_grfprescribe_tracked_states.sto');
+    % get a variable to say which muscle driven one it is
+    if strcmp(trackorprescribe, 'track')
+        trackstatestable = TimeSeriesTable('muscle_statetrack_grfprescribe_tracked_states.sto');
+    elseif strcmp(trackorprescribe, 'prescribe')
+        trackstatestable = TimeSeriesTable('torque_statetrack_grfprescribe_tracked_states.sto');
+    end
+
     trackNumRows = trackstatestable.getNumRows();
     trackLabels = trackstatestable.getColumnLabels();
     trackNumLabels = trackLabels.size();
@@ -59,12 +65,12 @@ function [] = computeKinematicDifferences(solution)
     solutiontime = solutionstatestable.getIndependentColumn();
     solutiontime2 = [];
     for t = 0:solutiontime.size()-1
-        solutiontime2 = [solutiontime2, solutiontime.get(t)]; %.doubleValue()];
+        solutiontime2 = [solutiontime2, solutiontime.get(t).doubleValue()];
     end
     tracktime = trackstatestable.getIndependentColumn();
     tracktime2 = [];
     for t = 0:tracktime.size()-1
-        tracktime2 = [tracktime2, tracktime.get(t)]; %.doubleValue()];
+        tracktime2 = [tracktime2, tracktime.get(t).doubleValue()];
     end
     
     
@@ -196,8 +202,7 @@ function [] = computeKinematicDifferences(solution)
         subject = workingdir(workingdirlength-26:workingdirlength-20);
     end
     
-    
-    temptarget = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg');
+    temptarget = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_',trackorprescribe);
     print(tempfig3, temptarget, '-dpng', '-r500')
     disp('print 1')
 
@@ -240,7 +245,7 @@ function [] = computeKinematicDifferences(solution)
         subject = workingdir(workingdirlength-26:workingdirlength-20);
     end
     
-    temptarget2 = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_diff');
+    temptarget2 = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_diff_',trackorprescribe);
     print(tempfig4, temptarget2, '-dpng', '-r500')
     disp('print 1')
 
