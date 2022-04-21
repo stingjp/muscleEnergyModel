@@ -1,7 +1,7 @@
 % written by Jon Stingel
 % 20211021
 import org.opensim.modeling.*
-repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
+repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -20,11 +20,11 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003'};
+welksubjects = {'welk002','welk003','welk007','welk008','welk009','welk010'};
 
 thingstoplot = {'coordinates'}; % 'probes', 'shortening', 'mechanical', 'activation'
 
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
 
@@ -251,7 +251,7 @@ for thing=1:length(thingstoplot)
         end
         
         print(tempfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
             '-dpng', '-r500')
         disp('print 1')
         
@@ -281,9 +281,9 @@ for thing=1:length(thingstoplot)
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-');%char(markr(subj)))
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj)))
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-');%char(markb(subj)))
         end
         
         templabel2 = strrep(templabel,'_',' ');
@@ -293,17 +293,17 @@ for thing=1:length(thingstoplot)
         ylabel('Coordinate Value [rad/m]')
         grid on;
     end
-    subplot(5,7,i);
-    plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
-    hold on;
-    plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj-1)))
-    plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
-    hold on;
-    plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj)))
-    legend('Subj 1 natural','Subj 1 exo','Subj 2 natural','Subj 2 exo')
+%     subplot(5,7,i);
+%     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
+%     hold on;
+%     plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj-1)))
+%     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
+%     hold on;
+%     plot(welkexostruct.time, mean(muscleplot_exo,2), char(markb(subj)))
+%     legend('Subj 1 natural','Subj 1 exo','Subj 2 natural','Subj 2 exo')
 
     print(tempfig2, ...
-        strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', tempthing, '_combined', '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 end
