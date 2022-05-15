@@ -144,10 +144,10 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(5e-4); % 9e-1 5e-4 2.5e-4
+    excitegoal.setWeight(5e-1); % 9e-1 5e-4 2.5e-4
     % 'activation_effort' goal
-    % activegoal = problem.updGoal('activation_effort');
-    % activegoal.setWeight(5e-4);
+    activegoal = problem.updGoal('activation_effort');
+    activegoal.setWeight(5e-4);
 
     % add metabolic cost goal
    
@@ -225,5 +225,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     analyzeMetabolicCost(solution);
     Issues = computeIDFromResult(Issues, solution);
     analyzeMetabolicCost(solution);
+    trackorprescribe = 'prescribe';
+    computeKinematicDifferences(solution, trackorprescribe);
     
 end
