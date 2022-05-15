@@ -165,7 +165,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(.01); %0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(.001); %0.1 for the new %.5 % been trying .25. previous was .1
 
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
@@ -182,7 +182,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 10); % here 1000
+            effort.setWeightForControl(forcePath, 1); % was using 10 % here 1000
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -213,10 +213,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     solver.set_optim_convergence_tolerance(1e-2); % 1e-2
     solver.set_optim_constraint_tolerance(1e-3); % 1e-2
+%     solver.set_parallel(24);
+    solver.set_parallel(12);
+%     solver.set_parallel(12);
+
     % solver.set_num_mesh_intervals(steps);
 
-    guess = solver.createGuess('bounds'); % bounds or random  
-    guess.write('boundsguess.sto');
+    guessBounds = solver.createGuess('bounds'); % bounds or random
+    guessRandom = solver.createGuess('random');
+    guessBounds.write('boundsguess.sto');
     % solver.setGuess(guess);
 
     randomguess = MocoTrajectory('boundsguess.sto');
@@ -272,6 +277,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % now set the guess for the solver
     solver.setGuess(randomguess);
+%     solver.setGuess(guessBounds);
 
     % solve and visualize
     solution = study.solve();
