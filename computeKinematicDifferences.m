@@ -65,12 +65,12 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     solutiontime = solutionstatestable.getIndependentColumn();
     solutiontime2 = [];
     for t = 0:solutiontime.size()-1
-        solutiontime2 = [solutiontime2, solutiontime.get(t).doubleValue()];
+        solutiontime2 = [solutiontime2, solutiontime.get(t)]; %.doubleValue()];
     end
     tracktime = trackstatestable.getIndependentColumn();
     tracktime2 = [];
     for t = 0:tracktime.size()-1
-        tracktime2 = [tracktime2, tracktime.get(t).doubleValue()];
+        tracktime2 = [tracktime2, tracktime.get(t)]; %.doubleValue()];
     end
     
     
