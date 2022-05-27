@@ -22,10 +22,10 @@ cd(workingdir)
 
 
 if exist('Issues','var')
-    Issues = [Issues; [java.lang.String(subjectname); java.lang.String(strcat(condname,trialname))]];
+    Issues = [Issues; [java.lang.String(subjectname), java.lang.String(strcat(condname,trialname))]];
 else
-    global Issues
-    Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
+%     global Issues
+    Issues = [java.lang.String('coordinate actuator'), java.lang.String('ratio to net')];
 end
 
 % edit experimental data for simulations
@@ -40,15 +40,22 @@ end
 % runRRA_2('./RRAfiles/RRA_Setup_2.xml');
 % close all;
 % torqueMarkerTrackGRFPrescribe();
-close all;
+% close all;
 torqueStateTrackGRFPrescribe();
 close all;
 Issues = muscleStatePrescribeGRFPrescribe(Issues);
 close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 % close all;
-Issues = muscleStateTrackGRFPrescribe(Issues);
-close all;
+
+% Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
+% close all;
+% Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
+% close all;
+% Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
+% close all;
+% Issues = muscleStateTrackGRFPrescribe(Issues);
+% close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
@@ -57,11 +64,12 @@ close all;
 % solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
 
 
-% Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+% Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
 % analyzeMetabolicCost(solution1);
 % Issues = computeIDFromResult(Issues, solution1);
 % analyzeMetabolicCost(solution1);
-% computeKinematicDifferences(solution1);
+% trackorprescribe = 'prescribe';
+% computeKinematicDifferences(solution1, trackorprescribe);
 % Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
 % Issues = computeIDFromResult(Issues, solution2);
 % analyzeMetabolicCostWithEMG(solution2);
