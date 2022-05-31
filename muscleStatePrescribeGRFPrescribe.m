@@ -129,14 +129,14 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set time and intervals
     inverse.set_initial_time(gait_start);
     inverse.set_final_time(gait_end);
-    inverse.set_mesh_interval(0.01); %.05 .02, .01% may need to adjust this
+    inverse.set_mesh_interval(0.02); %.05 .02, .01% may need to adjust this
     % By default, Moco gives an error if the kinematics contains extra columns.
     % Here, we tell Moco to allow (and ignore) those extra columns.
     inverse.set_kinematics_allow_extra_columns(true);
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(50);% 3e-2 30
+    inverse.set_reserves_weight(30);% 3e-2 30
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -144,10 +144,10 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(5e-1); % 9e-1 5e-4 2.5e-4
+    excitegoal.setWeight(5e-4); % 9e-1 5e-4 2.5e-4
     % 'activation_effort' goal
-    activegoal = problem.updGoal('activation_effort');
-    activegoal.setWeight(5e-4);
+    % activegoal = problem.updGoal('activation_effort');
+    % activegoal.setWeight(5e-4);
 
     % add metabolic cost goal
    
@@ -175,8 +175,8 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-    solver.set_optim_convergence_tolerance(1e-4); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    % solver.set_optim_convergence_tolerance(1e-4); % 1e-2
+    % solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
     solution = study.solve();
 %     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
