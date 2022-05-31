@@ -265,10 +265,11 @@ for subj in subjects:
                     pass
                 try:
                     # distutils.dir_util.copy_tree(geometrydir, targetgeometry)
-                    copytree(geometrydir, targetgeometry)
+                    rmtree(targetgeometry)
+                    # copytree(geometrydir, targetgeometry)
                 except:
                     rmtree(targetgeometry)
-                    copytree(geometrydir, targetgeometry)
+                    # copytree(geometrydir, targetgeometry)
                 try:
                     # distutils.dir_util.copy_tree(template_RRA_dir, targetRRA)
                     copytree(template_RRA_dir, targetRRA)
@@ -334,10 +335,11 @@ for subj in subjects:
                     pass
                 try:
                     # distutils.dir_util.copy_tree(geometrydir, targetgeometry)
-                    copytree(geometrydir, targetgeometry)
+                    rmtree(targetgeometry)
+                    # copytree(geometrydir, targetgeometry)
                 except:
                     rmtree(targetgeometry)
-                    copytree(geometrydir, targetgeometry)
+                    # copytree(geometrydir, targetgeometry)
                 try:
                     # distutils.dir_util.copy_tree(template_RRA_dir, targetRRA)
                     copytree(template_RRA_dir, targetRRA)
