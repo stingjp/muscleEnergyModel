@@ -136,7 +136,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(30);% 3e-2 30
+    inverse.set_reserves_weight(300);% 3e-2 30
 
     study = inverse.initialize();
     problem = study.updProblem();
@@ -144,7 +144,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % TODO test
     % excitation_effort goal
     excitegoal = problem.updGoal('excitation_effort');
-    excitegoal.setWeight(5e-4); % 9e-1 5e-4 2.5e-4
+    excitegoal.setWeight(5e-3); % 9e-1 5e-4 2.5e-4
     % 'activation_effort' goal
     % activegoal = problem.updGoal('activation_effort');
     % activegoal.setWeight(5e-4);
@@ -175,8 +175,8 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-    % solver.set_optim_convergence_tolerance(1e-4); % 1e-2
-    % solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    solver.set_optim_convergence_tolerance(0.01); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
     solution = study.solve();
 %     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
