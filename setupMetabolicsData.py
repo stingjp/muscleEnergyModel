@@ -220,7 +220,8 @@ ylim(2,9)
 
 
 ax.set_xticks([1.5, 4.5])
-ax.set_xticklabels(['Stance\n13% Reduction Avg.', 'Swing\n1% Increase Avg.'],fontsize=16)
+# ax.set_xticklabels(['Stance\n13% Reduction Avg.', 'Swing\n1% Increase Avg.'],fontsize=16)
+ax.set_xticklabels(['Stance', 'Swing'],fontsize=16)
 # ax.yticks(fontsize=16)
 # draw temporary red and blue lines and use them to create a legend
 hB, = plot([1,1],'r-')
@@ -235,17 +236,20 @@ colorsjit = ['red', 'blue']
 for i in [1,2]: # ,4,5]:
     y = stances[i-1] # titanic.age[titanic.pclass==i].dropna()
     # Add some random "jitter" to the x-axis
-    x = np.random.normal(i, 0.04, size=len(y))
-    plot(x, y, '.', alpha=0.2, color=colorsjit[i-1])
+    x = np.random.normal(i, 0.0, size=len(y))
+    plot(x, y, '.', alpha=0.8, color='grey') # color=colorsjit[i-1])
 for i in [4,5]:
     y = swings[i-4]
-    x = np.random.normal(i, 0.04, size=len(y))
-    plot(x, y, '.', alpha=0.2, color=colorsjit[i-4])
+    x = np.random.normal(i, 0.0, size=len(y))
+    plot(x, y, '.', alpha=0.8, color='grey') # color=colorsjit[i-4])
 
-plt.text(0.5,8.5,'Mean: %.1f' % np.mean(stances_natural),fontsize=16)
-plt.text(1.75,8.5,'Mean: %.1f' % np.mean(stances_exo),fontsize=16)
-plt.text(3.5,5.5,'Mean: %.1f' % np.mean(swings_natural),fontsize=16)
-plt.text(4.75,5.5,'Mean: %.1f' % np.mean(swings_exo),fontsize=16)
+# figure out how to put in subject lines
+
+
+# plt.text(0.5,8.5,'Mean: %.1f' % np.mean(stances_natural),fontsize=16)
+# plt.text(1.75,8.5,'Mean: %.1f' % np.mean(stances_exo),fontsize=16)
+# plt.text(3.5,5.5,'Mean: %.1f' % np.mean(swings_natural),fontsize=16)
+# plt.text(4.75,5.5,'Mean: %.1f' % np.mean(swings_exo),fontsize=16)
 
 show()
 pdb.set_trace()
