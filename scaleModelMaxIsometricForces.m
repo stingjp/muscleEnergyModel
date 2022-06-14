@@ -32,7 +32,7 @@ function [subj_model] = scaleModelMaxIsometricForces(subjectmass, subjectheight)
 
 
     workdir = pwd;
-    repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\';
+    repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\';
 %     cd(repodir)
 %     % get the subject name and mass
 %     load subjectmass.mat;
@@ -60,7 +60,8 @@ function [subj_model] = scaleModelMaxIsometricForces(subjectmass, subjectheight)
         haveheight = false;
     end
     
-    generic_model = Model('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\Rajagopal_40_abdChg_passiveCalib_hippathsadjust_dembiaoldmarkerset.osim');
+    % get the generic model file. 
+    generic_model = Model('G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\Rajagopal_40_abdChg_passiveCalib_hippathsadjust_welkrecollect.osim');
     subj_model = Model('./subject_updated.osim');
 
 
