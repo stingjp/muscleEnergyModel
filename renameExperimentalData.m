@@ -80,7 +80,9 @@ function renameExperimentalData()
                     % temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
                     temprow = temptable.getRowAtIndex(i).getAsMat();
                     temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
+%                     sto.append(statetime.get(i).doubleValue(), temprow2);
                     sto.append(statetime.get(i), temprow2);
+
                 end
 
                 % save the new version of the file
