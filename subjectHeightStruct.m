@@ -12,12 +12,16 @@ subjectheight.welk001 = 1.750;
 subjectheight.welk002 = 1.765;
 subjectheight.welk003 = 1.760;
 subjectheight.welk004 = 1.905;
-
+subjectheight.welk005 = 1.778;
 
 subjectheight.welk007 = 1.600;
 subjectheight.welk008 = 1.780;
 subjectheight.welk009 = 1.575;
 subjectheight.welk010 = 1.727;
+
+
+subjectheight.welk013 = 1.651;
+
 
 % subjectheight.jack001 = ;
 % subjectheight.jack002 = ;

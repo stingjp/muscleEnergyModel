@@ -12,12 +12,15 @@ subjectmass.welk001 = 74.3;
 subjectmass.welk002 = 66.8;
 subjectmass.welk003 = 64.7;
 subjectmass.welk004 = 93.5;
+subjectmass.welk005 = 73.48;
 
 subjectmass.welk007 = 57.2;
 subjectmass.welk008 = 68.49;
 subjectmass.welk009 = 53.98;
 subjectmass.welk010 = 59.2;
 
+
+subjectmass.welk013 = 57.61;
 
 subjectmass.jack001 = 79.6;
 subjectmass.jack002 = 79.9;
