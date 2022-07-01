@@ -35,7 +35,8 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % load the tracked or original states for comparison
     % get a variable to say which muscle driven one it is
     if strcmp(trackorprescribe, 'track')
-        trackstatestable = TimeSeriesTable('muscle_statetrack_grfprescribe_tracked_states.sto');
+        % trackstatestable = TimeSeriesTable('muscle_statetrack_grfprescribe_tracked_states.sto');
+        trackstatestable = TimeSeriesTable('torque_statetrack_grfprescribe_tracked_states.sto'); 
     elseif strcmp(trackorprescribe, 'prescribe')
         trackstatestable = TimeSeriesTable('torque_statetrack_grfprescribe_tracked_states.sto');
     end
@@ -172,19 +173,31 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % go through all the joints
     for l=0:trackNumLabels-1
         templabel = trackLabels.get(l);
-        temptrack = trackstatestable.getDependentColumn(templabel);
-        temptrack2 = temptrack.getAsMat();
-        tempsolution = solutionstatestable.getDependentColumn(templabel);
-        tempsolution2 = tempsolution.getAsMat();
-        
-        % have to figure out where they overlap
-        tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
-        
-        % okay now what...
+
+        if contains(templabel, 'tx') || contains(templabel, 'ty') || contains(templabel, 'tz')
+            temptrack = trackstatestable.getDependentColumn(templabel);
+            temptrack2 = temptrack.getAsMat();
+            tempsolution = solutionstatestable.getDependentColumn(templabel);
+            tempsolution2 = tempsolution.getAsMat();
+            % have to figure out where they overlap
+            tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
+        else
+            temptrack = trackstatestable.getDependentColumn(templabel);
+            temptrack2 = temptrack.getAsMat();
+            temptrack2 = temptrack2.*180./pi();
+
+            tempsolution = solutionstatestable.getDependentColumn(templabel);
+            tempsolution2 = tempsolution.getAsMat();
+            % have to figure out where they overlap
+            tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
+            tempsolution3 = tempsolution3.*180./pi();
+        end
+
+        % okay plot everything
         subplot(6,8,l+1);
-        plot(temptracktime, temptrack2(timesplit1:timesplit2).*180./pi());
+        plot(temptracktime, temptrack2(timesplit1:timesplit2));
         hold on;
-        plot(temptracktime, tempsolution3.*180./pi());
+        plot(temptracktime, tempsolution3);
         title(string(templabel));
         xlabel('time [s]');
         ylabel('[deg or deg/s]');
