@@ -65,12 +65,14 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     solutiontime = solutionstatestable.getIndependentColumn();
     solutiontime2 = [];
     for t = 0:solutiontime.size()-1
-        solutiontime2 = [solutiontime2, solutiontime.get(t)]; %.doubleValue()];
+%         solutiontime2 = [solutiontime2, solutiontime.get(t).doubleValue()];
+        solutiontime2 = [solutiontime2, solutiontime.get(t)];
     end
     tracktime = trackstatestable.getIndependentColumn();
     tracktime2 = [];
     for t = 0:tracktime.size()-1
-        tracktime2 = [tracktime2, tracktime.get(t)]; %.doubleValue()];
+%         tracktime2 = [tracktime2, tracktime.get(t).doubleValue()];
+        tracktime2 = [tracktime2, tracktime.get(t)];
     end
     
     
@@ -203,6 +205,7 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     end
     
     temptarget = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_',trackorprescribe);
+    delete(strcat(temptarget, '.png'));
     print(tempfig3, temptarget, '-dpng', '-r500')
     disp('print 1')
 
@@ -246,6 +249,7 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     end
     
     temptarget2 = strcat(pwd,'\..\..\..\..\analysis\',subject,'\',string(trial),'_',condition,'_kinematics_differences_adj_deg_diff_',trackorprescribe);
+    delete(strcat(temptarget2, '.png'));
     print(tempfig4, temptarget2, '-dpng', '-r500')
     disp('print 1')
 
