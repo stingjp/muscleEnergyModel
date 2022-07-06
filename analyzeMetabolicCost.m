@@ -266,8 +266,12 @@ function analyzeMetabolicCost(solution)
                 metabolics_gas_avg, metabolics_sol_avg, metabolics_bifemlh_avg, metabolics_recfem_avg,... 
                 metabolics_swing_avg, metabolics_stance_avg,...
                 model_mass, {subjectname},{condname},...
-                {experimentname},{trialname},'RowNames', met_rows);
-            
+                {experimentname},{trialname});% 'RowNames', met_rows);
+    met_table.Properties.VariableNames{'Var13'} = 'subjectname';
+    met_table.Properties.VariableNames{'Var14'} = 'condname';
+    met_table.Properties.VariableNames{'Var15'} = 'experimentname';
+    met_table.Properties.VariableNames{'Var16'} = 'trialname';
+    
     writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
 
 end
