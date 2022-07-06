@@ -25,7 +25,7 @@ targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\'
 
 ## set up all the subject conditions and trials that we will need
 subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
-            'welk001','weld002','welk003','welk004',
+            'welk001','weld002','welk003','welk004','welk005','welk007','welk008','welk009','welk010','welk011','welk013',
             'jack001','jack002','jack003','jack004','jack005','jack006','jack007','jack008',
             'demb005','demb007','demb009','demb010','demb011','demb012','demb014',
             'sild001','sild001b','sild002','sild003','sild004','sild005','sild007_standing','sild007',
@@ -108,6 +108,70 @@ welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
               'welk004welknaturalexo':['trial01','trial02','trial03','trial04'],
               'welk004welkexonatural':['trial01','trial02','trial03','trial04'],
               'welk004welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk005welknatural':['trial01','trial02','trial03','trial04'],
+              'welk005welkexo':['trial01','trial02','trial03','trial04'],
+              'welk005welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk005welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk005welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk005welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk005welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk005welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk007welknatural':['trial01','trial02','trial03','trial04'],
+              'welk007welkexo':['trial01','trial02','trial03','trial04'],
+              'welk007welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk007welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk007welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk007welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk007welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk007welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk008welknatural':['trial01','trial02','trial03','trial04'],
+              'welk008welkexo':['trial01','trial02','trial03','trial04'],
+              'welk008welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk008welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk008welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk008welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk008welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk008welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk009welknatural':['trial01','trial02','trial03','trial04'],
+              'welk009welkexo':['trial01','trial02','trial03','trial04'],
+              'welk009welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk009welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk009welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk009welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk009welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk009welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk010welknatural':['trial01','trial02','trial03','trial04'],
+              'welk010welkexo':['trial01','trial02','trial03','trial04'],
+              'welk010welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk010welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk010welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk010welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk010welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk010welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk011welknatural':['trial01','trial02','trial03','trial04'],
+              'welk011welkexo':['trial01','trial02','trial03','trial04'],
+              'welk011welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk011welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk011welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk011welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk011welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk011welkexofast':['trial01','trial02','trial03','trial04'],
+
+              'welk013welknatural':['trial01','trial02','trial03','trial04'],
+              'welk013welkexo':['trial01','trial02','trial03','trial04'],
+              'welk013welknaturalnatural':['trial01','trial02','trial03','trial04'],
+              'welk013welkexoexo':['trial01','trial02','trial03','trial04'],
+              'welk013welknaturalslow':['trial01','trial02','trial03','trial04'],
+              'welk013welknaturalexo':['trial01','trial02','trial03','trial04'],
+              'welk013welkexonatural':['trial01','trial02','trial03','trial04'],
+              'welk013welkexofast':['trial01','trial02','trial03','trial04']
+
               }
 
 
@@ -116,16 +180,15 @@ welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
 os.chdir(resultsbasedir)
 
 
-## loop through all the directories
+## loop through all the directorie7
 # TODO loop through everything and actually gather data!
 # going for a datastructure
 
 
 #### 
 # scratch space overwrite for subsets of subj and conditions
-subjects = ['welk002','welk003']
-welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']
-
+subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
+welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
 
 
 
@@ -134,7 +197,7 @@ welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']
 for subj in subjects:
     if subj[0:4] == 'wals':
         # make the directories
-        tempdir = os.path.join(resultsbasedir,subj) 
+        tempdir = os.path.join(resultsbasedir,subj)
         # TODO: copy and edit for these subjects
     
     elif subj[0:4] == 'welk':
