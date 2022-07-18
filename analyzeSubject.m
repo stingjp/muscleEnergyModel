@@ -29,7 +29,7 @@ else
 end
 
 % edit experimental data for simulations
-% renameExperimentalData();
+renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
@@ -44,18 +44,18 @@ end
 torqueStateTrackGRFPrescribe();
 close all;
 Issues = muscleStatePrescribeGRFPrescribe(Issues);
-close all;
+% close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 % close all;
 
-% Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
+Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues);
-% close all;
+close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
@@ -63,7 +63,7 @@ close all;
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 % solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
 
-
+% 
 % Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
 % analyzeMetabolicCost(solution1);
 % Issues = computeIDFromResult(Issues, solution1);
