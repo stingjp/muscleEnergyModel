@@ -20,7 +20,8 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk007','welk008','welk009','welk010'};
+% welksubjects = {'welk001','welk002','welk003','welk004'};
+welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
 
 thingstoplot = {'externalforces'}; % 'probes', 'shortening', 'mechanical', 'activation'
 
@@ -343,7 +344,7 @@ for thing=1:length(thingstoplot)
 %     legend('Subj 1 natural','Subj 1 exo','Subj 2 natural','Subj 2 exo')
 
     print(tempfig2, ...
-        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined', '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_newsubjs', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 end

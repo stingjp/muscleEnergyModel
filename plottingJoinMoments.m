@@ -1,7 +1,7 @@
 % written by Jon Stingel
 % 20211022
 import org.opensim.modeling.*
-repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
+repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -20,13 +20,13 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003'};
+welksubjects = {'welk001','welk002','welk003','welk004'};
 
 thingstoplot = {'netjointmoments'}; % 'probes', 'shortening', 'mechanical', 'activation'
 
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectmass.mat';
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectmass.mat';
 
 
 % loop through each of the things we want to plot
@@ -141,10 +141,10 @@ for thing=1:length(thingstoplot)
         end
 
 
+        newlabels = fields(welkexostruct);
         
 %         % okay now to plot etc. 
 %         
-%         newlabels = fields(welkexostruct);
 %         % need to redo the labels
 %         tempfig = figure('Position',[1,1,1920,1080]);
 %         % do more stuff
@@ -206,6 +206,7 @@ for thing=1:length(thingstoplot)
         for subj=1:length(welksubjects)
             subject = char(welksubjects(subj));
             model_mass = subjectmass.(genvarname(subject));
+            disp(model_mass)
             
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
@@ -240,7 +241,7 @@ for thing=1:length(thingstoplot)
     legend('Exotendon','Natural') 
 
     print(tempfig2, ...
-        strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', tempthing, '_combined_subjectAVG', '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_subjectAVG', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 end
