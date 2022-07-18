@@ -20,7 +20,7 @@ cd(resultsdir)
 welkexoconditions = {'welknatural'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk001','welk002','welk003','welk004'};
+welksubjects = {'welk005'};
 
 thingstoplot = {'PassiveFiberForce','ActiveFiberForce'};
 
