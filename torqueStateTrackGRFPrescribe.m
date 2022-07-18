@@ -57,16 +57,19 @@ function torqueStateTrackGRFPrescribe()
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-    coordinateweights = MocoWeightSet();
+%     coordinateweights = MocoWeightSet();
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
-    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
-    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    track.set_states_weight_set(coordinateweights);
+%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 0));
+%     
+%     track.set_states_weight_set(coordinateweights);
     
     
 
@@ -86,7 +89,7 @@ function torqueStateTrackGRFPrescribe()
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.005); %.01% may regret later
+    track.set_mesh_interval(0.01); %.01% may regret later
 
     % instead of calling solve, call initialize to get pre-configured
     % MocoStudy object, that can be further customized
@@ -116,16 +119,16 @@ function torqueStateTrackGRFPrescribe()
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
         end
-        if contains(string(forcePath), 'hip_rotation')
-           effort.setWeightForControl(forcePath, 1e4);
-        end
+        % if contains(string(forcePath), 'hip_rotation')
+        %    effort.setWeightForControl(forcePath, 1e4);
+        % end
     end
     
     % solver changes
-    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
-    solver.resetProblem(problem);
-    solver.set_optim_convergence_tolerance(1e-5); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-5); % 1e-2
+%     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+%     solver.resetProblem(problem);
+%     solver.set_optim_convergence_tolerance(1e-5); % 1e-2
+%     solver.set_optim_constraint_tolerance(1e-5); % 1e-2
     
     
     % solve and visualize
