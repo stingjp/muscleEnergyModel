@@ -1,4 +1,4 @@
-% written by Jon Stingel
+I% written by Jon Stingel
 % 20211021
 import org.opensim.modeling.*
 repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
@@ -20,14 +20,9 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk007','welk008','welk009','welk010'};
-
+welksubjects = {'welk001','welk002','welk003','welk004','welk005','welk007','welk008','welk009','welk010','welk013'};
 thingstoplot = {'coordinates'}; % 'probes', 'shortening', 'mechanical', 'activation'
-
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
-
-
-
 
 % loop through each of the things we want to plot
 for thing=1:length(thingstoplot)
@@ -64,18 +59,47 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
+                % tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
+                % tempfile = strcat(trialdir, '/torque_statetrack_grfprescribe_tracked_states','.sto');
+                tempfile = strcat(trialdir, '/coordinates_updated.mot');
+                
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
-                times = zeros(temptime.size(),1);
-                for i=0:temptime.size()-1
-                    times(i+1) = temptime.get(i);
+
+                gait_start = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).initial;
+                gait_end = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).final;
+                
+                time = [];
+                for t=0:temptime.size()-1
+                    tempix = temptime.get(t);
+                    if tempix >= gait_start && tempix <= gait_end
+                        time = [time, tempix];
+                    end
                 end
-                timespercent = (times - times(1)) / (times(end) - times(1)) *100;
+                        
+%                 times = zeros(temptime.size(),1);
+%                 for i=0:temptime.size()-1
+%                     times(i+1) = temptime.get(i);
+%                 end
+%                 timespercent = (times - times(1)) ./ (times(end) - times(1)) .*100;
+                
+                timespercent = (time - time(1))./(time(end)-time(1)).*100;
                 timespercent101 = [0:1:100]';
                 welkexostruct.time = timespercent101;
 
-                
+                % grab the start and finish index for the rows in the
+                % table
+                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
+                    row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
+                else
+                    row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
+                end
+                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
+                    row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
+                else
+                    row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
+                end
+
                 % now for each of the things
                 numCols = tempTimeSeriesTable.getNumColumns(); % including time
                 labels = tempTimeSeriesTable.getColumnLabels();            
@@ -83,6 +107,24 @@ for thing=1:length(thingstoplot)
                 for i=0:labels.size()-1
                     coord = char(labels.get(i));
                     
+                   
+                    % we want it all
+                    % tempsplit = split(coord,'/');
+                    % coordshort = string(tempsplit(4));
+                    tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(coord)).getAsMat();
+                    % now take the rows that we want
+                    col = tempcol(row_idx_start:row_idx_end);
+
+                    tempcolinterp = interp1(timespercent, col, timespercent101);
+                    if ~isfield(welkexostruct, coord)
+                        welkexostruct.(genvarname(coord)) = [];
+                    end
+                    welkexostruct.(genvarname(coord)) = [welkexostruct.(genvarname(coord)), tempcolinterp];
+
+                    
+                    
+                    
+                    %{
                     % need to screen only the things that we want
                     if contains(char(coord), 'value') % 'value' denotes a coordinate value
                         tempsplit = split(coord,'/');
@@ -126,10 +168,11 @@ for thing=1:length(thingstoplot)
                     %         welkexostruct.(genvarname(muscle)) = [];
                     %     end
                     %     welkexostruct.(genvarname(muscle)) = [welkexostruct.(genvarname(muscle)), tempcolinterp];
+                    %}
                     end
                 end
             end
-        end
+        % end
         % done with the exo conditions
         
         % loop through conditions - now for the natural
@@ -148,9 +191,45 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
+%                 tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
+                tempfile = strcat(trialdir, '/coordinates_updated.mot');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
+                
+                gait_start = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).initial;
+                gait_end = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).final;
+                
+                time = [];
+                for t=0:temptime.size()-1
+                    tempix = temptime.get(t);
+                    if tempix >= gait_start && tempix <= gait_end
+                        time = [time, tempix];
+                    end
+                end
+                        
+%                 times = zeros(temptime.size(),1);
+%                 for i=0:temptime.size()-1
+%                     times(i+1) = temptime.get(i);
+%                 end
+%                 timespercent = (times - times(1)) ./ (times(end) - times(1)) .*100;
+                
+                timespercent = (time - time(1))./(time(end)-time(1)).*100;
+                timespercent101 = [0:1:100]';
+                welknaturalstruct.time = timespercent101;
+
+                % grab the start and finish index for the rows in the
+                % table
+                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
+                    row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
+                else
+                    row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
+                end
+                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
+                    row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
+                else
+                    row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
+                end
+                %{
                 times = zeros(temptime.size(),1);
                 for i=0:temptime.size()-1
                     times(i+1) = temptime.get(i);
@@ -158,7 +237,7 @@ for thing=1:length(thingstoplot)
                 timespercent = (times - times(1)) / (times(end) - times(1)) *100;
                 timespercent101 = [0:1:100]';
                 welknaturalstruct.time = timespercent101;
-
+                %}
                 % now for each of the things
                 numCols = tempTimeSeriesTable.getNumColumns(); % including time
                 labels = tempTimeSeriesTable.getColumnLabels();            
@@ -166,7 +245,18 @@ for thing=1:length(thingstoplot)
                 
                 for i=0:labels.size()-1
                     coord = char(labels.get(i));
-                    
+                        
+                        % we also want the whole body measure
+                    tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(coord)).getAsMat();
+                    col = tempcol(row_idx_start:row_idx_end);
+                    tempcolinterp = interp1(timespercent, col, timespercent101);
+                    if ~isfield(welknaturalstruct, coord)                         
+                        welknaturalstruct.(genvarname(coord)) = [];
+                    end
+                    welknaturalstruct.(genvarname(coord)) = [welknaturalstruct.(genvarname(coord)), tempcolinterp];
+                   
+                   
+                    %{
                     % need to screen only the things that we want
                     if contains(char(coord), 'value')
                         tempsplit = split(coord,'/');
@@ -212,7 +302,9 @@ for thing=1:length(thingstoplot)
                     %         welknaturalstruct.(genvarname(muscle)) = [];
                     %     end
                         % welknaturalstruct.(genvarname(muscle)) = [welknaturalstruct.(genvarname(muscle)), tempcolinterp];
+                    
                     end
+                    %}
                 end
             end
         end
@@ -227,7 +319,7 @@ for thing=1:length(thingstoplot)
         % do more stuff
         % averaging and whatnot
         for i=2:length(newlabels)
-            subplot(5,7,i-1);
+            subplot(6,7,i-1);
             templabel = newlabels(i);
             templabel = char(templabel);
             % plot each of the gait cycles
@@ -272,7 +364,7 @@ for thing=1:length(thingstoplot)
     tempfig2 = figure('Position',[1,1,1920,1080]);
         % then loop through the muscles inside each subject
     for i=2:length(newlabels)
-        subplot(5,7,i-1);
+        subplot(6,7,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         % loop through the subjects
