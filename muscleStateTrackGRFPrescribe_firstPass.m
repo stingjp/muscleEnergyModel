@@ -69,25 +69,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     modelProcessorDC.append(ModOpFiberDampingDGF(0.01));
     % modelProcessorDC.append(ModOpAddReserves(1, 2.5, true));
     modelProcessorDC.append(ModOpTendonComplianceDynamicsModeDGF('implicit'));
-
-    % need to add the bhargava metabolics probe for cost function
-    % bhargmet = Bhargava2004SmoothedMuscleMetabolics();
-    % bhargmet.setName("simmetabolics");
-    % bhargmet.set_use_smoothing(true);
-    % modelmet = modelProcessorDC.process();
-    % modelmetMuscles = modelmet.getMuscles();
-    % nummodelmetMuscles = modelmetMuscles.getSize();
-    % for m = 0:nummodelmetMuscles-1
-    %     musc = modelmetMuscles.get(m);
-    %     muscName = musc.getName();
-    %     muscName = char(muscName);
-    %     bhargmet.addMuscle(muscName, musc);
-    % end
-    
-    % modelmet.addComponent(bhargmet);
-    % modelmet.finalizeConnections();
-    % modelProcessorDC2 = ModelProcessor(modelmet);
-    % inverse.setModel(modelProcessorDC2);
     
     track.setModel(modelProcessorDC)
 
@@ -97,7 +78,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
     tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot'));
-%     tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto')); 
+%     tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto'));
+%     tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
     tableProcessor.append(TabOpLowPassFilter(6));
    
 
@@ -119,16 +101,21 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
-%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1000000));
-%     track.set_states_weight_set(coordinateweights);
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1000000));
+    
+%     coordinateweights.cloneAndAppend(MocoWeight('lumber_extension', 1000));
+%     coordinateweights.cloneAndAppend(MocoWeight('lumber_bending', 1000));
+%     coordinateweights.cloneAndAppend(MocoWeight('lumber_rotation', 1000));
+    
+    track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
     load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
@@ -146,7 +133,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.05); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -155,18 +142,20 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem = study.updProblem();
 
     % set a constraint so that the model doesnt overlap feet
-    % distance = MocoFrameDistanceConstraint();
-    % distance.setName('minimum_distance');
-    % distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
-    % distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-    % distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-    % distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
-    % problem.addPathConstraint(distance);
+%     distance = MocoFrameDistanceConstraint();
+%     distance.setName('minimum_distance');
+%     distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
+%     distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+%     distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+%     distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
+%     problem.addPathConstraint(distance);
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(.001); %0.1 for the new %.5 % been trying .25. previous was .1
-
+    effort.setWeight(0.5); % 0.1 for the new %.5 % been trying .25. previous was .1
+    % whatever the weight was before the alienware did really well withit
+    % for 007 natural1
+    
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
     problem.addGoal(initactivationgoal);
@@ -174,7 +163,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % put large weight on the pelvis CoordinateActuators, which act as the 
     % residual, or 'hand-of-god' forces which we would like to keep small
-    
     model = modelProcessorDC.process();
     model.print('post_simple_model_all_the_probes_muscletrack.osim');
     model.initSystem();
@@ -182,46 +170,37 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 1); % was using 10 % here 1000
+            effort.setWeightForControl(forcePath, 10); % here 1000
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
+%         elseif contains(string(forcePath), 'reserve')
+%             effort.setWeightForControl(forcePath, 10000);
         end
 %         if contains(string(forcePath), 'hip_rotation')
 %            effort.setWeightForControl(forcePath, 10);
 %         end
     end
     
-
-    % track.set_guess_file('muscle_stateprescribe_grfprescribe_solution.sto');
-    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    % solver.setGuess(twosteptraj);
-    % solver.setGuessFile('muscle_stateprescribe_grfprescribe_solution.sto');
-    % solver.set_optim_convergence_tolerance(1e-4);
-
-
-    % solver = study.initCasADiSolver();
-    % guess = solver.createGuess('bounds'); % bounds or random
-    % solver.setGuess(guess);
-
-%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    
+    % set our initial guesses
     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
-    
-    solver.set_optim_convergence_tolerance(1e-2); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-3); % 1e-2
+
+
+%     solver.set_optim_convergence_tolerance(10); % 1e-2
+%     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
 %     solver.set_parallel(24);
-    solver.set_parallel(12);
+%     solver.set_parallel(8);
 %     solver.set_parallel(12);
-
     % solver.set_num_mesh_intervals(steps);
-
-    guessBounds = solver.createGuess('bounds'); % bounds or random
-    guessRandom = solver.createGuess('random');
-    guessBounds.write('boundsguess.sto');
+    
+    guess = solver.createGuess('bounds'); % bounds or random  
+    guess.write('boundsguess.sto');
     % solver.setGuess(guess);
 
     randomguess = MocoTrajectory('boundsguess.sto');
@@ -277,7 +256,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % now set the guess for the solver
     solver.setGuess(randomguess);
-%     solver.setGuess(guessBounds);
 
     % solve and visualize
     solution = study.solve();
@@ -310,9 +288,53 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution);
-    Issues = computeIDFromResult(Issues, solution);
-    analyzeMetabolicCost(solution);
-    trackorprescribe = 'track';
-    computeKinematicDifferences(solution, trackorprescribe);
+    % Issues = computeIDFromResult(Issues, solution);
+    % analyzeMetabolicCost(solution);
+    % trackorprescribe = 'track';
+    % computeKinematicDifferences(solution, trackorprescribe);
 
-end
+% end
+
+
+
+
+%% testing reporting stuff
+% 
+% 
+% report = osimMocoTrajectoryReport(model, ...
+%                                     'muscle_stateprescribe_grfprescribe_solution.sto', ...
+%                                     'bilateral', true, ...
+%                                     'refFile',{'../../welkexo/trial01/muscleprescribe_states.sto'});
+% reportFilePath = report.generate();
+% pdfFilePath = reportFilePath(1:end-2);
+% pdfFilePath = strcat(pdfFilePath, 'pdf');
+% ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
+%         'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
+%         'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
+%         'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
+%     
+%     
+%     
+%     
+% % try with coordinate data
+% report = osimMocoTrajectoryReport(model, ...
+%                                     'coordinates_updated.mot', ...
+%                                     'refFile',{'../../welkexo/trial04/coordinates_updated.mot'});
+% reportFilePath = report.generate();
+% pdfFilePath = reportFilePath(1:end-2);
+% 
+% 
+% 
+% 
+% 
+% 
+% %% new try
+% report = osimMocoTrajectoryReport(model, ...
+%         'muscle_stateprescribe_grfprescribe_solution.sto', ...
+%         'outputFilepath', 'testreport.pdf', ...
+%         'bilateral', true, ...
+%         'refFiles', {'../../welkexo/trial01/muscle_stateprescribe_grfprescribe_solution.sto', ...
+%                      'muscleprescribe_controls.sto'});
+% % The report is saved to the working directory.
+% reportFilepath = report.generate();
+% open(reportFilepath);
