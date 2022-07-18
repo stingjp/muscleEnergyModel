@@ -66,14 +66,14 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     solutiontime = solutionstatestable.getIndependentColumn();
     solutiontime2 = [];
     for t = 0:solutiontime.size()-1
-%         solutiontime2 = [solutiontime2, solutiontime.get(t).doubleValue()];
-        solutiontime2 = [solutiontime2, solutiontime.get(t)];
+        solutiontime2 = [solutiontime2, solutiontime.get(t).doubleValue()];
+        % solutiontime2 = [solutiontime2, solutiontime.get(t)];
     end
     tracktime = trackstatestable.getIndependentColumn();
     tracktime2 = [];
     for t = 0:tracktime.size()-1
-%         tracktime2 = [tracktime2, tracktime.get(t).doubleValue()];
-        tracktime2 = [tracktime2, tracktime.get(t)];
+        tracktime2 = [tracktime2, tracktime.get(t).doubleValue()];
+        % tracktime2 = [tracktime2, tracktime.get(t)];
     end
     
     
@@ -173,7 +173,7 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % go through all the joints
     for l=0:trackNumLabels-1
         templabel = trackLabels.get(l);
-
+        templabel = string(templabel); % like double - idk why
         if contains(templabel, 'tx') || contains(templabel, 'ty') || contains(templabel, 'tz')
             temptrack = trackstatestable.getDependentColumn(templabel);
             temptrack2 = temptrack.getAsMat();
