@@ -27,7 +27,7 @@ thingstoplot = {'externalforces'}; % 'probes', 'shortening', 'mechanical', 'acti
 
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
-
+tag = 'muscleprescribe'
 
 
 % loop through each of the things we want to plot
@@ -48,7 +48,7 @@ for thing=1:length(thingstoplot)
         welknaturalstruct = struct();
         welkexostruct = struct();
     
-
+        
         % loop through conditions - exo first
         for cond=1:length(welkexoconditions)
            condition = char(welkexoconditions(cond));
@@ -65,7 +65,7 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, '/analyzemuscles_ForceReporter_forces', '.sto');
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ForceReporter_forces', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -140,6 +140,7 @@ for thing=1:length(thingstoplot)
             end
         end
         % done with the exo conditions
+
         
         % loop through conditions - now for the natural
         for cond=1:length(welknaturalconditions)
@@ -157,7 +158,7 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, '/analyzemuscles_ForceReporter_forces', '.sto');
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ForceReporter_forces', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -252,20 +253,20 @@ for thing=1:length(thingstoplot)
                 % muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
                 % plot(welknaturalstruct.time, muscleplot_nat, 'r:')
-                plot(welkexostruct.time, muscleplot_exo, 'b:')
+                % plot(welkexostruct.time, muscleplot_exo, 'b:')
                 % plot the subject average
                 % plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
                 hold on
-                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
             else
                 muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
                 plot(welknaturalstruct.time, muscleplot_nat, 'r:')
                 hold on;
-                plot(welkexostruct.time, muscleplot_exo, 'b:')
+                % plot(welkexostruct.time, muscleplot_exo, 'b:')
                 % plot the subject average
                 plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
-                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
             end
             
             ylabel('Force [N]');
@@ -279,9 +280,9 @@ for thing=1:length(thingstoplot)
             grid on;
         end
         
-        print(tempfig, ...
-            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
-            '-dpng', '-r500')
+        % print(tempfig, ...
+        %     strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+        %     '-dpng', '-r500')
         disp('print 1')
         
 
@@ -314,7 +315,7 @@ for thing=1:length(thingstoplot)
                 % have all of them, want the average plotted for each subject
                 % plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
                 % hold on;
-                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b--'); %char(markb(subj)))
+                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b--'); %char(markb(subj)))
                 hold on
             else
 
@@ -323,7 +324,7 @@ for thing=1:length(thingstoplot)
                 % have all of them, want the average plotted for each subject
                 plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-'); %char(markr(subj)))
                 hold on;
-                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); %char(markb(subj)))
+                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); %char(markb(subj)))
             end
         end
         
@@ -337,14 +338,14 @@ for thing=1:length(thingstoplot)
     subplot(4,5,i);
     plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-'); %char(markr(subj-1)))
     hold on;
-    plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); %char(markb(subj-1)))
+    % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); %char(markb(subj-1)))
     plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-'); %char(markr(subj)))
     hold on;
-    plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); % char(markb(subj)))
+    % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); % char(markb(subj)))
 %     legend('Subj 1 natural','Subj 1 exo','Subj 2 natural','Subj 2 exo')
 
-    print(tempfig2, ...
-        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_newsubjs', '.png'),...
-        '-dpng', '-r500')
+    % print(tempfig2, ...
+    %     strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_newsubjs', '.png'),...
+    %     '-dpng', '-r500')
     disp('print 2')
 end
