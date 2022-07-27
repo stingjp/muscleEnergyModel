@@ -1,4 +1,4 @@
-function [Issues] = muscleStateTrackGRFPrescribe(Issues)
+function [Issues] = muscleStateTrackGRFTrack(Issues)
     import org.opensim.modeling.*;
     
     % create and name an instance of the MocoTrack tool
@@ -9,8 +9,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
     modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
 
-%     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
-    modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
+    % modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+    % modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
@@ -88,7 +88,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.setStatesReference(tableProcessor);
     
 %     track.set_kinematics_allow_extra_columns(true);
-    track.set_states_global_tracking_weight(1000); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
+    track.set_states_global_tracking_weight(10); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -133,7 +133,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.08); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.05); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -152,7 +152,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % adding in contact
     % Track the right and left vertical and fore-aft ground reaction forces.
-    contactTracking = MocoContactTrackingGoal('contact', 1);
+    contactTracking = MocoContactTrackingGoal('contact', .01);
     contactTracking.setExternalLoadsFile('grf_walk.xml');
     forceNamesRightFoot = StdVectorString();
     % forceNamesRightFoot.add('contactHeel_r');
@@ -186,13 +186,13 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(1); % 0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(.01); % 0.1 for the new %.5 % been trying .25. previous was .1
     % whatever the weight was before the alienware did really well withit
     % for 007 natural1
     
-    initactivationgoal = MocoInitialActivationGoal('init_activation');
-    initactivationgoal.setWeight(10);
-    problem.addGoal(initactivationgoal);
+%     initactivationgoal = MocoInitialActivationGoal('init_activation');
+%     initactivationgoal.setWeight(10);
+%     problem.addGoal(initactivationgoal);
 
 
     % put large weight on the pelvis CoordinateActuators, which act as the 
@@ -218,8 +218,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % set our initial guesses
-    twosteptraj = MocoTrajectory('muscle_statetrack_grftrack_solution.sto');
-%     twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % twosteptraj = MocoTrajectory('muscle_statetrack_grftrack_solution.sto');
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
@@ -293,14 +293,14 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % solve and visualize
     solution = study.solve();
-%     solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % solution = MocoTrajectory('muscle_statetrack_grftrack_solution.sto');
     % study.visualize(solution);
     % generate a report and save
     solution.write('muscle_statetrack_grftrack_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'grftrack_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'grftrack_states.sto');
 
 
     % Extract ground reaction forces
@@ -322,7 +322,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     contact_l.add('SmoothSphereHalfSpaceForce_s3_l');
     contact_l.add('SmoothSphereHalfSpaceForce_s4_l');
     contact_l.add('SmoothSphereHalfSpaceForce_s5_l');
-    contact_l.add('SmoothSphereHalfSpaceForce_s6_l')
+    contact_l.add('SmoothSphereHalfSpaceForce_s6_l');
 
     externalForcesTableFlat = opensimMoco.createExternalLoadsTableForGait(model, ...
                              solution,contact_r,contact_l);
@@ -347,55 +347,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % post analysis and validation
     
-    % Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
-    % analyzeMetabolicCost(solution);
+    Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
+    analyzeMetabolicCost(solution, 'grftrack');
     % Issues = computeIDFromResult(Issues, solution);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);
 
 % end
-
-
-
-
-%% testing reporting stuff
-% 
-% 
-% report = osimMocoTrajectoryReport(model, ...
-%                                     'muscle_stateprescribe_grfprescribe_solution.sto', ...
-%                                     'bilateral', true, ...
-%                                     'refFile',{'../../welkexo/trial01/muscleprescribe_states.sto'});
-% reportFilePath = report.generate();
-% pdfFilePath = reportFilePath(1:end-2);
-% pdfFilePath = strcat(pdfFilePath, 'pdf');
-% ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-%         'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
-%         'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
-%         'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
-%     
-%     
-%     
-%     
-% % try with coordinate data
-% report = osimMocoTrajectoryReport(model, ...
-%                                     'coordinates_updated.mot', ...
-%                                     'refFile',{'../../welkexo/trial04/coordinates_updated.mot'});
-% reportFilePath = report.generate();
-% pdfFilePath = reportFilePath(1:end-2);
-% 
-% 
-% 
-% 
-% 
-% 
-% %% new try
-% report = osimMocoTrajectoryReport(model, ...
-%         'muscle_stateprescribe_grfprescribe_solution.sto', ...
-%         'outputFilepath', 'testreport.pdf', ...
-%         'bilateral', true, ...
-%         'refFiles', {'../../welkexo/trial01/muscle_stateprescribe_grfprescribe_solution.sto', ...
-%                      'muscleprescribe_controls.sto'});
-% % The report is saved to the working directory.
-% reportFilepath = report.generate();
-% open(reportFilepath);
