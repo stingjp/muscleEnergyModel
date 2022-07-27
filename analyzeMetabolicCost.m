@@ -1,4 +1,4 @@
-function analyzeMetabolicCost(solution)
+function analyzeMetabolicCost(solution, tag)
     import org.opensim.modeling.*
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23,29 +23,29 @@ function analyzeMetabolicCost(solution)
     
     % full moco method
     analyze = AnalyzeTool();
-    analyze.setName("analyzemuscles");
+    analyze.setName(strcat("analyzemuscles",tag));
     analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
-    analyze.setStatesFileName("muscleprescribe_states.sto");
+    analyze.setStatesFileName(strcat(tag, "_states.sto"));
+    analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
-    analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
     analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
     analyze.updAnalysisSet().cloneAndAppend(BodyKinematics());
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
-    analyze.print("testing_AnalyzeTool_setup.xml");
+    analyze.print(strcat(tag,"_AnalyzeTool_setup.xml"));
     % Run the analysis.
-    analyze = AnalyzeTool("testing_AnalyzeTool_setup.xml");
+    analyze = AnalyzeTool(strcat(tag,"_AnalyzeTool_setup.xml"));
     analyze.run();
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % tables
-    table_activefiberforce = TimeSeriesTable("analyzemuscles_MuscleAnalysis_ActiveFiberForce.sto");
-    table_fibervelocity = TimeSeriesTable("analyzemuscles_MuscleAnalysis_FiberVelocity.sto");
-    table_metabolics = TimeSeriesTable('analyzemuscles_ProbeReporter_probes.sto');
-    table_lMT = TimeSeriesTable('analyzemuscles_MuscleAnalysis_Length.sto');
-    table_fiberlength = TimeSeriesTable('analyzemuscles_MuscleAnalysis_FiberLength.sto');
+    table_activefiberforce = TimeSeriesTable(strcat("analyzemuscles",tag,"_MuscleAnalysis_ActiveFiberForce.sto"));
+    table_fibervelocity = TimeSeriesTable(strcat("analyzemuscles",tag,"_MuscleAnalysis_FiberVelocity.sto"));
+    table_metabolics = TimeSeriesTable(strcat("analyzemuscles",tag,'_ProbeReporter_probes.sto'));
+    table_lMT = TimeSeriesTable(strcat("analyzemuscles",tag,'_MuscleAnalysis_Length.sto'));
+    table_fiberlength = TimeSeriesTable(strcat("analyzemuscles",tag,'_MuscleAnalysis_FiberLength.sto'));
     
     % get time
     time_os = table_activefiberforce.getIndependentColumn();
@@ -177,7 +177,7 @@ function analyzeMetabolicCost(solution)
     
     % look through the GRF file?
     % get grf for residual comparisons
-    table_grf = TimeSeriesTable('analyzemuscles_ForceReporter_forces.sto');
+    table_grf = TimeSeriesTable(strcat('analyzemuscles',tag,'_ForceReporter_forces.sto'));
     grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
     grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
     grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
