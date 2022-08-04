@@ -29,12 +29,12 @@ else
 end
 
 % edit experimental data for simulations
-renameExperimentalData();
+% renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
 % metabolicsModelSetup();
-% close all;
+close all;
 % runRRA_1('./RRAfiles/RRA_Setup_1.xml');
 % close all;
 % runRRA_2('./RRAfiles/RRA_Setup_2.xml');
@@ -44,17 +44,19 @@ renameExperimentalData();
 torqueStateTrackGRFPrescribe();
 close all;
 Issues = muscleStatePrescribeGRFPrescribe(Issues);
-% close all;
+close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 % close all;
 
 Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
-% close all;
+close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues);
+% close all;
+% Issues = muscleStateTrackGRFTrack(Issues)
 close all;
 
 %%% only uncomment this if the above simulations are commented out
@@ -66,7 +68,7 @@ close all;
 % 
 % Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
 % analyzeMetabolicCost(solution1);
-% Issues = computeIDFromResult(Issues, solution1);
+% Issues = computeIDFromResult(Issues, solution1, tag);
 % analyzeMetabolicCost(solution1);
 % trackorprescribe = 'prescribe';
 % computeKinematicDifferences(solution1, trackorprescribe);

@@ -190,10 +190,10 @@ os.chdir(resultsbasedir)
 #### 
 # scratch space overwrite for subsets of subj and conditions
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
-subjects = ['welk007','welk008','welk010','welk013']
-welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
+subjects = ['welk013','welk010'] #,'welk009','welk010','welk013']
+welkconditions = ['welknatural','welkexo'] #,'welkexo'] #,'welknaturalnatural','welkexoexo']8
 trials = ['trial01','trial02','trial03','trial04']
-command = "analyzeSubject_python"
+command = "analyzeSubject"
 
 
 ########################################## 
@@ -218,10 +218,10 @@ for subj in subjects:
                 print(trialdir)
                 ## now do stuff
                 # print(os.path.isfile('matlab_log.txt'))
-                if os.path.isfile('matlab_log.txt'):
-                    os.remove('matlab_log.txt')
+                if os.path.isfile('matlab_log2.txt'):
+                    os.remove('matlab_log2.txt')
                     
-                status = os.system('matlab -nosplash -nodesktop -logfile matlab_log.txt -wait -r "try, '
+                status = os.system('matlab -nosplash -nodesktop -logfile matlab_log2.txt -wait -r "try, '
                         "run('%s'); disp('SUCCESS'); "
                         'catch ME; disp(getReport(ME)); exit(2), end, exit(0);"\n' 
                         % command
