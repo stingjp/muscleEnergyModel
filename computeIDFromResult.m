@@ -1,4 +1,4 @@
-function [Issues] = computeIDFromResult(Issues, solution)
+function [Issues] = computeIDFromResult(Issues, solution, tag)
     import org.opensim.modeling.*
 %     Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -17,7 +17,13 @@ function [Issues] = computeIDFromResult(Issues, solution)
     modelid1.initSystem();
     modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
     idtool.setModel(modelid2);
-    idtool.setExternalLoadsFileName('grf_walk.xml')
+
+    if strcmp(tag, 'grftrack')
+        idtool.setExternalLoadsFileName('grftrack_grf_walk.xml')
+    else
+        idtool.setExternalLoadsFileName('grf_walk.xml')
+    end
+
 
     % % get the coordinates and all the states
     % idtable = solution.exportToStatesTable();
@@ -56,19 +62,23 @@ function [Issues] = computeIDFromResult(Issues, solution)
     sto.setColumnLabels(properlabels);
     
     statetime = solutionstatestable.getIndependentColumn();
-    
-    starttime = statetime.get(0).doubleValue();
-    endtime = statetime.get(statetime.size()-1).doubleValue();
-    % starttime = statetime.get(0);
-    % endtime = statetime.get(statetime.size()-1);
-
+    try
+        starttime = statetime.get(0).doubleValue();
+        endtime = statetime.get(statetime.size()-1).doubleValue();
+    catch
+        starttime = statetime.get(0);
+        endtime = statetime.get(statetime.size()-1);
+    end
     timelength = statetime.size();
     
     for i=0:timelength-1
         temprow = solutionstatestable.getRowAtIndex(i).getAsMat();
         temprow2 = org.opensim.modeling.Vector().createFromMat(temprow);
-        sto.append(statetime.get(i).doubleValue(), temprow2);
-        % sto.append(statetime.get(i), temprow2);
+        try
+            sto.append(statetime.get(i).doubleValue(), temprow2);
+        catch
+            sto.append(statetime.get(i), temprow2);
+        end
     end
     
     % idstorage = solution.exportToStatesStorage();
