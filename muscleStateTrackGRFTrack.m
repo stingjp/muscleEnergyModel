@@ -1,6 +1,8 @@
 function [Issues] = muscleStateTrackGRFTrack(Issues)
     import org.opensim.modeling.*;
     
+    tag = 'grftrack';
+
     % create and name an instance of the MocoTrack tool
     track = MocoTrack();
     track.setName("muscle_statetrack_grfprescribe");
@@ -152,7 +154,7 @@ function [Issues] = muscleStateTrackGRFTrack(Issues)
     
     % adding in contact
     % Track the right and left vertical and fore-aft ground reaction forces.
-    contactTracking = MocoContactTrackingGoal('contact', .01);
+    contactTracking = MocoContactTrackingGoal('contact', .00000001);
     contactTracking.setExternalLoadsFile('grf_walk.xml');
     forceNamesRightFoot = StdVectorString();
     % forceNamesRightFoot.add('contactHeel_r');
@@ -186,7 +188,7 @@ function [Issues] = muscleStateTrackGRFTrack(Issues)
 
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(.01); % 0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(.00000001); % 0.1 for the new %.5 % been trying .25. previous was .1
     % whatever the weight was before the alienware did really well withit
     % for 007 natural1
     
@@ -204,7 +206,7 @@ function [Issues] = muscleStateTrackGRFTrack(Issues)
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 10); % here 1000
+            effort.setWeightForControl(forcePath, 1); % here 1000
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
