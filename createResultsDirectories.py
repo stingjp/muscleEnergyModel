@@ -24,6 +24,7 @@ resultbasedir = os.path.join(repodir,'..\\results\\')
 # print(templateanalysis)
 templategrf = os.path.join(repodir,'templates\\moco\\grf_walk.xml')
 templategrf_welk = os.path.join(repodir,'templates\\moco\\welk_grf_walk.xml')
+templategrf_grftrack = os.path.join(repodir,'templates\\moco\\grftrack_grf_walk.xml')
 geometrydir = os.path.join(repodir,'Geometry\\')
 idtemplate = os.path.join(repodir,'templates\\moco\\idguitesting.xml')
 template_RRA_dir = os.path.join(repodir, 'RRAfiles\\')
@@ -252,12 +253,14 @@ for subj in subjects:
                 targetfile3 = os.path.join(trialdir, 'idguitesting.xml')
                 targetgeometry = os.path.join(trialdir, 'Geometry')
                 targetRRA = os.path.join(trialdir, 'RRAfiles')
+                targetfile4 = os.path.join(trialdir, 'grftrack_grf_walk.xml')
                 
                 if os.path.exists(targetfile):
                     os.path.remove(targetfile)
                 
                 print('should do something to delete all the old analyzeSubject files')
                 copy(templategrf_welk, targetfile2)
+                copy(templategrf_grftrack, targetfile4)
                 copy(idtemplate, targetfile3)
                 try:
                     os.mkdir(os.path.join(trialdir, 'expdata'))
