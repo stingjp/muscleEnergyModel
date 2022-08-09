@@ -1,7 +1,7 @@
 % written by Jon Stingel
 % 20210323
 import org.opensim.modeling.*
-repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
+repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -17,14 +17,15 @@ cd(resultsdir)
 %%%%% - remember to only put in the exo conditions that you are looking to see the reductions from
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkexoconditions = {'welknatural'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk005'};
+welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
+tag = 'muscletrack';
 
 thingstoplot = {'PassiveFiberForce','ActiveFiberForce'};
 
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
 
@@ -56,7 +57,7 @@ for subj=1:length(welksubjects)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', strcat(tempthing, '.sto')));
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -101,7 +102,7 @@ for subj=1:length(welksubjects)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', strcat(tempthing, '.sto')));
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -145,7 +146,7 @@ for subj=1:length(welksubjects)
             grid on;
         end
         print(tempfig, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_natural'), '.png')),...
+            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_natural'), '.png')),...
             '-dpng', '-r500')
         disp('print 1')
         
@@ -166,7 +167,7 @@ for subj=1:length(welksubjects)
             grid on;
         end
         print(tempfig2, ...
-            strcat(strcat('C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_exo'), '.png')),...
+            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_exo'), '.png')),...
             '-dpng', '-r500')
         disp('print 2')
         
