@@ -252,21 +252,21 @@ for thing=1:length(thingstoplot)
             if contains(templabel, 'HOBL')
                 % muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
-                % plot(welknaturalstruct.time, muscleplot_nat, 'r:')
-                % plot(welkexostruct.time, muscleplot_exo, 'b:')
+                plot(welknaturalstruct.time, muscleplot_nat, 'r:')
+                plot(welkexostruct.time, muscleplot_exo, 'b:')
                 % plot the subject average
-                % plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
+                plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
                 hold on
-                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
             else
                 muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
                 plot(welknaturalstruct.time, muscleplot_nat, 'r:')
                 hold on;
-                % plot(welkexostruct.time, muscleplot_exo, 'b:')
+                plot(welkexostruct.time, muscleplot_exo, 'b:')
                 % plot the subject average
                 plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
-                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
             end
             
             ylabel('Force [N]');
@@ -280,9 +280,9 @@ for thing=1:length(thingstoplot)
             grid on;
         end
         
-        % print(tempfig, ...
-        %     strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
-        %     '-dpng', '-r500')
+        print(tempfig, ...
+            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+            '-dpng', '-r500')
         disp('print 1')
         
 
@@ -313,9 +313,9 @@ for thing=1:length(thingstoplot)
             % muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
                 % have all of them, want the average plotted for each subject
-                % plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
+                plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj)))
                 % hold on;
-                % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b--'); %char(markb(subj)))
+                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b--'); %char(markb(subj)))
                 hold on
             else
 
@@ -344,8 +344,8 @@ for thing=1:length(thingstoplot)
     % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-'); % char(markb(subj)))
 %     legend('Subj 1 natural','Subj 1 exo','Subj 2 natural','Subj 2 exo')
 
-    % print(tempfig2, ...
-    %     strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_newsubjs', '.png'),...
-    %     '-dpng', '-r500')
+    print(tempfig2, ...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_newsubjs', '.png'),...
+        '-dpng', '-r500')
     disp('print 2')
 end

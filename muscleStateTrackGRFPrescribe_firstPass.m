@@ -259,14 +259,14 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % solve and visualize
     solution = study.solve();
-%     solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(solution);
     % generate a report and save
     solution.write('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
@@ -287,7 +287,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % post analysis and validation
     
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
-    analyzeMetabolicCost(solution);
+    analyzeMetabolicCost(solution, 'muscletrack');
     % Issues = computeIDFromResult(Issues, solution);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';

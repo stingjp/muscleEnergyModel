@@ -1,6 +1,7 @@
 function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     import org.opensim.modeling.*;
 
+    tag = 'muscleprescribe';
     % construct MocoInverse tool
     inverse = MocoInverse();
     
@@ -180,21 +181,22 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
     solution = study.solve();
-%     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    
-    solution.write('muscleguess.sto');
     solution.insertStatesTrajectory(tempkintable);
+    
+    % solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    
+    % solution.write('muscleguess.sto');
     % study.visualize(solution);
 
 
     % post processing
-    solution.write('muscle_statetrack_grfprescribe_solution.sto');
+    % solution.write('muscle_statetrack_grfprescribe_solution.sto');
     solution.write('muscle_stateprescribe_grfprescribe_solution.sto')
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
 
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls_old.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states_old.sto');
+    % STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls_old.sto');
+    % STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states_old.sto');
 
 
     % Solve the problem and write the solution to a Storage file.
@@ -223,8 +225,8 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % post analysis and validation
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
-    analyzeMetabolicCost(solution);
-    % Issues = computeIDFromResult(Issues, solution);
+    analyzeMetabolicCost(solution, 'muscleprescribe');
+    % Issues = computeIDFromResult(Issues, solution, tag);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'prescribe';
     % computeKinematicDifferences(solution, trackorprescribe);

@@ -20,7 +20,7 @@ cd(resultsdir)
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
 welkconditions = {'welknatural','welkexo'}; %,'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
-welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'}; %'welk007','welk008','welk009','welk010'};   
+welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
 
 % TODO an issues holder for this script
@@ -41,8 +41,8 @@ for subj=1:length(welksubjects)
             cd(trialdir)
             % run the analysis
             try
-                analyzeSubject()
-%                 analyzeSubject_setup()
+%                 analyzeSubject()
+                analyzeSubject_setup()
                 disp('ran');
             catch
                 disp('issue');

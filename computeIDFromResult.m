@@ -180,7 +180,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
     % aim for 5% of net joint moment or less for reserves
     % lots for residuals
     % get grf for residual comparisons
-    table_grf = TimeSeriesTable('analyzemuscles_ForceReporter_forces.sto');
+    table_grf = TimeSeriesTable(strcat('analyzemuscles',tag,'_ForceReporter_forces.sto'));
     grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
     grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
     grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
@@ -194,7 +194,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
     grf_l_Ty = table_grf.getDependentColumn('calcn_l_Left_GRF_Ty').getAsMat();
     grf_l_Tz = table_grf.getDependentColumn('calcn_l_Left_GRF_Tz').getAsMat();
 
-    table_com = TimeSeriesTable('analyzemuscles_BodyKinematics_pos_global.sto');
+    table_com = TimeSeriesTable(strcat('analyzemuscles',tag,'_BodyKinematics_pos_global.sto'));
     com_x = table_com.getDependentColumn('center_of_mass_X').getAsMat();
     com_y = table_com.getDependentColumn('center_of_mass_Y').getAsMat();
     com_z = table_com.getDependentColumn('center_of_mass_Z').getAsMat();
