@@ -187,7 +187,10 @@ os.chdir(resultsbasedir)
 
 #### 
 # scratch space overwrite for subsets of subj and conditions
+# subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
+
+
 welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
 
 

@@ -21,8 +21,9 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
-
+% welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
+tag = 'muscletrack';
 thingstoplot = {'excitation','activation'};
 
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
@@ -72,7 +73,7 @@ for subj=1:length(welksubjects)
                     % do something for the activations
                     % disp('getting activations...')
 
-                    tempfile = strcat(trialdir, '/muscleprescribe_states.sto');
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -111,7 +112,7 @@ for subj=1:length(welksubjects)
                     % do something for the excitations
                     % disp('getting excitations...')
                     
-                    tempfile = strcat(trialdir, '/muscleprescribe_controls.sto');
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -169,7 +170,7 @@ for subj=1:length(welksubjects)
                     % do something for the activations
                     % disp('getting activations...')
 
-                    tempfile = strcat(trialdir, '/muscleprescribe_states.sto');
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -208,7 +209,7 @@ for subj=1:length(welksubjects)
                     % do something for the excitations
                     % disp('getting excitations...')
                     
-                    tempfile = strcat(trialdir, '/muscleprescribe_controls.sto');
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
