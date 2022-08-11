@@ -1,0 +1,22 @@
+log
+10000 con = 3.11 met cost = 10.0032
+1000 con = 3.12 met cost = 10.04
+10 con = 3.11 met cost = 10.0032
+1 con = 3.11 met cost = 10.0032
+.1 con = 3.11 met cost = 10.0032
+.01 con = 3.11 met cost = 10.0032
+.001 con = 3.10 met cost = 9.88
+.0001 con = 
+.00001 con = 
+
+
+
+
+
+TODO
+Welk010 welknatural trial01 - try simulating with no initial guess, or just a different initial guess, to see if it has something to do with that trajectory handling?
+	- possibly some spline issue
+	- possibly my trimming issue
+	- possibly something with the solution I am using being solved at different mesh size
+	- ???
+	
