@@ -22,7 +22,7 @@ welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknatur
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
 % welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
-welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk007','welk009','welk010','welk013'}; % 'welk008
 tag = 'muscletrack';
 thingstoplot = {'excitation','activation'};
 
@@ -72,8 +72,11 @@ for subj=1:length(welksubjects)
                 if tempthing == 'activation'
                     % do something for the activations
                     % disp('getting activations...')
-
-                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                        tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
+                    else
+                        tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -111,8 +114,11 @@ for subj=1:length(welksubjects)
                 if tempthing == 'excitation'
                     % do something for the excitations
                     % disp('getting excitations...')
-                    
-                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                        tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
+                    else
+                        tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -169,8 +175,11 @@ for subj=1:length(welksubjects)
                 if tempthing == 'activation'
                     % do something for the activations
                     % disp('getting activations...')
-
-                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                        tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
+                    else
+                        tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -208,8 +217,11 @@ for subj=1:length(welksubjects)
                 if tempthing == 'excitation'
                     % do something for the excitations
                     % disp('getting excitations...')
-                    
-                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                        tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
+                    else
+                        tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);

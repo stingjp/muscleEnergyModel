@@ -20,7 +20,7 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk005','welk009'}; %,'welk007','welk008','welk009','welk010','welk013'};
 tag = 'muscletrack';
 
 thingstoplot = {'PassiveFiberForce','ActiveFiberForce'};
