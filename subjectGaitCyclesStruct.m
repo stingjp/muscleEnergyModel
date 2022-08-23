@@ -343,10 +343,10 @@ subjectgaitcycles.welk008.welkexo.trial01.initial = 41.961;
 subjectgaitcycles.welk008.welkexo.trial01.final = 42.661;
 subjectgaitcycles.welk008.welkexo.trial02.initial = 42.661;
 subjectgaitcycles.welk008.welkexo.trial02.final = 43.359;
-subjectgaitcycles.welk008.welkexo.trial03.initial = 115.508;
-subjectgaitcycles.welk008.welkexo.trial03.final = 116.221;
-subjectgaitcycles.welk008.welkexo.trial04.initial = 116.221;
-subjectgaitcycles.welk008.welkexo.trial04.final = 116.925;
+subjectgaitcycles.welk008.welkexo.trial03.initial = 20.208;
+subjectgaitcycles.welk008.welkexo.trial03.final = 20.915;
+subjectgaitcycles.welk008.welkexo.trial04.initial = 20.915;
+subjectgaitcycles.welk008.welkexo.trial04.final = 21.619;
 
 subjectgaitcycles.welk008.welknatural.trial01.initial = 67.197;
 subjectgaitcycles.welk008.welknatural.trial01.final = 67.965;
