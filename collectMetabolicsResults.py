@@ -191,7 +191,7 @@ os.chdir(resultsbasedir)
 subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 
 
-welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
+welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']
 
 
 

@@ -50,9 +50,9 @@ end
 
 % Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
 close all;
-% Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
+Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
-Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
+% Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues);
 % close all;
