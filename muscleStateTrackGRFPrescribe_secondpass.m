@@ -174,8 +174,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
-%         elseif contains(string(forcePath), 'reserve')
-%             effort.setWeightForControl(forcePath, 10000);
+        elseif contains(string(forcePath), 'reserve')
+            effort.setWeightForControl(forcePath, 10000);
         end
 %         if contains(string(forcePath), 'hip_rotation')
 %            effort.setWeightForControl(forcePath, 10);
@@ -192,8 +192,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     solver.resetProblem(problem)
 
 
-%     solver.set_optim_convergence_tolerance(10); % 1e-2
-%     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    solver.set_optim_convergence_tolerance(.001); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
 %     solver.set_parallel(24);
 %     solver.set_parallel(8);
 %     solver.set_parallel(12);
