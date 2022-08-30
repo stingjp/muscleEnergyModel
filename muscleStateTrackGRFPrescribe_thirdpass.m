@@ -133,7 +133,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.04); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -152,7 +152,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(0.4); % 0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(0.5); % 0.1 for the new %.5 % been trying .25. previous was .1
     % whatever the weight was before the alienware did really well withit
     % for 007 natural1
     
@@ -184,15 +184,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % set our initial guesses
-    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
 
-
-    solver.set_optim_convergence_tolerance(.001); % 1e-2
+    keyboard
+    solver.set_optim_convergence_tolerance(1); % 1e-2
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
 %     solver.set_parallel(24);
 %     solver.set_parallel(8);
@@ -255,18 +255,18 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % now set the guess for the solver
-    solver.setGuess(randomguess);
+%     solver.setGuess(randomguess);
 
     % solve and visualize
     solution = study.solve();
     % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(solution);
     % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution_pt001con.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution_1con_new.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_1connew.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_1connew.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
@@ -294,47 +294,3 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % computeKinematicDifferences(solution, trackorprescribe);
 
 % end
-
-
-
-
-%% testing reporting stuff
-% 
-% 
-% report = osimMocoTrajectoryReport(model, ...
-%                                     'muscle_stateprescribe_grfprescribe_solution.sto', ...
-%                                     'bilateral', true, ...
-%                                     'refFile',{'../../welkexo/trial01/muscleprescribe_states.sto'});
-% reportFilePath = report.generate();
-% pdfFilePath = reportFilePath(1:end-2);
-% pdfFilePath = strcat(pdfFilePath, 'pdf');
-% ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-%         'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
-%         'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
-%         'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
-%     
-%     
-%     
-%     
-% % try with coordinate data
-% report = osimMocoTrajectoryReport(model, ...
-%                                     'coordinates_updated.mot', ...
-%                                     'refFile',{'../../welkexo/trial04/coordinates_updated.mot'});
-% reportFilePath = report.generate();
-% pdfFilePath = reportFilePath(1:end-2);
-% 
-% 
-% 
-% 
-% 
-% 
-% %% new try
-% report = osimMocoTrajectoryReport(model, ...
-%         'muscle_stateprescribe_grfprescribe_solution.sto', ...
-%         'outputFilepath', 'testreport.pdf', ...
-%         'bilateral', true, ...
-%         'refFiles', {'../../welkexo/trial01/muscle_stateprescribe_grfprescribe_solution.sto', ...
-%                      'muscleprescribe_controls.sto'});
-% % The report is saved to the working directory.
-% reportFilepath = report.generate();
-% open(reportFilepath);

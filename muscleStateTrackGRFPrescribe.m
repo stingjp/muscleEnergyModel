@@ -143,13 +143,13 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem = study.updProblem();
 
     % set a constraint so that the model doesnt overlap feet
-%     distance = MocoFrameDistanceConstraint();
-%     distance.setName('minimum_distance');
-%     distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
-%     distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-%     distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-%     distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
-%     problem.addPathConstraint(distance);
+    distance = MocoFrameDistanceConstraint();
+    distance.setName('minimum_distance');
+    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
+    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
+    problem.addPathConstraint(distance);
     
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
@@ -193,7 +193,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     solver.resetProblem(problem)
 
 
-%     solver.set_optim_convergence_tolerance(10); % 1e-2
+    solver.set_optim_convergence_tolerance(.001); % 1e-2
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
 %     solver.set_parallel(24);
 %     solver.set_parallel(8);
