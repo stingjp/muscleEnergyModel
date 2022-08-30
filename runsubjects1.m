@@ -18,7 +18,7 @@ cd(resultsdir)
 %%%%%
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkconditions = {'welknatural','welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welksubjects = {'welk009'};%'welk002','welk003',};%'welk005','welk007','welk008','welk009','welk010','welk013'};
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
