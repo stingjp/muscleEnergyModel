@@ -8,10 +8,15 @@ log
 .01 con = 3.11 met cost = 10.0032
 .001 con = 3.10 met cost = 9.88
 .0001 con = 3.10 met cost = 9.83
+.00001 con = failed too many iterations 
+********************
+the first ones were with the old GRF the defaults ones are with the new fixed ones. 
+********************
 
-defaults con = 
-default con with updated constraint = 
 
+defaults con = 3.73 met cost = 10.0691
+default con with updated constraint = 3.67 met cost = 10.0691
+ redo 1 con just for updated costs = 3.675 met cost = 10.0691
 
 
 
