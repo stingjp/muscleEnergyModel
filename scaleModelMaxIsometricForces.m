@@ -49,7 +49,7 @@ function [subj_model] = scaleModelMaxIsometricForces(subjectmass, subjectheight)
     cd(workdir);
     
     % # set the specific tension N/cm^2
-    specific_tension = 60; % # kPa?
+    % specific_tension = 60; % # kPa?
     subj_mass = subjectmass.(genvarname(subjectname)); % kg
     
     % dont have height for all
