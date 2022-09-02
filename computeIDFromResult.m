@@ -202,7 +202,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
     % check the coordactlabels
     % check tempcoordinate name
     
-    
+    % TODO start here and fix. 
     forcecheck = {'tx','ty','tz'};
     templabels = coordactmomentstable.getColumnLabels();
     for i=1:length(coordinatepaths);
@@ -246,10 +246,10 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
                     ratio_peak = tempind_peak/tempnetexternal_peak;
                     ratio_rms = tempind_rms/tempnetexternal_rms;
                     
-                    if ratio_peak > 0.05
+                    if ratio_peak > 0.01
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
-                    if ratio_rms > 0.05
+                    if ratio_rms > 0.01
                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end 
                 
