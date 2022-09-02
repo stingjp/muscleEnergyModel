@@ -228,7 +228,7 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     print(tempfig3, temptarget, '-dpng', '-r500')
     disp('print 1')
 
-
+    
     % now a figure that actually takes the differences between them, or the
     % deviation in the tracking problem from the IK angles
     % same figure but in degrees
@@ -236,24 +236,86 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % go through all the joints
     for l=0:trackNumLabels-1
         templabel = trackLabels.get(l);
-        temptrack = trackstatestable.getDependentColumn(templabel);
-        temptrack2 = temptrack.getAsMat();
-        tempsolution = solutionstatestable.getDependentColumn(templabel);
-        tempsolution2 = tempsolution.getAsMat();
+        templabel = string(templabel);
+        if contains(templabel, 'tx') || contains(templabel, 'ty') || contains(templabel, 'tz')
+            temptrack = trackstatestable.getDependentColumn(templabel);
+            temptrack2 = temptrack.getAsMat();
+            tempsolution = solutionstatestable.getDependentColumn(templabel);
+            tempsolution2 = tempsolution.getAsMat();
+            % have to figure out where they overlap
+            tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
+
+
+            % okay now what...
+            subplot(6,8,l+1);
+            % plot(temptracktime, ((tempsolution3.*180./pi()) - (temptrack2(timesplit1:timesplit2).*180./pi())')');
+            plot(temptracktime, (tempsolution3 - (temptrack2(timesplit1:timesplit2))')');
+            hold on;
+    %         plot(temptracktime, tempsolution3.*180./pi());
+            
+            % get the RMS error
+            err = ((tempsolution3 - (temptrack2(timesplit1:timesplit2))')');
+            err = err(~isnan(err));
+            sqerr = err.^2;
+            msqerr = mean(sqerr);
+            rmse = sqrt(msqerr); 
+            
+            title(string(templabel));
+            xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
+            % xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
+            ylabel('difference [m]');
+            grid on;
+
+            % legend(strcat('RMSE: ', string(rmse)));
+        else
+            temptrack = trackstatestable.getDependentColumn(templabel);
+            temptrack2 = temptrack.getAsMat();
+            tempsolution = solutionstatestable.getDependentColumn(templabel);
+            tempsolution2 = tempsolution.getAsMat();
+            
+            % have to figure out where they overlap
+            tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
+            
+            % convert to degrees
+            tempsolution3 = tempsolution3.*180./pi();
+            temptrack2 = temptrack2.*180./pi();
+
+
+            % okay now what...
+            subplot(6,8,l+1);
+            % plot(temptracktime, ((tempsolution3.*180./pi()) - (temptrack2(timesplit1:timesplit2).*180./pi())')');
+            plot(temptracktime, (tempsolution3 - (temptrack2(timesplit1:timesplit2))')');
+            hold on;
+        %         plot(temptracktime, tempsolution3.*180./pi());
+            % get the RMS error
+            err = ((tempsolution3 - (temptrack2(timesplit1:timesplit2))')');
+            err = err(~isnan(err));
+            sqerr = err.^2;
+            msqerr = mean(sqerr);
+            rmse = sqrt(msqerr); 
+
+            title(string(templabel));
+            xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
+            ylabel('difference [deg]');
+            grid on;
+            % legend(strcat('RMSE: ', string(rmse)));
+
+        end
+
         
-        % have to figure out where they overlap
-        tempsolution3 = interp1(solutiontime2, tempsolution2, temptracktime);
-        
-        % okay now what...
-        subplot(6,8,l+1);
-        plot(temptracktime, ((tempsolution3.*180./pi()) - (temptrack2(timesplit1:timesplit2).*180./pi())')');
-        hold on;
-%         plot(temptracktime, tempsolution3.*180./pi());
-        title(string(templabel));
-        xlabel('time [s]');
-        ylabel('[deg or deg/s]');
-        grid on;
+%         % okay now what...
+%         subplot(6,8,l+1);
+%         % plot(temptracktime, ((tempsolution3.*180./pi()) - (temptrack2(timesplit1:timesplit2).*180./pi())')');
+%         plot(temptracktime, (tempsolution3 - (temptrack2(timesplit1:timesplit2))')');
+%         hold on;
+% %         plot(temptracktime, tempsolution3.*180./pi());
+%         title(string(templabel));
+%         xlabel('time [s]');
+%         ylabel('[deg or deg/s]');
+%         grid on;
     end
+
+
     
 %     subplot(6,8,l+2);
     legend('solution-original','location','eastoutside');
