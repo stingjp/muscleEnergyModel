@@ -88,7 +88,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.setStatesReference(tableProcessor);
     
 %     track.set_kinematics_allow_extra_columns(true);
-    track.set_states_global_tracking_weight(10); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
+    track.set_states_global_tracking_weight(100); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -98,22 +98,23 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % set specific weights for the individual weight set
     coordinateweights = MocoWeightSet();
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1000000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
-%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1000));
-%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1000));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1e3));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1e7));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1e2));
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1e-6));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1e-6));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
 %     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
-    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1000000));
-    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1000000));
-    
-%     coordinateweights.cloneAndAppend(MocoWeight('lumber_extension', 1000));
-%     coordinateweights.cloneAndAppend(MocoWeight('lumber_bending', 1000));
-%     coordinateweights.cloneAndAppend(MocoWeight('lumber_rotation', 1000));
+    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1e2));
+    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1e2));
+    coordinateweights.cloneAndAppend(MocoWeight("subtalar_angle_r", 1e-6));
+    coordinateweights.cloneAndAppend(MocoWeight("subtalar_angle_l", 1e-6));
+    coordinateweights.cloneAndAppend(MocoWeight('lumber_extension', 1000));
+    coordinateweights.cloneAndAppend(MocoWeight('lumber_bending', 1000));
+    coordinateweights.cloneAndAppend(MocoWeight('lumber_rotation', 1000));
     
     track.set_states_weight_set(coordinateweights);
 
@@ -133,7 +134,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.04); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -142,14 +143,115 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem = study.updProblem();
 
     % set a constraint so that the model doesnt overlap feet
-    distance = MocoFrameDistanceConstraint();
-    distance.setName('minimum_distance');
-    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
-    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-    distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
-    distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
-    problem.addPathConstraint(distance);
+    % distance = MocoFrameDistanceConstraint();
+    % distance.setName('minimum_distance');
+    % distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); % 0.20
+    % distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    % distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
+    % distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
+    % problem.addPathConstraint(distance);
     
+
+    % prescribeTable = TableProcessor('muscleprescribe_states.sto');
+    % tableProcessor is the coordinates_updated
+    % tempkintable = TimeSeriesTable('coordinates_updated.mot');
+    %now need to go through and try to get them better
+
+    % % attempt on the periodicity goal
+        % % Symmetry
+        % % --------
+        % % This goal allows us to simulate only one step with left-right symmetry
+        % % that we can then double to create a full gait cycle.
+        % symmetryGoal = MocoPeriodicityGoal('symmetryGoal');
+        % problem.addGoal(symmetryGoal);
+        % modelPeriod = modelProcessorDC.process();
+        % modelPeriod.initSystem();
+
+        % % Symmetric coordinate values (except for pelvis_tx) and speeds. Here, we 
+        % % constrain final coordinate values of one leg to match the initial value of the 
+        % % other leg. Or, in the case of the pelvis_tx value, we constrain the final 
+        % % value to be the same as the initial value.
+        % for i = 1:modelPeriod.getNumStateVariables()
+        %     currentStateName = string(modelPeriod.getStateVariableNames().getitem(i-1));
+        %     %% this is for half a cycle to set periodicity
+        %         % if startsWith(currentStateName , '/jointset')
+        %         %     if contains(currentStateName,'_r')
+        %         %         pair = MocoPeriodicityGoalPair(currentStateName, ...
+        %         %                        regexprep(currentStateName,'_r','_l'));
+        %         %         symmetryGoal.addStatePair(pair);
+        %         %     end
+        %         %     if contains(currentStateName,'_l')
+        %         %         pair = MocoPeriodicityGoalPair(currentStateName, ...
+        %         %                        regexprep(currentStateName,'_l','_r'));
+        %         %         symmetryGoal.addStatePair(pair);
+        %         %     end
+        %         %     if (~contains(currentStateName,'_r') && ...
+        %         %         ~contains(currentStateName,'_l') && ...
+        %         %         ~contains(currentStateName,'pelvis_tx/value') && ...
+        %         %         ~contains(currentStateName,'/activation'))
+        %         %         symmetryGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName));
+        %             % end
+        %         % end
+
+        %     % setting periodicity for each variable, but across full gait cycle
+        %     if startsWith(currentStateName, '/jointset')
+        %         % disp(currentStateName)
+        %         symmetryGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName))
+        %     elseif endsWith(currentStateName, '/activation')
+        %         % disp(currentStateName)
+        %         symmetryGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName))
+        %     end
+        % end
+        % % keyboard
+
+
+        % % The lumbar coordinate actuator control is symmetric.
+        % % symmetryGoal.addControlPair(MocoPeriodicityGoalPair('/lumbar_bending'));
+        % % symmetryGoal.addControlPair(MocoPeriodicityGoalPair('/lumbar_rotation'));
+        % % symmetryGoal.addControlPair(MocoPeriodicityGoalPair('/lumbar_extension'));
+
+    % experiment with orientation tracking
+        % torsoOrientationGoal = MocoOrientationTrackingGoal('torso_orientation_goal',1e3);
+        % % torsoOrientationGoal.setStatesReference(TableProcessor(tempkintable));
+        % torsoOrientationGoal.setStatesReference(tableProcessor);
+        % torsopaths = StdVectorString();
+        % torsopaths.add(java.lang.String('/bodyset/torso'));
+        % torsoOrientationGoal.setFramePaths(torsopaths);
+        % torsoOrientationGoal.setEnabled(true);
+        % problem.addGoal(torsoOrientationGoal);
+
+        % calc position tracking?
+        % calcnPositionGoal = MocoTranslationTrackingGoal('calcn_position_goal',1e4);
+        % calcnOrientationGoal.setStatesReference(TableProcessor(tempkintable));
+        % calcnOrientationGoal.setStatesReference(prescribeTable);
+        % calcpath = StdVectorString();
+        % calcpath.add(java.lang.String('/bodyset/calcn_r'));
+        % calcpath.add(java.lang.String('/bodyset/calcn_l'));
+        % calcnOrientationGoal.setFramePaths(calcpath);
+        % calcnOrientationGoal.setEnabled(true);
+        % problem.addGoal(calcnOrientationGoal);
+        
+
+        % calcnOrientationGoal = MocoOrientationTrackingGoal('calcn_orientation_goal',1e4);
+        % % calcnOrientationGoal.setStatesReference(TableProcessor(tempkintable));
+        % calcnOrientationGoal.setStatesReference(prescribeTable);
+        % calcpath = StdVectorString();
+        % calcpath.add(java.lang.String('/bodyset/calcn_r'));
+        % calcpath.add(java.lang.String('/bodyset/calcn_l'));
+        % calcnOrientationGoal.setFramePaths(calcpath);
+        % calcnOrientationGoal.setEnabled(true);
+        % problem.addGoal(calcnOrientationGoal);
+
+        % shinOrientationGoal = MocoOrientationTrackingGoal('shin_orientation_goal',1e1);
+        % % calcnOrientationGoal.setStatesReference(TableProcessor(tempkintable));
+        % shinOrientationGoal.setStatesReference(tableProcessor);
+        % shinpath = StdVectorString();
+        % shinpath.add(java.lang.String('/bodyset/tibia_r'));
+        % shinpath.add(java.lang.String('/bodyset/tibia_l'));
+        % shinOrientationGoal.setFramePaths(shinpath);
+        % shinOrientationGoal.setEnabled(true);
+        % problem.addGoal(shinOrientationGoal);
+
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
     effort.setWeight(0.5); % 0.1 for the new %.5 % been trying .25. previous was .1
@@ -161,6 +263,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     problem.addGoal(initactivationgoal);
 
 
+
     % put large weight on the pelvis CoordinateActuators, which act as the 
     % residual, or 'hand-of-god' forces which we would like to keep small
     model = modelProcessorDC.process();
@@ -170,12 +273,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 10); % here 1000
+            disp('okay should probably check pelvis stuff')
+            % effort.setWeightForControl(forcePath, 10); % here 1000
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
-        elseif contains(string(forcePath), 'reserve')
-            effort.setWeightForControl(forcePath, 10000);
+        elseif contains(string(forcePath), 'reserve') && contains(string(forcePath), 'subtalar')
+            effort.setWeightForControl(forcePath, 100);
+        elseif contains(string(forcePath), 'reserve') && contains(string(forcePath), 'hip_rotation')
+            effort.setWeightForControl(forcePath, 10)
         end
 %         if contains(string(forcePath), 'hip_rotation')
 %            effort.setWeightForControl(forcePath, 10);
@@ -184,16 +290,16 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % set our initial guesses
-    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
 
 
-    solver.set_optim_convergence_tolerance(.001); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+%     solver.set_optim_convergence_tolerance(10); % 1e-2
+%     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
 %     solver.set_parallel(24);
 %     solver.set_parallel(8);
 %     solver.set_parallel(12);
@@ -255,7 +361,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % now set the guess for the solver
-%     solver.setGuess(randomguess);
+    solver.setGuess(randomguess);
 
     % solve and visualize
     solution = study.solve();
