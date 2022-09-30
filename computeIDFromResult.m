@@ -104,7 +104,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
     
     
     netjointmoments = TimeSeriesTable(idresultfile);
-
+    
     % get the states
     statestraj = solution.exportToStatesTrajectory(modelid1);
 
@@ -213,7 +213,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
         if ~any(contains(char(tempcoordinate),'beta'))
             % compare the reserve for each coordinate to the net joint moment
             tempmomentname = tempcoordinate.split('/');
-            tempmomentname = char(tempmomentname(end));
+            tempmomentname = char(tempmomentname(end))
                         
             % figure out how to get the reserve ones here
             matched = false;
@@ -243,13 +243,16 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
                     tempind_peak = max(abs(tempind));
                     tempind_rms = rms(tempind);
 
-                    ratio_peak = tempind_peak/tempnetexternal_peak;
-                    ratio_rms = tempind_rms/tempnetexternal_rms;
+                    % ratio_peak = tempind_peak/tempnetexternal_peak;
+                    % ratio_rms = tempind_rms/tempnetexternal_rms;
+                    ratio_peak = max(abs(tempind)./tempnetexternal_peak)
+                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak)
+
                     
-                    if ratio_peak > 0.01
+                    if ratio_peak > 0.05
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
-                    if ratio_rms > 0.01
+                    if ratio_rms > 0.05
                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end 
                 
@@ -272,13 +275,17 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
                     tempind_peak = max(abs(tempind));
                     tempind_rms = rms(tempind);
  
-                    ratio_peak = tempind_peak/tempnetexternalcom_peak;
-                    ratio_rms = tempind_rms/tempnetexternalcom_rms;
+                    % ratio_peak = tempind_peak/tempnetexternalcom_peak;
+                    % ratio_rms = tempind_rms/tempnetexternalcom_rms;
+                    ratio_peak = max(abs(tempind)./tempnetexternalcom_peak)
+                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak)
 
-                    if ratio_peak > 0.05
+
+
+                    if ratio_peak > 0.01
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
-                    if ratio_rms > 0.05
+                    if ratio_rms > 0.01
                        Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('rms ratio:',string(ratio_rms)))]];
                     end 
 
@@ -292,8 +299,11 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
                     tempind_peak = max(abs(tempind));
                     tempind_rms = rms(tempind);
 
-                    ratio_peak = tempind_peak/tempnet_peak;
-                    ratio_rms = tempind_rms/tempnet_rms;
+                    % ratio_peak = tempind_peak/tempnet_peak;
+                    % ratio_rms = tempind_rms/tempnet_rms;
+                    ratio_peak = max(abs(tempind)./tempnet_peak)
+                    ratio_rms = rms(abs(tempind)./tempnet_peak)
+
 
                     if ratio_peak > 0.05
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
