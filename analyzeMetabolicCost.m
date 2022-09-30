@@ -43,7 +43,7 @@ function analyzeMetabolicCost(solution, tag)
     analyze = AnalyzeTool(strcat(tag,"_AnalyzeTool_setup.xml"));
     analyze.run();
 
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % tables
     table_activefiberforce = TimeSeriesTable(strcat("analyzemuscles",tag,"_MuscleAnalysis_ActiveFiberForce.sto"));
@@ -154,14 +154,14 @@ function analyzeMetabolicCost(solution, tag)
     nummuscmet = table_musc_metabolics.getNumColumns();
     muscmetlabels = table_musc_metabolics.getColumnLabels();
     muscMetabolicsMat = [];
-    muscMetabolicsLabels = [];
+    muscMetabolicsLabels = {};
     
     muscMetTime = table_musc_metabolics.getIndependentColumn();
     for i=0:nummuscmet-1
         templabel = muscmetlabels.get(i);
         tempcolumn = table_musc_metabolics.getDependentColumn(templabel);
         muscMetabolicsMat = [muscMetabolicsMat, tempcolumn.getAsMat()];
-        muscMetabolicsLabels = [muscMetabolicsLabels, {templabel}];
+        muscMetabolicsLabels{i+1} = char(templabel);
     end
     
     muscMetabolicsMat;
@@ -176,7 +176,11 @@ function analyzeMetabolicCost(solution, tag)
     % write them all to a file that I can pull later to get differences
     % get everything set up for the table printout
     % met_rows = {'trial'};
-    musc_table = table(avgMuscMetMat, string(muscMetabolicsLabels));        
+
+%     avgMuscMetMat2 = num2cell(avgMuscMetMat);
+%     musc_table = cell2table(avgMuscMetMat2);
+%     musc_table.Properties.VariableNames = muscMetabolicsLabels;
+    musc_table = table((avgMuscMetMat)', (muscMetabolicsLabels)');        
     writetable(musc_table, 'muscleMetabolicsALL.csv');% ,'WriteRowNames',true);
     
     
