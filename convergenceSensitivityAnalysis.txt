@@ -28,3 +28,6 @@ Welk010 welknatural trial01 - try simulating with no initial guess, or just a di
 	- possibly something with the solution I am using being solved at different mesh size
 	- ???
 	
+
+
+Also added some weights for specific coordinates, the difference in cost function looks to be around 4.6 compared to 3.6, so that is cool. Not huge, but potentially powerful?? check the final!
