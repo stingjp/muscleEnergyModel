@@ -73,7 +73,11 @@ for thing=1:length(thingstoplot)
                 
                 time = [];
                 for t=0:temptime.size()-1
-                    tempix = temptime.get(t);
+                    try
+                        tempix = temptime.get(t).doubleValue();
+                    catch
+                        tempix = temptime.get(t);
+                    end
                     if tempix >= gait_start && tempix <= gait_end
                         time = [time, tempix];
                     end
@@ -156,7 +160,11 @@ for thing=1:length(thingstoplot)
                 
                 time = [];
                 for t=0:temptime.size()-1
-                    tempix = temptime.get(t);
+                   try
+                        tempix = temptime.get(t).doubleValue();
+                    catch
+                        tempix = temptime.get(t);
+                    end
                     if tempix >= gait_start && tempix <= gait_end
                         time = [time, tempix];
                     end
@@ -248,9 +256,13 @@ for thing=1:length(thingstoplot)
 
             end
 
+            
+
+
+
             % okay have one coord through time
-            subjectexovar.(genvarname(char(coord))) = mean(coordtimevar(:,3));
-            subjectnatvar.(genvarname(char(coord))) = mean(coordtimevar2(:,3));
+            subjectexovar.(genvarname(char(coord))) = mean(coordtimevar(:,1));
+            subjectnatvar.(genvarname(char(coord))) = mean(coordtimevar2(:,1));
         
             
         end
@@ -279,7 +291,7 @@ for thing=1:length(thingstoplot)
             bar([subjectexovar_plot,subjectnatvar_plot]);
             xticklabels({strcat('exo:',' ',string(subjectexovar_plot)),strcat('natural:',' ', string(subjectnatvar_plot))});
             xtickangle(30);
-            ylabel('Standard Deviation');
+            ylabel('Range');
             % select the name out 
             templabel2 = strrep(templabel,'_',' ');
             % for activation maintenance rate

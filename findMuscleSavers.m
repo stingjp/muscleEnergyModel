@@ -1,6 +1,6 @@
 % written by Jon Stingel
 
-repodir = 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel';
+repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -21,8 +21,8 @@ cd(resultsdir)
 welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural'};
-welksubjects = {'welk002','welk003'};
-load 'C:\Users\JP\code\repos\Stanford\delplab\projects\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
 
@@ -138,7 +138,7 @@ end
 %% have all the values, now have to compute differences
 keyboard
 % going to make a new structure that is the combined muscle paths/groups
-
+disp('NOTE: These values are for single muscle, single leg.')
 
 
 
@@ -205,7 +205,7 @@ savecompare1 = [];
 savecompare2 = [];
 savecomparenames = [];
 % grab the biggest savers (differences)
-for i=1:2
+for i=1:4
     % for the savers
     savecompare1 = [savecompare1, naturalMetabolicsAvg_new_avg(savingix(i))];
     savecompare2 = [savecompare2, exoMetabolicsAvg_new_avg(savingix(i))];
