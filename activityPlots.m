@@ -328,62 +328,62 @@ for subj=1:length(welksubjects)
         
         
         % now create a figure 
-        tempfig = figure('Position',[1,1,1920,1080]);
-        for i=2:length(testlabels_nat)
-            subplot(7,9,i-1);
-            templabel = char(testlabels_nat(i));
-            muscleplot1 = welknaturalstruct.(genvarname(templabel));
-            plot(welknaturalstruct.time, muscleplot1, ':')
-            hold on;
-            plot(welknaturalstruct.time, mean(muscleplot1,2), 'k-', 'LineWidth', 2)
-            title(templabel)
-            xlabel('% gait cycle')
-            ylabel(tempthing)
-            grid on;
-        end
-        print(tempfig, ...
-            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_natural', '.png'),...
-            '-dpng', '-r500')
-        disp('print 1')
+        % tempfig = figure('Position',[1,1,1920,1080]);
+        % for i=2:length(testlabels_nat)
+        %     subplot(7,9,i-1);
+        %     templabel = char(testlabels_nat(i));
+        %     muscleplot1 = welknaturalstruct.(genvarname(templabel));
+        %     plot(welknaturalstruct.time, muscleplot1, ':')
+        %     hold on;
+        %     plot(welknaturalstruct.time, mean(muscleplot1,2), 'k-', 'LineWidth', 2)
+        %     title(templabel)
+        %     xlabel('% gait cycle')
+        %     ylabel(tempthing)
+        %     grid on;
+        % end
+        % print(tempfig, ...
+        %     strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_natural', '.png'),...
+        %     '-dpng', '-r500')
+        % disp('print 1')
         
         
-        tempfig2 = figure('Position',[1,1,1920,1080]);
-        for i=2:length(testlabels_exo)
-            subplot(7,9,i-1);
-            templabel = char(testlabels_exo(i));
-            muscleplot2 = welkexostruct.(genvarname(templabel));
-            plot(welkexostruct.time, muscleplot2, ':')
-            hold on;
-            plot(welkexostruct.time, mean(muscleplot2,2), 'k-', 'LineWidth', 2)
-            title(templabel)
-            xlabel('% gait cycle')
-            ylabel(tempthing)
-            grid on;
-        end
-        print(tempfig2, ...
-            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_exo', '.png'),...
-            '-dpng', '-r500')
-        disp('print 2')
+        % tempfig2 = figure('Position',[1,1,1920,1080]);
+        % for i=2:length(testlabels_exo)
+        %     subplot(7,9,i-1);
+        %     templabel = char(testlabels_exo(i));
+        %     muscleplot2 = welkexostruct.(genvarname(templabel));
+        %     plot(welkexostruct.time, muscleplot2, ':')
+        %     hold on;
+        %     plot(welkexostruct.time, mean(muscleplot2,2), 'k-', 'LineWidth', 2)
+        %     title(templabel)
+        %     xlabel('% gait cycle')
+        %     ylabel(tempthing)
+        %     grid on;
+        % end
+        % print(tempfig2, ...
+        %     strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_exo', '.png'),...
+        %     '-dpng', '-r500')
+        % disp('print 2')
         
         
         % combined exo and natural fig
-        combineexonaturalfig = figure('Position',[1,1,1920,1080]);
-        title('red=natural, blue=exo');
+        % combineexonaturalfig = figure('Position',[1,1,1920,1080]);
+        % title('red=natural, blue=exo');
         labels = fields(welkexostruct);
         for i=2:length(labels)
-            subplot(7,9,i-1);
+            % subplot(7,9,i-1);
             templabel = char(labels(i));
             muscleplot2 = welkexostruct.(genvarname(templabel));
             muscleplot1 = welknaturalstruct.(genvarname(templabel));
-            % plot(welkexostruct.time, muscleplot1, ':')
-            hold on;
-            plot(welkexostruct.time, mean(muscleplot2,2), 'b-', 'LineWidth', 2)
-            plot(welknaturalstruct.time, mean(muscleplot1,2), 'r-', 'LineWidth', 2)
-            title(templabel)
-            xlabel('% gait cycle')
-            ylabel(tempthing)
-            grid on;
-            % legend('exo','natural')
+            % % plot(welkexostruct.time, muscleplot1, ':')
+            % hold on;
+            % plot(welkexostruct.time, mean(muscleplot2,2), 'b-', 'LineWidth', 2)
+            % plot(welknaturalstruct.time, mean(muscleplot1,2), 'r-', 'LineWidth', 2)
+            % title(templabel)
+            % xlabel('% gait cycle')
+            % ylabel(tempthing)
+            % grid on;
+            % % legend('exo','natural')
             if tempthing == 'excitation'
                 exomeans_excitation.(genvarname(subject)) = [exomeans_excitation.(genvarname(subject)), mean(muscleplot2, 2)];
                 naturalmeans_excitation.(genvarname(subject)) = [naturalmeans_excitation.(genvarname(subject)), mean(muscleplot1, 2)];
@@ -399,9 +399,9 @@ for subj=1:length(welksubjects)
                 % naturalmeans_activation = [naturalmeans_activation, mean(muscleplot1, 2)];
             end
         end
-        print(combineexonaturalfig, ...
-            strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_combined', '.png'),...
-            '-dpng', '-r500')
+        % print(combineexonaturalfig, ...
+        %     strcat(repodir,'\..\analysis\',subject,'\', tempthing, '_combined', '.png'),...
+        %     '-dpng', '-r500')
         disp('print combined')
     end
 end
@@ -445,10 +445,12 @@ for i=1:length(excitelabels)-1
     ylabel(tempthing)
     grid on;
     % legend('exo','natural')
+%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
+
 end
 
 print(subjectcombineexonaturalfig1, ...
-    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined.png'),...
+    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined_nolegend.png'),...
     '-dpng', '-r500')
 disp('print combined')
 
@@ -490,9 +492,10 @@ for i=1:length(activelabels)-1
     ylabel(tempthing)
     grid on;
     % legend('exo','natural')
+%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
 end
 
 print(subjectcombineexonaturalfig2, ...
-    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined.png'),...
+    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined_nolegend.png'),...
     '-dpng', '-r500')
 disp('print combined')
