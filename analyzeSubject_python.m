@@ -40,21 +40,23 @@ end
 % runRRA_2('./RRAfiles/RRA_Setup_2.xml');
 % close all;
 % torqueMarkerTrackGRFPrescribe();
-close all;
-torqueStateTrackGRFPrescribe();
-close all;
-Issues = muscleStatePrescribeGRFPrescribe(Issues);
-close all;
+% close all;
+% torqueStateTrackGRFPrescribe();
+% close all;
+% Issues = muscleStatePrescribeGRFPrescribe(Issues);
+% close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 close all;
 
-Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
-close all;
+% Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
+% close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
+torqueStateTrackGRFPrescribeStrict();
+Issues = muscleStatePrescribeGRFPrescribeStrict(Issues);
 % Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
 % close all;
-Issues = muscleStateTrackGRFPrescribe(Issues);
+% Issues = muscleStateTrackGRFPrescribe(Issues);
 % close all;
 % Issues = muscleStateTrackGRFTrack(Issues)
 close all;

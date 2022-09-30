@@ -190,9 +190,9 @@ os.chdir(resultsbasedir)
 #### 
 # scratch space overwrite for subsets of subj and conditions
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
-subjects = ['welk005','welk008','welk010','welk013']
+subjects = ['welk008','welk009','welk010','welk013']
 welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
-trials = ['trial01','trial02','trial03','trial04']
+trials = ['trial01','trial02','trial03','trial04'] #,'trial02','trial03','trial04']
 command = "analyzeSubject"
 # command = "analyzeSubject_setup"
 
@@ -238,8 +238,9 @@ for subj in subjects:
                     time.sleep(3.0)
                     # output_fpath = os.path.join(trialdir,'\\matlab_log.txt')
                     mat_exists = os.path.isfile('matlab_log.txt')
-                    
-                    if mat_exists:
+                    mat_exists2 = os.path.isfile('matlab_log2.txt')
+
+                    if mat_exists or mat_exists2:
                         print('it exists')
                         break
                     print('still in the loop')
