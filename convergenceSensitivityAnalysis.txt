@@ -31,3 +31,19 @@ Welk010 welknatural trial01 - try simulating with no initial guess, or just a di
 
 
 Also added some weights for specific coordinates, the difference in cost function looks to be around 4.6 compared to 3.6, so that is cool. Not huge, but potentially powerful?? check the final!
+
+
+
+
+Newnew - welk008 welkexo trial01
+log - all with 1e-4 on the constraint
+base - 15.607  met cost = 9.818
+
+con is the convergence tolerance value. J the cost function. all the same mesh and constraint tolerance. 
+100 con J = 12.598, , kinematics = decent (slight hip shift forward)
+10 con J = 12.598, , kinematics = same ^
+1 con J = 12.598, , kinematics = same ^
+0.1 con J = 12.598, , kinematics = same ^
+0.01 con J = 12.51, , kinematics = same ^
+0.001 con J = 12.46, , kinematics = same ^, honestly maybe better
+0.0001 con J = didn't converge...

@@ -9,7 +9,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
     modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
 
-%     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+    % modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
@@ -98,9 +98,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % set specific weights for the individual weight set
     coordinateweights = MocoWeightSet();
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1e3));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 1e5));
     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 1e7));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1e2));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 1e3));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 1000000));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 1000000));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
@@ -134,7 +134,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.04); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -249,11 +249,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     solver.resetProblem(problem)
 
 
-%     solver.set_optim_convergence_tolerance(10); % 1e-2
-%     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
-%     solver.set_parallel(24);
-%     solver.set_parallel(8);
-%     solver.set_parallel(12);
+    % solver.set_optim_convergence_tolerance(10); % 1e-2
+    % solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    % solver.set_parallel(24);
+    % solver.set_parallel(8);
+    % solver.set_parallel(12);
     % solver.set_num_mesh_intervals(steps);
     
     guess = solver.createGuess('bounds'); % bounds or random  
