@@ -32,6 +32,7 @@ function analyzeMetabolicCost(solution, tag)
         analyze.setStatesFileName(strcat(tag, "_states.sto"));
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
     end
+
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
