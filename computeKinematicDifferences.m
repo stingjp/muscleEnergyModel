@@ -234,6 +234,11 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % same figure but in degrees
     tempfig4 = figure('Position',[1,1,2800,1080]);
     % go through all the joints
+
+    % want to get two data structures - one with names, and one with error
+    errnames = [];
+    errvalus = [];
+    keyboard
     for l=0:trackNumLabels-1
         templabel = trackLabels.get(l);
         templabel = string(templabel);
@@ -260,6 +265,13 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
             msqerr = mean(sqerr);
             rmse = sqrt(msqerr); 
             
+            % add to vectors
+            if ~contains(templabel, 'speed')
+                errnames = [errnames, templabel];
+                errvalus = [errvalus, rmse];
+            end
+
+
             title(string(templabel));
             xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
             % xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
@@ -293,6 +305,13 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
             sqerr = err.^2;
             msqerr = mean(sqerr);
             rmse = sqrt(msqerr); 
+            
+            % add to vectors
+            if ~contains(templabel, 'speed')
+                errnames = [errnames, templabel];
+                errvalus = [errvalus, rmse];
+            end
+
 
             title(string(templabel));
             xlabel(strcat('time [s]\nRMSE: ',string(rmse)));
@@ -334,5 +353,5 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     print(tempfig4, temptarget2, '-dpng', '-r500')
     disp('print 1')
 
-    close all
+%     close all
 end

@@ -1,4 +1,8 @@
-function [Issues] = computeIDFromResult(Issues, solution, tag)
+function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avgreservevalus, reservenames, ...
+    maxresidualpercvalus, avgresidualpercvalus, maxresidualvalus, avgresidualvalus, residualnames, ...
+    maxresidualmompercvalus, avgresidualmompercvalus, maxresidualmomvalus, avgresidualmomvalus, residualmomnames ...
+    ] = computeIDFromResult(Issues, solution, tag)
+
     import org.opensim.modeling.*
 %     Issues = [[java.lang.String('coordinate actuator'); java.lang.String('ratio to net')]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -202,6 +206,26 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
     % check the coordactlabels
     % check tempcoordinate name
     
+    % set up data structs for reserve or residual error
+    % reserve errors
+    maxreservevalus = [];
+    maxreservepercvalus = [];
+    avgreservevalus = [];
+    avgreservepercvalus = [];
+    reservenames = [];
+    %residual forces
+    maxresidualvalus = [];
+    maxresidualpercvalus = [];
+    avgresidualvalus = [];
+    avgresidualpercvalus = [];
+    residualnames = [];
+    % residual moments
+    maxresidualmomvalus = [];
+    maxresidualmompercvalus = [];
+    avgresidualmomvalus = [];
+    avgresidualmompercvalus = [];
+    residualmomnames = [];
+
     % TODO start here and fix. 
     forcecheck = {'tx','ty','tz'};
     templabels = coordactmomentstable.getColumnLabels();
@@ -213,7 +237,7 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
         if ~any(contains(char(tempcoordinate),'beta'))
             % compare the reserve for each coordinate to the net joint moment
             tempmomentname = tempcoordinate.split('/');
-            tempmomentname = char(tempmomentname(end))
+            tempmomentname = char(tempmomentname(end));
                         
             % figure out how to get the reserve ones here
             matched = false;
@@ -245,10 +269,16 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
 
                     % ratio_peak = tempind_peak/tempnetexternal_peak;
                     % ratio_rms = tempind_rms/tempnetexternal_rms;
-                    ratio_peak = max(abs(tempind)./tempnetexternal_peak)
-                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak)
-
+                    ratio_peak = max(abs(tempind)./tempnetexternal_peak);
+                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak);
                     
+                    % residual forces collection
+                    maxresidualvalus = [maxresidualvalus; max(abs(tempind))];
+                    avgresidualvalus = [avgresidualvalus; rms(abs(tempind))];
+                    maxresidualpercvalus = [maxresidualpercvalus; ratio_peak];
+                    avgresidualpercvalus = [avgresidualpercvalus; ratio_rms];
+                    residualnames = [residualnames; string(tempmomentname)];
+
                     if ratio_peak > 0.05
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
                     end
@@ -277,10 +307,15 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
  
                     % ratio_peak = tempind_peak/tempnetexternalcom_peak;
                     % ratio_rms = tempind_rms/tempnetexternalcom_rms;
-                    ratio_peak = max(abs(tempind)./tempnetexternalcom_peak)
-                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak)
+                    ratio_peak = max(abs(tempind)./tempnetexternalcom_peak);
+                    ratio_rms = rms(abs(tempind)./tempnetexternalcom_peak);
 
-
+                    % residual moment collection
+                    maxresidualmomvalus = [maxresidualmomvalus; max(abs(tempind))];
+                    maxresidualmompercvalus = [maxresidualmompercvalus; ratio_peak];
+                    avgresidualmomvalus = [avgresidualmomvalus; rms(abs(tempind))];
+                    avgresidualmompercvalus = [avgresidualmompercvalus; ratio_rms];
+                    residualmomnames = [residualmomnames; string(tempmomentname)];
 
                     if ratio_peak > 0.01
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
@@ -301,9 +336,15 @@ function [Issues] = computeIDFromResult(Issues, solution, tag)
 
                     % ratio_peak = tempind_peak/tempnet_peak;
                     % ratio_rms = tempind_rms/tempnet_rms;
-                    ratio_peak = max(abs(tempind)./tempnet_peak)
-                    ratio_rms = rms(abs(tempind)./tempnet_peak)
+                    ratio_peak = max(abs(tempind)./tempnet_peak);
+                    ratio_rms = rms(abs(tempind)./tempnet_peak);
 
+                    % reserve value collection
+                    maxreservevalus = [maxreservevalus; max(abs(tempind))];
+                    maxreservepercvalus = [maxreservepercvalus; ratio_peak];
+                    avgreservevalus = [avgreservevalus; rms(abs(tempind))];
+                    avgreservepercvalus = [avgreservepercvalus; ratio_rms];
+                    reservenames = [reservenames; string(tempmomentname)];
 
                     if ratio_peak > 0.05
                         Issues = [Issues; [java.lang.String(tempcoordact), java.lang.String(strcat('peak ratio:',string(ratio_peak)))]];
