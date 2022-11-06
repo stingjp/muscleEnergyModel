@@ -19,7 +19,8 @@ resultsbasedir = os.path.join(repodir,'..\\results\\')
 analysisbasedir = os.path.join(repodir,'..\\analysis\\')
 metabolicsbasedir = os.path.join(repodir,'..\\metabolicsResults\\')
 targetmuscleresults = os.path.join(metabolicsbasedir,'muscleInverse\\')
-targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\')
+# targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\')
+targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverse_100con\\')
 
 
 
@@ -215,10 +216,10 @@ for subj in subjects:
                 trialdir = os.path.join(tempdir_2, keys)                
                 # directory for each metabolic result file
                 metfile1 = os.path.join(trialdir, 'metabolicsTable.csv')
-                metfile2 = os.path.join(trialdir, 'metabolicsTable_withemg.csv')
+                metfile2 = os.path.join(trialdir, 'metabolicsTable_100con.csv')
                 # new names for when they are copied
                 newname1 = subj+'_'+cond+'_'+keys+'_metabolicsTable.csv'
-                newname2 = subj+'_'+cond+'_'+keys+'_metabolicsTable_withemg.csv'
+                newname2 = subj+'_'+cond+'_'+keys+'_metabolicsTable_100con.csv'
                 # target location paths
                 target1 = os.path.join(targetmuscleresults,newname1)
                 target2 = os.path.join(targetmuscleEMGresults,newname2)
