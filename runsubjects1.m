@@ -18,9 +18,9 @@ cd(resultsdir)
 %%%%%
 % dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
-welkconditions = {'welknatural'}%,'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
+welkconditions = {'welknatural','welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
-welksubjects = {'welk005'}%,'welk003','welk005','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003'}%,'welk003','welk005','welk008','welk009','welk010','welk013'};
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
 
 % TODO an issues holder for this script
@@ -82,44 +82,49 @@ for subj=1:length(welksubjects)
         end
     end
 end
-keyboard
+
 % possibly do all the error stuff here
 % compute some average values for the different RMSE values
 % TODO add in code for averaging different things
 % start with marker errors
-[max_markerr, idxmax_markerr] = max(markvalus(:))
+[max_markerr, idxmax_markerr] = max(markvalus(:));
 marknameslong = marknames(:);
 max_markerrname = marknameslong(idxmax_markerr)
+disp(max_markerr)
 mean_markerr = mean(markvalus,2);
 avg_markerr = mean(mean_markerr)
 % get rid of upper body and redo
 marknamesabbrev = marknames(5:end,:);
 markvalusabbrev = markvalus(5:end,:);
-[max_markerrabbrev, idxmax_markerrabbrev] = max(markvalusabbrev(:))
+[max_markerrabbrev, idxmax_markerrabbrev] = max(markvalusabbrev(:));
 marknamesabbrevlong = marknamesabbrev(:);
 max_markerrnameabbrev = marknamesabbrevlong(idxmax_markerrabbrev)
+disp(max_markerrabbrev)
 mean_markerrabbrev = mean(markvalusabbrev,2);
 avg_markerrabbrev = mean(mean_markerrabbrev)
 
 % now for the joint kinematic errors
-[max_coorderr, idxmax_coorderr] = max(errvalus(:))
+[max_coorderr, idxmax_coorderr] = max(errvalus(:));
 coordnameslong = errnames(:);
 max_coordname = coordnameslong(idxmax_coorderr)
+disp(max_coorderr)
 mean_coorderr = mean(errvalus,2);
 avg_coorderr = mean(mean_coorderr)
 % remove lumbar and try again
 errnamesabbrev = errnames(1:17,:);
 errvalusabbrev = errvalus(1:17,:);
-[max_coorderrabbrev, idxmax_coorderrabbrev] = max(errvalusabbrev(:))
+[max_coorderrabbrev, idxmax_coorderrabbrev] = max(errvalusabbrev(:));
 coordnamesabbrevlong = errnamesabbrev(:);
 max_coordnameabbrev = coordnamesabbrevlong(idxmax_coorderrabbrev)
+disp(max_coorderrabbrev)
 mean_coorderrabbrev = mean(errvalusabbrev,2);
 avg_coorderrabbrev = mean(mean_coorderrabbrev)
 
 % next is the translational coordinates
-[max_poserr, idxmax_poserr] = max(tranvalus(:))
+[max_poserr, idxmax_poserr] = max(tranvalus(:));
 posnameslong = trannames(:);
 max_posname = posnameslong(idxmax_poserr)
+disp(max_poserr)
 mean_poserr = mean(tranvalus,2);
 avg_poserr = mean(mean_poserr)
 
@@ -127,13 +132,15 @@ avg_poserr = mean(mean_poserr)
 % have to remove the lumbar actuators
 maxreservevalusabbrev = maxreservevalus(1:12,:);
 reservenamesabbrev = reservenames(1:12,:);
-[max_maxreserveerr, idxmax_maxreserveerr] = max(maxreservevalusabbrev(:))
+[max_maxreserveerr, idxmax_maxreserveerr] = max(maxreservevalusabbrev(:));
 reservenameslong = reservenamesabbrev(:);
 max_maxreservename = reservenameslong(idxmax_maxreserveerr)
+disp(max_maxreserveerr)
 % reserves errors - percent of net joint moment max
 maxreservepercvalusabbrev = maxreservepercvalus(1:12,:);
-[max_maxreserveperc, idxmax_maxreserveperc] = max(maxreservepercvalusabbrev(:))
+[max_maxreserveperc, idxmax_maxreserveperc] = max(maxreservepercvalusabbrev(:));
 max_maxreservepercname = reservenameslong(idxmax_maxreserveperc)
+disp(max_maxreserveperc)
 % reserve errors - RMS raw valus
 avgreservevalusabbrev = avgreservevalus(1:12,:);
 mean_avgreserveerr = mean(avgreservevalusabbrev,2);
@@ -144,12 +151,14 @@ mean_avgreservepercerr = mean(avgreservepercvalusabbrev,2);
 avg_avgreservepercerr = mean(mean_avgreservepercerr)
 
 % residual errors raw max
-[max_maxresidualerr, idxmax_maxresidualerr] = max(maxresidualvalus(:))
+[max_maxresidualerr, idxmax_maxresidualerr] = max(maxresidualvalus(:));
 residualnameslong = residualnames(:);
 max_maxresidualname = residualnameslong(idxmax_maxresidualerr)
+disp(max_maxresidualerr)
 % residual errors percent max
-[max_maxresidualperc, idxmax_maxresidualperc] = max(maxresidualpercvalus(:))
+[max_maxresidualperc, idxmax_maxresidualperc] = max(maxresidualpercvalus(:));
 max_maxresidualpercname = residualnameslong(idxmax_maxresidualperc)
+disp(max_maxresidualperc)
 % residual errors - RMS raw valus
 mean_avgresidualerr = mean(avgresidualvalus,2);
 avg_avgresidualerr = mean(mean_avgresidualerr)
@@ -158,12 +167,14 @@ mean_avgresidualpercerr = mean(avgresidualpercvalus,2);
 avg_avgresidualpercerr = mean(mean_avgresidualpercerr)
 
 % residual moment errors raw max
-[max_maxresidualmomerr, idxmax_maxresidualmomerr] = max(maxresidualmomvalus(:))
+[max_maxresidualmomerr, idxmax_maxresidualmomerr] = max(maxresidualmomvalus(:));
 residualmomnameslong = residualmomnames(:);
 max_maxresidualmomname = residualmomnameslong(idxmax_maxresidualmomerr)
+disp(max_maxresidualmomerr)
 % residual moment errors percent max
-[max_maxresidualmomperc, idxmax_maxresidualmomperc] = max(maxresidualmompercvalus(:))
+[max_maxresidualmomperc, idxmax_maxresidualmomperc] = max(maxresidualmompercvalus(:));
 max_maxresidualmompercname = residualmomnameslong(idxmax_maxresidualmomperc)
+disp(max_maxresidualmomperc)
 % residual moment errors - RMS raw valus
 mean_avgresidualmomerr = mean(avgresidualmomvalus,2);
 avg_avgresidualmomerr = mean(mean_avgresidualmomerr)
