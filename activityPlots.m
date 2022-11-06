@@ -426,8 +426,8 @@ for i=1:length(excitelabels)-1
     % for each muscle go through each subject
     for subj=1:length(welksubjects)
         subject = char(welksubjects(subj));
-        plot(welkexostruct.time, exomeans_excitation.(genvarname(subject))(:,i), 'b:', 'LineWidth', 1)
-        plot(welknaturalstruct.time, naturalmeans_excitation.(genvarname(subject))(:,i), 'r:', 'LineWidth', 1)
+        plot(welkexostruct.time, exomeans_excitation.(genvarname(subject))(:,i), 'b:', 'LineWidth', 0.4)
+        plot(welknaturalstruct.time, naturalmeans_excitation.(genvarname(subject))(:,i), 'r:', 'LineWidth', 0.4)
         
         % add each signal to the temp vector to get means before moving to
         % the next muscle
@@ -443,14 +443,14 @@ for i=1:length(excitelabels)-1
     title(templabel)
     xlabel('% gait cycle')
     ylabel(tempthing)
-    grid on;
+%     grid on;
     % legend('exo','natural')
-%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
+    legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
 
 end
 
 print(subjectcombineexonaturalfig1, ...
-    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined_nolegend.png'),...
+    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined_withlegend.png'),...
     '-dpng', '-r500')
 disp('print combined')
 
@@ -473,8 +473,8 @@ for i=1:length(activelabels)-1
     % for each muscle go through each subject
     for subj=1:length(welksubjects)
         subject = char(welksubjects(subj));
-        plot(welkexostruct.time, exomeans_activation.(genvarname(subject))(:,i), 'b:', 'LineWidth', 1)
-        plot(welknaturalstruct.time, naturalmeans_activation.(genvarname(subject))(:,i), 'r:', 'LineWidth', 1)
+        plot(welkexostruct.time, exomeans_activation.(genvarname(subject))(:,i), 'b:', 'LineWidth', 0.4)
+        plot(welknaturalstruct.time, naturalmeans_activation.(genvarname(subject))(:,i), 'r:', 'LineWidth', 0.4)
         
         % add each signal to the temp vector to get means before moving to
         % the next muscle
@@ -490,12 +490,12 @@ for i=1:length(activelabels)-1
     title(templabel)
     xlabel('% gait cycle')
     ylabel(tempthing)
-    grid on;
+%     grid on;
     % legend('exo','natural')
-%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
+    legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
 end
 
 print(subjectcombineexonaturalfig2, ...
-    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined_nolegend.png'),...
+    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined_withlegend.png'),...
     '-dpng', '-r500')
 disp('print combined')

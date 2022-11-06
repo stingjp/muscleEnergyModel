@@ -313,39 +313,39 @@ for thing=1:length(thingstoplot)
         
         % okay now to plot etc. 
         
-        newlabels = fields(welkexostruct);
-        % need to redo the labels
-        tempfig = figure('Position',[1,1,1920,1080]);
-        % do more stuff
-        % averaging and whatnot
-        for i=2:length(newlabels)
-            subplot(6,7,i-1);
-            templabel = newlabels(i);
-            templabel = char(templabel);
-            % plot each of the gait cycles
-            muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
-            muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
-            plot(welknaturalstruct.time, muscleplot_nat, 'r:')
-            hold on;
-            plot(welkexostruct.time, muscleplot_exo, 'b:')
-            % plot the subject average
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
-            ylabel('Coordinate Value [rad/m]');
-            % title(templabel)
-            xlabel('% gait cycle')
-            % select the name out 
-            templabel2 = strrep(templabel,'_',' ');
-            % for activation maintenance rate
-            % templabel2 = templabel()
-            title(templabel2);
-            grid on;
-        end
+        % newlabels = fields(welkexostruct);
+        % % need to redo the labels
+        % tempfig = figure('Position',[1,1,1920,1080]);
+        % % do more stuff
+        % % averaging and whatnot
+        % for i=2:length(newlabels)
+        %     subplot(6,7,i-1);
+        %     templabel = newlabels(i);
+        %     templabel = char(templabel);
+        %     % plot each of the gait cycles
+        %     muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
+        %     muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
+        %     plot(welknaturalstruct.time, muscleplot_nat, 'r:')
+        %     hold on;
+        %     plot(welkexostruct.time, muscleplot_exo, 'b:')
+        %     % plot the subject average
+        %     plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
+        %     plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+        %     ylabel('Coordinate Value [rad/m]');
+        %     % title(templabel)
+        %     xlabel('% gait cycle')
+        %     % select the name out 
+        %     templabel2 = strrep(templabel,'_',' ');
+        %     % for activation maintenance rate
+        %     % templabel2 = templabel()
+        %     title(templabel2);
+        %     grid on;
+        % end
         
-        print(tempfig, ...
-            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
-            '-dpng', '-r500')
-        disp('print 1')
+        % print(tempfig, ...
+        %     strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+        %     '-dpng', '-r500')
+        % disp('print 1')
         
 
 
@@ -355,7 +355,9 @@ for thing=1:length(thingstoplot)
         
     end
 
-    
+
+    newlabels = fields(welkexostruct);
+
     % loop through the subjects again?
     markr = {'r:','r--'};
     markb = {'b:','b--'};
@@ -367,17 +369,27 @@ for thing=1:length(thingstoplot)
         subplot(6,7,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
+        temp1 = [];
+        temp2 = [];
         % loop through the subjects
         for subj=1:length(welksubjects)
             subject = char(welksubjects(subj));
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
+            
+            temp1 = [temp1, mean(muscleplot_nat,2)];
+            temp2 = [temp2, mean(muscleplot_exo,2)];
+
+            
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-');%char(markr(subj)))
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4);%char(markr(subj)))
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-');%char(markb(subj)))
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
         end
         
+        plot(mean(temp1,2), 'r', 'LineWidth', 2)
+        plot(mean(temp2,2), 'b', 'LineWidth', 2)
+
         templabel2 = strrep(templabel,'_',' ');
         title(templabel2)
         

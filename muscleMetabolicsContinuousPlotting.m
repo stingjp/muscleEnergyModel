@@ -383,9 +383,13 @@ for thing=1:length(thingstoplot)
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1)
+%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color','#D95319', 'LineWidth',0.4)
+%             hold on;
+%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', '#7E2F8E','LineStyle',':','LineWidth',0.4)
+
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color','r', 'LineWidth',0.4)
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1)
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', 'b','LineStyle',':','LineWidth',0.4)
 
             % add them to the temp vector for plotting the average of all
             % subjects
@@ -458,19 +462,24 @@ for thing=1:length(thingstoplot)
         title(templabel2);
         xlabel('% gait cycle')
         ylabel('Metabolic rate [W/kg]')
-        grid on;
+        ylim([-600 300])
+%         grid on;
+        ax = gca;
+%         ax.XAxisLocation = 'origin'
         
         % need to average them all and plot
-        plot(mean(tempsubj_nat,2), 'r','LineWidth',2);
-        plot(mean(tempsubj_exo,2), 'b','LineWidth',2);
-        % legend(strcat('nat peak max: ',num2str(max(mean(tempsubj_nat,2)))), ...
-        %     strcat('exo peak max: ',num2str(max(mean(tempsubj_exo,2)))), ...
-        %     strcat('nat min peak: ',num2str(min(mean(tempsubj_nat,2)))), ...
-        %     strcat('exo min peak',num2str(min(mean(tempsubj_exo,2)))))
+%         plot(mean(tempsubj_nat,2), 'Color','#D95319','LineWidth',2);
+%         plot(mean(tempsubj_exo,2), 'Color', '#7E2F8E','LineWidth',2);
+        plot(mean(tempsubj_nat,2), 'Color','r','LineWidth',2);
+        plot(mean(tempsubj_exo,2), 'Color', 'b','LineWidth',2);
+%         legend(strcat('nat peak max: ',num2str(max(mean(tempsubj_nat,2)))), ...
+%             strcat('exo peak max: ',num2str(max(mean(tempsubj_exo,2)))), ...
+%             strcat('nat min peak: ',num2str(min(mean(tempsubj_nat,2)))), ...
+%             strcat('exo min peak',num2str(min(mean(tempsubj_exo,2)))))
 
     end
 
-
+    % withlegend
     print(tempfig2, ...
         strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, tag, '_combined_',whichthing, '.png'),...
         '-dpng', '-r500')

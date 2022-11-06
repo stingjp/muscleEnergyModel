@@ -346,17 +346,17 @@ for i=2:length(labels)
 
 
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat_act,2), 'r:', 'DisplayName', 'natural active','LineWidth',1)
+            plot(welknaturalstruct.time, mean(muscleplot_nat_act,2), 'r:', 'DisplayName', 'natural active','LineWidth',0.4)
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo_act,2), 'b:', 'DisplayName', 'exotendon active','LineWidth',1)
+            plot(welkexostruct.time, mean(muscleplot_exo_act,2), 'b:', 'DisplayName', 'exotendon active','LineWidth',0.4)
             % plot(welknaturalstruct.time, mean(muscleplot_nat_pas,2), 'r-.', 'DisplayName', 'natural passive','LineWidth',1)
             % plot(welkexostruct.time, mean(muscleplot_exo_pas,2), 'b-.', 'DisplayName', 'exotendon passive','LineWidth',1)
 
             title(templabel)
             xlabel('% gait cycle')
             ylabel('Force [N]')
-            grid on;
-            % legend();
+%             grid on;
+            legend();
         end
         plot(mean(actnat,2),'r','LineWidth',2);
         plot(mean(actexo,2),'b','LineWidth',2);
@@ -376,12 +376,12 @@ plot(welkexostruct.time, mean(muscleplot_exo_act,2), 'b', 'DisplayName', 'exoten
 title('copy legend only')
 xlabel('% gait cycle')
 ylabel('Force [N]')
-grid on;
-legend();
-
+% grid on;
+% legend();
+% __withlegend
 % save figure
 print(tempfig3, ...
-    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_active_allsubjects__withlegend',tag,'.png'),...
+    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_active_allsubjects_withlegend',tag,'.png'),...
     '-dpng', '-r500')
 disp('print 3')
 
@@ -421,16 +421,16 @@ for i=2:length(labels)
 
 
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat_pas,2), 'r:', 'DisplayName', 'natural passive','LineWidth',1)
+            plot(welknaturalstruct.time, mean(muscleplot_nat_pas,2), 'r:', 'DisplayName', 'natural passive','LineWidth',0.4)
             % plot(welknaturalstruct.time, mean(muscleplot_nat_act,2), 'r:', 'DisplayName', 'natural active','LineWidth',1)
             hold on;
             % plot(welkexostruct.time, mean(muscleplot_exo_act,2), 'b:', 'DisplayName', 'exotendon active','LineWidth',1)
-            plot(welkexostruct.time, mean(muscleplot_exo_pas,2), 'b:', 'DisplayName', 'exotendon passive','LineWidth',1)
+            plot(welkexostruct.time, mean(muscleplot_exo_pas,2), 'b:', 'DisplayName', 'exotendon passive','LineWidth',0.4)
 
             title(templabel)
             xlabel('% gait cycle')
             ylabel('Force [N]')
-            grid on;
+%             grid on;
             % legend();
         end
         % plot(mean(actnat,2),'r','LineWidth',2);
@@ -452,11 +452,11 @@ title('copy legend only')
 xlabel('% gait cycle')
 ylabel('Force [N]')
 grid on;
-legend();
-
+% legend();
+% _withlegend
 % save figure
 print(tempfig4, ...
-    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_passive_allsubjects_withlegend_',tag,'.png'),...
+    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_passive_allsubjects_',tag,'.png'),...
     '-dpng', '-r500')
 disp('print 3')
 
