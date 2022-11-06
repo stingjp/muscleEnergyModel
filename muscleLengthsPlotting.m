@@ -274,9 +274,9 @@ for thing=1:length(thingstoplot)
                 testnat = [testnat, muscleplot_nat];
                 testexo = [testexo, muscleplot_exo];
                 % have all of them, want the average plotted for each subject
-                plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1)
+                plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4)
                 hold on;
-                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1)
+                plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4)
             end
 
             % plot the means here.
@@ -286,26 +286,25 @@ for thing=1:length(thingstoplot)
             title(templabel)
             xlabel('% gait cycle')
             ylabel(tempthing)
-            grid on;
+%             grid on;
 
             % try to get legend with peaks
-            legend(strcat('nat min: ',num2str(min(mean(testnat,2)))), ...
-                strcat('exo min: ',num2str(min(mean(testexo,2)))), ...
-                strcat('nat max: ',num2str(max(mean(testnat,2)))), ...
-                strcat('exo max: ',num2str(max(mean(testexo,2)))));
+%             legend(strcat('nat min: ',num2str(min(mean(testnat,2)))), ...
+%                 strcat('exo min: ',num2str(min(mean(testexo,2)))), ...
+%                 strcat('nat max: ',num2str(max(mean(testnat,2)))), ...
+%                 strcat('exo max: ',num2str(max(mean(testexo,2)))));
 
 
 
         end
     end
 
-
+    % _withlegend
     print(tempfig2, ...
-        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing,tag, '_combined_withlegend', '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing,tag, '_combined', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 
     
 end
-
 

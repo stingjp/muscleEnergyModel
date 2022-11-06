@@ -146,37 +146,37 @@ for thing=1:length(thingstoplot)
         % okay now to plot etc. 
         
         % need to redo the labels
-        tempfig = figure('Position',[1,1,1920,1080]);
-        % do more stuff
-        % averaging and whatnot
-        for i=2:length(newlabels)
-            subplot(5,6,i-1);
-            templabel = newlabels(i);
-            templabel = char(templabel);
-            % plot each of the gait cycles
-            muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
-            muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
-            plot(welknaturalstruct.time, muscleplot_nat, 'r:')
-            hold on;
-            plot(welkexostruct.time, muscleplot_exo, 'b:')
-            % plot the subject average
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
-            ylabel('Moment [Nm]');
-            % title(templabel)
-            xlabel('% gait cycle')
-            % select the name out 
-            templabel2 = strrep(templabel,'_',' ');
-            % for activation maintenance rate
-            % templabel2 = templabel()
-            title(templabel2);
-            grid on;
-        end
+%         tempfig = figure('Position',[1,1,1920,1080]);
+%         % do more stuff
+%         % averaging and whatnot
+%         for i=2:length(newlabels)
+%             subplot(5,6,i-1);
+%             templabel = newlabels(i);
+%             templabel = char(templabel);
+%             % plot each of the gait cycles
+%             muscleplot_nat = welknaturalstruct.(genvarname(char(templabel)));
+%             muscleplot_exo = welkexostruct.(genvarname(char(templabel)));
+%             plot(welknaturalstruct.time, muscleplot_nat, 'r:')
+%             hold on;
+%             plot(welkexostruct.time, muscleplot_exo, 'b:')
+%             % plot the subject average
+%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r-', 'LineWidth', 1)
+%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b-', 'LineWidth', 1)
+%             ylabel('Moment [Nm]');
+%             % title(templabel)
+%             xlabel('% gait cycle')
+%             % select the name out 
+%             templabel2 = strrep(templabel,'_',' ');
+%             % for activation maintenance rate
+%             % templabel2 = templabel()
+%             title(templabel2);
+%             grid on;
+%         end
         
-        print(tempfig, ...
-            strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
-            '-dpng', '-r500')
-        disp('print 1')
+%         print(tempfig, ...
+%             strcat(strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', strcat(subject,'\')), strcat(strcat(tempthing, '_acrossconditions'), '.png')),...
+%             '-dpng', '-r500')
+%         disp('print 1')
         
 
 
@@ -222,8 +222,8 @@ for thing=1:length(thingstoplot)
             hold on;
             % plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1);% char(markr(subj)))
             % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1);% char(markb(subj)))
-            plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',1);
-            plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',1);
+            plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',.4);
+            plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
 
         end
         plot(welknaturalstruct.time, mean(holding_nat,2),'r','LineWidth',2);
@@ -235,13 +235,13 @@ for thing=1:length(thingstoplot)
         
         xlabel('% gait cycle')
         ylabel('Moment [Nm/kg]')
-        grid on;
+%         grid on;
     end
     subplot(6,5,i);
     plot(welkexostruct.time, mean(holding_exo,2),'b');
     hold on;
     plot(welknaturalstruct.time, mean(holding_nat,2),'r');
-    legend('Exotendon','Natural') 
+%     legend('Exotendon','Natural') 
 
     print(tempfig2, ...
         strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_subjectAVG', '.png'),...
