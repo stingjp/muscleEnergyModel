@@ -190,9 +190,9 @@ os.chdir(resultsbasedir)
 #### 
 # scratch space overwrite for subsets of subj and conditions
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
-subjects = ['welk008','welk009','welk010','welk013']
-welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']8
-trials = ['trial01','trial02','trial03','trial04'] #,'trial02','trial03','trial04']
+subjects = ['welk008']#,'welk007','welk008','welk009','welk010'] # run first pass, then run base on all 5
+welkconditions = ['welkexo']#,'welknatural'] #,'welknaturalnatural','welkexoexo']
+trials = ['trial01']#,'trial02','trial03','trial04']
 command = "analyzeSubject"
 # command = "analyzeSubject_setup"
 
