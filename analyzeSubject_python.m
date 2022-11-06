@@ -29,7 +29,7 @@ else
 end
 
 % edit experimental data for simulations
-% renameExperimentalData();
+renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
@@ -50,10 +50,10 @@ close all;
 
 % Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
 % close all;
-% Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
+Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
-torqueStateTrackGRFPrescribeStrict();
-Issues = muscleStatePrescribeGRFPrescribeStrict(Issues);
+% torqueStateTrackGRFPrescribeStrict();
+% Issues = muscleStatePrescribeGRFPrescribeStrict(Issues);
 % Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues);
