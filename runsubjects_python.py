@@ -192,9 +192,9 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk013'] 
+subjects = ['welk002'] 
 welkconditions = ['welknatural'] 
-trials = ['trial01','trial02'] #,'trial02','trial03','trial04'] 
+trials = ['trial03'] # nat 1,2 done
 
 command = "analyzeSubject_python"
 # command = "analyzeSubject_setup"
