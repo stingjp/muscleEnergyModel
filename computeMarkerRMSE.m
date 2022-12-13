@@ -1,4 +1,4 @@
-function [marknames, markvalus, markstruct] = computeMarkerRMSE(solution, trackorprescribe)
+function [marknames, markvalus, markstruct] = computeMarkerRMSE(solution, trackorprescribe, conornot)
     import org.opensim.modeling.*
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 
@@ -11,8 +11,13 @@ function [marknames, markvalus, markstruct] = computeMarkerRMSE(solution, tracko
     end
     
     testmodel = Model('post_simple_model_all_the_probes_muscletrack.osim');
-    teststates = TimeSeriesTable('muscletrack_states.sto');
-    testcontrols = TimeSeriesTable('muscletrack_controls.sto');
+    if conornot
+        teststates = TimeSeriesTable('muscletrack_states_100con.sto');
+        testcontrols = TimeSeriesTable('muscletrack_controls_100con.sto');
+    else
+        teststates = TimeSeriesTable('muscletrack_states.sto');
+        testcontrols = TimeSeriesTable('muscletrack_controls.sto');
+    end
 
     simMarkers = opensimSimulation.analyzeVec3(testmodel, teststates, testcontrols, pathsstd);
     filepath = strcat(pwd, '\motion_capture.trc');

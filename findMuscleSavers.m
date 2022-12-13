@@ -21,7 +21,7 @@ cd(resultsdir)
 welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 

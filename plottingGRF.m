@@ -22,7 +22,7 @@ welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknat
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
 % welksubjects = {'welk001','welk002','welk003','welk004'};
 % welksubjects = {'welk005','welk007','welk008','welk009','welk010','welk013'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 thingstoplot = {'externalforces'}; % 'probes', 'shortening', 'mechanical', 'activation'
 
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
