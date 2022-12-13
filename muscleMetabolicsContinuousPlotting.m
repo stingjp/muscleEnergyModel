@@ -4,7 +4,8 @@ import org.opensim.modeling.*
 repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
-
+exocolor = '#AB82FF'
+natcolor = '#FF7F00'
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
@@ -20,10 +21,10 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 tag = 'muscletrack'
 thingstoplot = {'probes'}; % 'probes', 'shortening', 'mechanical', 'activation'
-whichthing = 'mechanical_work_rate'; % 'metabolics_combined','activation_maintenance_rate','shortening_rate','mechanical_work_rate'
+whichthing = 'metabolics_combined'; % 'metabolics_combined','activation_maintenance_rate','shortening_rate','mechanical_work_rate'
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
 
@@ -64,11 +65,14 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
-                else
-                    tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
-                end 
+                
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
+                % else
+                %     tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
+                % end 
                 % tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
@@ -150,11 +154,14 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
-                else
-                    tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
-                end 
+                
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
+                % else
+                %     tempfile = strcat(trialdir, '/analyzemuscles',tag,'_ProbeReporter_probes','.sto');
+                % end 
                 % tempfile = strcat(trialdir, '/analyzemuscles_ProbeReporter_probes', '.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
@@ -387,9 +394,9 @@ for thing=1:length(thingstoplot)
 %             hold on;
 %             plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', '#7E2F8E','LineStyle',':','LineWidth',0.4)
 
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color','r', 'LineWidth',0.4)
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color',natcolor, 'LineWidth',0.4)
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', 'b','LineStyle',':','LineWidth',0.4)
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', exocolor,'LineStyle',':','LineWidth',0.4)
 
             % add them to the temp vector for plotting the average of all
             % subjects
@@ -462,7 +469,7 @@ for thing=1:length(thingstoplot)
         title(templabel2);
         xlabel('% gait cycle')
         ylabel('Metabolic rate [W/kg]')
-        ylim([-600 300])
+%         ylim([-600 300])
 %         grid on;
         ax = gca;
 %         ax.XAxisLocation = 'origin'
@@ -470,8 +477,8 @@ for thing=1:length(thingstoplot)
         % need to average them all and plot
 %         plot(mean(tempsubj_nat,2), 'Color','#D95319','LineWidth',2);
 %         plot(mean(tempsubj_exo,2), 'Color', '#7E2F8E','LineWidth',2);
-        plot(mean(tempsubj_nat,2), 'Color','r','LineWidth',2);
-        plot(mean(tempsubj_exo,2), 'Color', 'b','LineWidth',2);
+        plot(mean(tempsubj_nat,2), 'Color',natcolor,'LineWidth',2);
+        plot(mean(tempsubj_exo,2), 'Color', exocolor,'LineWidth',2);
 %         legend(strcat('nat peak max: ',num2str(max(mean(tempsubj_nat,2)))), ...
 %             strcat('exo peak max: ',num2str(max(mean(tempsubj_exo,2)))), ...
 %             strcat('nat min peak: ',num2str(min(mean(tempsubj_nat,2)))), ...
@@ -481,7 +488,7 @@ for thing=1:length(thingstoplot)
 
     % withlegend
     print(tempfig2, ...
-        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, tag, '_combined_',whichthing, '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, tag, '_combined_nolegend_',whichthing, '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 end

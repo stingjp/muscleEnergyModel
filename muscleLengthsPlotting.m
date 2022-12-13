@@ -20,7 +20,7 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 tag = 'muscletrack';
 thingstoplot = {'NormalizedFiberLength','NormFiberVelocity'};
 
@@ -64,11 +64,14 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
-                else
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
-                end
+                
+                tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                % else
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
+                % end
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -114,11 +117,14 @@ for thing=1:length(thingstoplot)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
-                else
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
-                end
+                
+                tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                % else
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto'));
+                % end
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -301,7 +307,7 @@ for thing=1:length(thingstoplot)
 
     % _withlegend
     print(tempfig2, ...
-        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing,tag, '_combined', '.png'),...
+        strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing,tag, 'nolegend_combined', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
 

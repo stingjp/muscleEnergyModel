@@ -20,7 +20,7 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 tag = 'muscletrack';
 thingstoplot = {'PassiveFiberForce','ActiveFiberForce'};
 
@@ -66,11 +66,14 @@ for subj=1:length(welksubjects)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
-                else
-                    tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
-                end
+                
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                % else
+                %     tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
+                % end
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -116,11 +119,14 @@ for subj=1:length(welksubjects)
                 % now figure out how to get and plot the signal i want
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
-                if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
-                    tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
-                else
-                    tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
-                end
+                
+                tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
+
+                % if strcmp(subject, 'welk002') || strcmp(subject, 'welk003')
+                %     tempfile = strcat(trialdir, strcat('/analyzemuscles_MuscleAnalysis_', strcat(tempthing, '.sto')));
+                % else
+                %     tempfile = strcat(trialdir, '/analyzemuscles',tag,'_MuscleAnalysis_', tempthing, '.sto');
+                % end
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 times = zeros(temptime.size(),1);
@@ -356,14 +362,14 @@ for i=2:length(labels)
             xlabel('% gait cycle')
             ylabel('Force [N]')
 %             grid on;
-            legend();
+            % legend();
         end
         plot(mean(actnat,2),'r','LineWidth',2);
         plot(mean(actexo,2),'b','LineWidth',2);
         % plot(mean(passnat,2),'r','LineWidth',2);
         % plot(mean(passexo,2),'b','LineWidth',2);
-        legend(strcat('nat peak: ',num2str(max(mean(actnat,2)))), ...
-            strcat('exo peak: ', num2str(max(mean(actexo,2)))));
+%         legend(strcat('nat peak: ',num2str(max(mean(actnat,2)))), ...
+%             strcat('exo peak: ', num2str(max(mean(actexo,2)))));
     end
 end
 subplot(6,8,j-1);
@@ -381,7 +387,7 @@ ylabel('Force [N]')
 % __withlegend
 % save figure
 print(tempfig3, ...
-    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_active_allsubjects_withlegend',tag,'.png'),...
+    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_active_allsubjects_nolegend',tag,'.png'),...
     '-dpng', '-r500')
 disp('print 3')
 
@@ -437,8 +443,8 @@ for i=2:length(labels)
         % plot(mean(actexo,2),'b','LineWidth',2);
         plot(mean(passnat,2),'r','LineWidth',2);
         plot(mean(passexo,2),'b','LineWidth',2);
-        legend(strcat('nat peak: ',num2str(max(mean(passnat,2)))), ...
-            strcat('exo peak: ', num2str(max(mean(passexo,2)))));
+        % legend(strcat('nat peak: ',num2str(max(mean(passnat,2)))), ...
+        %     strcat('exo peak: ', num2str(max(mean(passexo,2)))));
     end
 end
 subplot(6,8,j-1);
@@ -456,7 +462,7 @@ grid on;
 % _withlegend
 % save figure
 print(tempfig4, ...
-    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_passive_allsubjects_',tag,'.png'),...
+    strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', 'muscleFiberForce_passive_nolegend_allsubjects_',tag,'.png'),...
     '-dpng', '-r500')
 disp('print 3')
 

@@ -22,7 +22,7 @@ welkexoconditions = {'welkexo'};%,'welkexoexo'}; % ,'welknaturalslow','welknatur
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};%,'welknaturalnatural'};
 % welksubjects = {'welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013'};
-welksubjects = {'welk002','welk003','welk005','welk007','welk009','welk010','welk013'}; % 'welk008
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'}; % 'welk008
 tag = 'muscletrack';
 thingstoplot = {'excitation','activation'};
 
@@ -72,11 +72,14 @@ for subj=1:length(welksubjects)
                 if tempthing == 'activation'
                     % do something for the activations
                     % disp('getting activations...')
-                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
-                        tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
-                    else
-                        tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
-                    end
+                    
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+
+                    % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                    %     tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
+                    % else
+                    %     tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    % end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -114,11 +117,14 @@ for subj=1:length(welksubjects)
                 if tempthing == 'excitation'
                     % do something for the excitations
                     % disp('getting excitations...')
-                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
-                        tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
-                    else
-                        tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
-                    end
+                    
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    
+                    % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                    %     tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
+                    % else
+                    %     tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    % end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -175,11 +181,14 @@ for subj=1:length(welksubjects)
                 if tempthing == 'activation'
                     % do something for the activations
                     % disp('getting activations...')
-                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
-                        tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
-                    else
-                        tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
-                    end
+                    
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+
+                    % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                    %     tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
+                    % else
+                    %     tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    % end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -217,11 +226,14 @@ for subj=1:length(welksubjects)
                 if tempthing == 'excitation'
                     % do something for the excitations
                     % disp('getting excitations...')
-                    if strcmp(subject,'welk002') || strcmp(subject,'welk003')
-                        tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
-                    else
-                        tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
-                    end
+                    
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+
+                    % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
+                    %     tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
+                    % else
+                    %     tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    % end
                     tempTimeSeriesTable = TimeSeriesTable(tempfile);
                     temptime = tempTimeSeriesTable.getIndependentColumn();
                     times = zeros(temptime.size(),1);
@@ -445,26 +457,29 @@ for i=1:length(excitelabels)-1
     ylabel(tempthing)
 %     grid on;
     % legend('exo','natural')
-    legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
+%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
 
 end
 
 print(subjectcombineexonaturalfig1, ...
-    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined_withlegend.png'),...
+    strcat(repodir, '\..\analysis\', 'excitation_all_subjects_combined_nolegend.png'),...
     '-dpng', '-r500')
 disp('print combined')
 
 
 % now for the activations
 % combined exo and natural fig - averages for subjects and mean
-subjectcombineexonaturalfig2 = figure('Position',[1,1,1920,1080]);
+subjectcombineexonaturalfig2 = figure(100); %'Number',100,'Position',[1,1,1920,1080]);
+set(gcf,'WindowStyle','Docked','Position',[1,1,1920,1080])
 title('red=natural, blue=exo');
 % do more stuff
 % averaging and whatnot
     
 for i=1:length(activelabels)-1   
     % make a subplot
-    subplot(7,9,i);
+    subplot(4,11,i);
+    axis('square')
+%     axis('tight')
     templabel = char(activelabels(i+1));
     hold on;
     tempsubjavgs1 = [];
@@ -482,7 +497,19 @@ for i=1:length(activelabels)-1
         tempsubjavgs2 = [tempsubjavgs2, exomeans_activation.(genvarname(subject))(:,i)];
     end
     
+    disp(templabel)
+    % spm tests for simulated activities
+    addpath(genpath('G:\Shared drives\Exotendon\Matlab\common\')) ;
+    spm = spm1d.stats.nonparam.ttest_paired(squeeze(tempsubjavgs1)', squeeze(tempsubjavgs2)');
+    spmi   = spm.inference(0.05, 'two_tailed',true, 'interp',true);
+    disp(spmi)
+    figure
+    spmi.plot();
+    spmi.plot_threshold_label();
+    spmi.plot_p_values();
+    title(templabel)
     % now plot the means from the tempsubjavgs1/2
+    figure(100);
     plot(welkexostruct.time, mean(tempsubjavgs2, 2), 'b-', 'LineWidth', 2)
     plot(welknaturalstruct.time, mean(tempsubjavgs1, 2), 'r-', 'LineWidth', 2)
     
@@ -492,10 +519,10 @@ for i=1:length(activelabels)-1
     ylabel(tempthing)
 %     grid on;
     % legend('exo','natural')
-    legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
+%     legend(strcat('exo peak: ', num2str(max(mean(tempsubjavgs2, 2)))),strcat('nat peak: ',num2str(max(mean(tempsubjavgs1, 2)))))
 end
 
 print(subjectcombineexonaturalfig2, ...
-    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined_withlegend.png'),...
+    strcat(repodir, '\..\analysis\', 'activation_all_subjects_combined_nolegend.png'),...
     '-dpng', '-r500')
 disp('print combined')

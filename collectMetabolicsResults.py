@@ -21,6 +21,8 @@ metabolicsbasedir = os.path.join(repodir,'..\\metabolicsResults\\')
 targetmuscleresults = os.path.join(metabolicsbasedir,'muscleInverse\\')
 # targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\')
 targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverse_100con\\')
+targetmuscleresultsprescribe = os.path.join(metabolicsbasedir,'muscleInverse_prescribe\\')
+
 
 
 
@@ -189,7 +191,7 @@ os.chdir(resultsbasedir)
 #### 
 # scratch space overwrite for subsets of subj and conditions
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
-subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
+subjects = ['welk002','welk003','welk005','welk008','welk009','welk010','welk013']
 
 
 welkconditions = ['welknatural','welkexo'] #,'welknaturalnatural','welkexoexo']

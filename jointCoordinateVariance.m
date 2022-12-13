@@ -20,7 +20,7 @@ cd(resultsdir)
 welkexoconditions = {'welkexo'}; % ,'welkexoexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welknaturalconditions = {'welknatural'};% ,'welknaturalnatural'};
-welksubjects = {'welk001','welk002','welk003','welk004','welk005','welk007','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 thingstoplot = {'coordinates'}; % 'probes', 'shortening', 'mechanical', 'activation'
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 

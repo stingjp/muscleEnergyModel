@@ -238,7 +238,7 @@ function [] = computeKinematicDifferences(solution, trackorprescribe)
     % want to get two data structures - one with names, and one with error
     errnames = [];
     errvalus = [];
-    keyboard
+    
     for l=0:trackNumLabels-1
         templabel = trackLabels.get(l);
         templabel = string(templabel);
