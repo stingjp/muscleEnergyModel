@@ -66,9 +66,8 @@ end
 
 
 
-
 % edit experimental data for simulations
-renameExperimentalData();
+% renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
@@ -100,18 +99,40 @@ renameExperimentalData();
 % this will load the existing solutions and perform the post analyses
 % solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
-solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+% solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
 
+disp('need to fixx!!!!!')
+
+try
+    solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+    conornot = true;
+catch
+    disp('NO 100 CON SOLUTION');
+    solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    conornot = false;
+end
+
+% 
+% if strcmp(subjectname, 'welk002') %|| strcmp(subjectname, 'welk003')
+%     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+%     conornot = false;
+% else
+%     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+%     conornot = true;
+% end
+    
+disp('switching to the 100 con solution')
 % analyze the tracking simulations 
 Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
 
 % main tracking solution analysis
 %
-analyzeMetabolicCost(solution1, 'muscletrack');
+% analyzeMetabolicCost(solution1, 'muscletrack');
+analyzeMetabolicCostSecond(solution2, 'muscletrack');
 [Issues, maxreservepercvalus_new, avgreservepercvalus_new, maxreservevalus_new, avgreservevalus_new, reservenames_new, ...
     maxresidualpercvalus_new, avgresidualpercvalus_new, maxresidualvalus_new, avgresidualvalus_new, residualnames_new, ...
     maxresidualmompercvalus_new, avgresidualmompercvalus_new, maxresidualmomvalus_new, avgresidualmomvalus_new, residualmomnames_new...
-    ] = computeIDFromResult(Issues, solution1, 'muscletrack');
+    ] = computeIDFromResult(Issues, solution2, 'muscletrack');
 
 % add to combined arrays 
 % reserves first
@@ -135,11 +156,12 @@ avgresidualmompercvalus = [avgresidualmompercvalus, avgresidualmompercvalus_new]
 
 
 % computing the kinematic differences
-% computeKinematicDifferences(solution1, trackorprescribe);
 trackorprescribe = 'track';
+computeKinematicDifferences(solution2, trackorprescribe);
+
 % joint coordinate errors
 [errnames_new, errvalus_new, errstruct_new, trannames_new, tranvalus_new, transtruct_new] = computeKinematicRMSE( ... 
-    solution1, trackorprescribe);
+    solution2, trackorprescribe);
 errnames = [errnames, errnames_new];
 errvalus = [errvalus, errvalus_new];
 errfields = fields(errstruct_new);
@@ -163,7 +185,30 @@ for i=1:length(fields(transtruct_new))
 end
 % get the marker errors
 [marknames_new, markvalus_new, markstruct_new] = computeMarkerRMSE( ... 
-    solution1, trackorprescribe);
+    solution2, trackorprescribe, conornot);
+if strcmp(subjectname, 'welk002') || strcmp(subjectname, 'welk003')
+    % don't want the two sternum markers
+    % dont want the exotendon markers. 
+    marknames_new = marknames_new(1:37);
+    markvalus_new = markvalus_new(1:37);
+
+    temp1 = marknames_new(1:3);
+    temp1 = [temp1; 'Sternum'];
+    temp10 = markvalus_new(1:3);
+    temp10 = [temp10; mean(markvalus_new(4:5))];
+
+    temp2 = marknames_new(6:end);
+    temp2(1) = string("r.ASIS");
+    temp2(2) = string('L.ASIS');
+    temp2(3) = string('r.PSIS');
+    temp2(4) = string('L.PSIS');
+    marknames_new = [temp1;temp2];
+
+    temp20 = markvalus_new(6:end);
+    markvalus_new = [temp10; temp20];
+end
+
+
 marknames = [marknames, marknames_new];
 markvalus = [markvalus, markvalus_new];
 markfields = fields(markstruct_new);
@@ -178,14 +223,14 @@ end
 
 %}
 
-try
-    solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
-    % 100 con tracking solution analysis
-    analyzeMetabolicCostSecond(solution2,'muscletrack');
-    % Issues = computeIDFromResult(Issues, solution2, 'muscletrack');
-catch
-    disp('must be subj 2 or 3')
-end
+% try
+%     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+%     % 100 con tracking solution analysis
+%     analyzeMetabolicCostSecond(solution2,'muscletrack');
+%     % Issues = computeIDFromResult(Issues, solution2, 'muscletrack');
+% catch
+%     disp('must be subj 2 or 3')
+% end
 % solution3 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % prescribe inverse solution analysis
 % analyzeMetabolicCost(solution3, 'muscleprescribe');

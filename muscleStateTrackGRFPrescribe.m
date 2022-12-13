@@ -134,7 +134,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.04); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -241,9 +241,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % set our initial guesses
-    % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
-    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+    % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
     
     steps = twosteptraj.getNumTimes();
 
@@ -261,9 +261,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     guess = solver.createGuess('bounds'); % bounds or random  
     guess.write('boundsguess.sto');
     % solver.setGuess(guess);
-
+    
     randomguess = MocoTrajectory('boundsguess.sto');
-    randomguess.resampleWithNumTimes(steps);
+    if ~(randomguess.getNumTimes() == steps)
+        randomguess.resampleWithNumTimes(steps);
+    end
     
     % go through and overwrite the states first
     randomstatenames = randomguess.getStateNames();
@@ -314,7 +316,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % now set the guess for the solver
-    % solver.setGuess(randomguess);
+    solver.setGuess(randomguess);
 
     % solve and visualize
     solution = study.solve();

@@ -29,7 +29,7 @@ else
 end
 
 % edit experimental data for simulations
-renameExperimentalData();
+% renameExperimentalData();
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;

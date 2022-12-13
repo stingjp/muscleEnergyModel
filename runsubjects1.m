@@ -20,10 +20,10 @@ cd(resultsdir)
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
 welkconditions = {'welknatural','welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
-welksubjects = {'welk002','welk003'}%,'welk003','welk005','welk008','welk009','welk010','welk013'};
+welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
 
-% TODO an issues holder for this script
+% an issues holder for this script
 % global Issues
 Issues = [[java.lang.String('running multiple subjects'); java.lang.String('here we go')]];
 % joint coord errors

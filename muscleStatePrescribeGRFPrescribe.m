@@ -180,10 +180,10 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     solver.set_optim_convergence_tolerance(.001); % 1e-2
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     
-    solution = study.solve();
-    solution.insertStatesTrajectory(tempkintable);
+    % solution = study.solve();
+    % solution.insertStatesTrajectory(tempkintable);
     
-    % solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     
     % solution.write('muscleguess.sto');
     % study.visualize(solution);
@@ -224,7 +224,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     
     % post analysis and validation
-    Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
+%     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
     analyzeMetabolicCost(solution, 'muscleprescribe');
     % Issues = computeIDFromResult(Issues, solution, tag);
     % analyzeMetabolicCost(solution);

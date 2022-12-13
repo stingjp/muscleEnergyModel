@@ -242,8 +242,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % set our initial guesses
     % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-    % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
-    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
 
     steps = twosteptraj.getNumTimes();
 
