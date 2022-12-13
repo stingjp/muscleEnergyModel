@@ -21,17 +21,29 @@ function analyzeMetabolicCost_second(solution, tag)
     cd(workdir);
     model_mass = subjectmass.(genvarname(subjectname)); % kg
     
+    % Redo the states and controls files needed for inverse analysis
+    STOFileAdapter.write(solution.exportToControlsTable(), strcat(tag, "_controls_100con.sto"));
+    STOFileAdapter.write(solution.exportToStatesTable(), strcat(tag, "_states_100con.sto"));
+
+
     % full moco method
     analyze = AnalyzeTool();
     analyze.setName(strcat("analyzemuscles_100con",tag));
     analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
-    if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
-        analyze.setStatesFileName("muscleprescribe_states.sto");
-        analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
-    else
-        analyze.setStatesFileName(strcat(tag, "_states_100con.sto"));
-        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con.sto")));
-    end
+    
+
+    % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
+    %     analyze.setStatesFileName("muscleprescribe_states.sto");
+    %     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
+    % else
+    %     analyze.setStatesFileName(strcat(tag, "_states_100con.sto"));
+    %     analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con.sto")));
+    % end
+    analyze.setStatesFileName(strcat(tag, "_states_100con.sto"));
+    analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con.sto")));
+   
+
+
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
