@@ -79,7 +79,7 @@ function [Issues] = muscleStateTrackGRFTrack(Issues)
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
-    tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot'));
+    tableProcessor = TableProcessor('coordinates_updated.mot');
 %     tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto'));
 %     tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
     tableProcessor.append(TabOpLowPassFilter(6));
