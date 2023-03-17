@@ -1,0 +1,85 @@
+knee extension moment max (negative knee flexion)
+- Nat: -2.64 Nm/kg, max 2.70, sd .33, se .12
+- Exo: -2.24 Nm/kg, max 2.29, sd .28, se .14
+diff max .40, sd .35, se .13
+
+knee flexion moment
+- Nat: 0.68 Nm/kg, max .69, sd .06, se .02
+- Exo: 0.50 Nm/kg, max .50, sd .09, se .03
+diff max .18, sd .07, se .03
+
+Hip Abd moment
+- Nat: -1.75 Nm/kg, max 1.77, sd .34, se .13
+- Exo: -1.61 Nm/kg, max 1.62, sd .33, se .12
+diff max .15, sd .14, se .05 
+
+Hip adduction moment
+- Nat: 0.16 Nm/kg, MAX 0.29, SD .07, SE 0.03
+- Exo: 0.14 Nm/kg, MAX 0.21, SD .09, SE .03
+diff max .07, sd .05, se .02
+
+Hip extension moment (negative flexion)
+- Nat: -1.26 Nm/kg, max 1.32, sd .08, se .03
+- Exo: -1.04 Nm/kg, max 1.07, sd .17, se .06
+diff max .25, sd .10, se .04
+
+Hip flexion moment
+- Nat: 1.11 Nm/kg MAX 1.16, SD 0.12, SE 0.047
+- Exo: 0.89 Nm/kg Max 0.91, SD 0.15, SE 0.05
+diff max 0.25, sd .08, se .03
+
+ankle PF moment (DF is positive)
+- Nat: -1.80 Nm/kg, max 1.86, sd .29, se .11
+- Exo: -1.64 Nm/kg, max 1.76, sd .29, se .11
+diff max .11, sd .29, se .11
+
+ankle DF moment
+- Nat: 0.16 Nm/kg, max .19, sd .17, se .06
+- Exo: 0.13 Nm/kg, max .21, sd .11, se .04
+diff max .02, sd .08, se .03
+
+**** only have the average, not SE
+
+
+- Nat:  Nm/kg
+- Exo:  Nm/kg
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Now for kinematics
+
+
+hip flexion
+nat = 35.3, max 35.68, sd 4.87, se 1.84
+exo = 33.3, max 33.62, sd 3.83, se 1.45
+nat ROM 49.67, sd 4.98, se 1.88
+exo ROM 44.34, sd 2.83, se 1.07
+hip extension
+nat = 13.6, max 13.99, sd 3.71, se 1.40
+exo = 10.3, max 10.72, sd 3.32, se 1.26
+
+hip adduction
+nat = 10.6, max 10.72, sd 3.26, se 1.23
+exo = 9.3, max 9.40, sd 2.14, se 0.81
+nat ROM 21.84, sd 3.17, se 1.20
+exo ROM 17.25, sd 3.50, se 1.32
+hip abduction
+nat = 10.6, max 11.12, sd 3.29, se 1.24
+exo = 7.6, max 7.85, sd 2.71, se 1.02
+
+knee flexion
+nat = 85.4, max 85.59, sd 6.01, se 2.27 
+exo = 69.5, max 70.03, sd 5.35, se 2.02
+nat ROM 78.07, sd 8.22, se 3.11
+exo ROM 63.43, sd 7.72, se 2.92
+knee extension
+nat = 7.7, max 7.52, sd 3.62, se 1.37
+exo = 7.2, max 6.60, sd 3.84, se 1.45
+
+ankle df
+nat = 23.8, max 24.15, sd 4.15, se 1.57
+exo = 21.0, max 21.68, sd 4.40, se 1.66
+nat ROM 49.91, sd 5.62, se 2.12
+exo ROM 41.70, sd 4.14, se 1.57
+ankle pf
+nat = -24.3, max 25.76, sd 3.23, se 1.22
+exo = -18.1, max 20.02, sd 2.80, se 1.06
