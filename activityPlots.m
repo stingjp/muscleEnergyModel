@@ -34,6 +34,12 @@ exomeans_excitation = struct();
 naturalmeans_excitation = struct();
 exomeans_activation = struct();
 naturalmeans_activation = struct();
+
+exopeaks_excitation = struct();
+exopeaks_activation = struct();
+naturalpeaks_excitation = struct();
+naturalpeaks_activation = struct();
+
  
 % loop through the subjects
 for subj=1:length(welksubjects)
@@ -45,6 +51,11 @@ for subj=1:length(welksubjects)
     exomeans_activation.(genvarname(subject)) = [];
     naturalmeans_activation.(genvarname(subject)) = [];
     
+    exopeaks_excitation.(genvarname(subject)) = [];
+    exopeaks_activation.(genvarname(subject)) = [];
+    naturalpeaks_excitation.(genvarname(subject)) = [];
+    naturalpeaks_activation.(genvarname(subject)) = [];
+
     
     % loop through each of the things we want to plot
     for thing=1:length(thingstoplot)
@@ -73,8 +84,8 @@ for subj=1:length(welksubjects)
                     % do something for the activations
                     % disp('getting activations...')
                     
-                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
-
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states_100con.sto'));
+                    disp(tempfile)
                     % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
                     %     tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
                     % else
@@ -118,8 +129,8 @@ for subj=1:length(welksubjects)
                     % do something for the excitations
                     % disp('getting excitations...')
                     
-                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
-                    
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls_100con.sto'));
+                    disp(tempfile)
                     % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
                     %     tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
                     % else
@@ -182,7 +193,7 @@ for subj=1:length(welksubjects)
                     % do something for the activations
                     % disp('getting activations...')
                     
-                    tempfile = strcat(trialdir, strcat('/',tag,'_states.sto'));
+                    tempfile = strcat(trialdir, strcat('/',tag,'_states_100con.sto'));
 
                     % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
                     %     tempfile = strcat(trialdir,'/muscleprescribe_states.sto');
@@ -227,7 +238,7 @@ for subj=1:length(welksubjects)
                     % do something for the excitations
                     % disp('getting excitations...')
                     
-                    tempfile = strcat(trialdir, strcat('/',tag,'_controls.sto'));
+                    tempfile = strcat(trialdir, strcat('/',tag,'_controls_100con.sto'));
 
                     % if strcmp(subject,'welk002') || strcmp(subject,'welk003')
                     %     tempfile = strcat(trialdir,'/muscleprescribe_controls.sto');
@@ -270,6 +281,7 @@ for subj=1:length(welksubjects)
         end
         
         % now need to loop through both natural and exo to find the 3 glutes
+        disp('can do weighted avgs here')
         labels_nat = fields(welknaturalstruct);
         glutemax = {'glmax1_r','glmax2_r','glmax3_r'};
         glutemed = {'glmed1_r','glmed2_r','glmed3_r'};
@@ -402,6 +414,10 @@ for subj=1:length(welksubjects)
                 excitelabels = fields(welkexostruct);
                 % exomeans_excitation. = [exomeans_excitation, mean(muscleplot2,2)];
                 % naturalmeans_excitation = [naturalmeans_excitation, mean(muscleplot1, 2)];
+
+                exopeaks_excitation.(genvarname(subject)) = [exopeaks_excitation.(genvarname(subject)), max(mean(muscleplot2, 2))];
+                naturalpeaks_excitation.(genvarname(subject)) = [naturalpeaks_excitation.(genvarname(subject)), max(mean(muscleplot1, 2))];
+
             end
             if tempthing == 'activation'
                 exomeans_activation.(genvarname(subject)) = [exomeans_activation.(genvarname(subject)), mean(muscleplot2, 2)];
@@ -409,6 +425,10 @@ for subj=1:length(welksubjects)
                 activelabels = fields(welkexostruct);
                 % exomeans_activation = [exomeans_activation, mean(muscleplot2, 2)];
                 % naturalmeans_activation = [naturalmeans_activation, mean(muscleplot1, 2)];
+
+                exopeaks_activation.(genvarname(subject)) = [exopeaks_activation.(genvarname(subject)), max(mean(muscleplot2, 2))];
+                naturalpeaks_activation.(genvarname(subject)) = [naturalpeaks_activation.(genvarname(subject)), max(mean(muscleplot1, 2))];
+
             end
         end
         % print(combineexonaturalfig, ...
@@ -419,9 +439,9 @@ for subj=1:length(welksubjects)
 end
 
 
-
+% keyboard
 % combined exo and natural fig - averages for subjects and mean
-subjectcombineexonaturalfig1 = figure('Position',[1,1,1920,1080]);
+subjectcombineexonaturalfig1 = figure('Position',[1,1,1200,1920]);
 title('red=natural, blue=exo');
 % do more stuff
 % averaging and whatnot
@@ -429,7 +449,7 @@ title('red=natural, blue=exo');
 
 for i=1:length(excitelabels)-1    
     % make a subplot
-    subplot(7,9,i);
+    subplot(16,4,i);
     templabel = char(excitelabels(i+1));
     hold on;
     tempsubjavgs1 = [];
@@ -470,15 +490,17 @@ disp('print combined')
 % now for the activations
 % combined exo and natural fig - averages for subjects and mean
 subjectcombineexonaturalfig2 = figure(100); %'Number',100,'Position',[1,1,1920,1080]);
-set(gcf,'WindowStyle','Docked','Position',[1,1,1920,1080])
+set(gcf,'WindowStyle','Docked','Position',[1,1,2480,3508])
+% set(gcf,'Position',[1,1,700,4508])
+
 title('red=natural, blue=exo');
 % do more stuff
 % averaging and whatnot
     
 for i=1:length(activelabels)-1   
     % make a subplot
-    subplot(4,11,i);
-    axis('square')
+    subplot(11,4,i);
+%     axis('square')
 %     axis('tight')
     templabel = char(activelabels(i+1));
     hold on;
@@ -503,11 +525,13 @@ for i=1:length(activelabels)-1
     spm = spm1d.stats.nonparam.ttest_paired(squeeze(tempsubjavgs1)', squeeze(tempsubjavgs2)');
     spmi   = spm.inference(0.05, 'two_tailed',true, 'interp',true);
     disp(spmi)
-    figure
+    tempfig = figure;
     spmi.plot();
     spmi.plot_threshold_label();
     spmi.plot_p_values();
     title(templabel)
+    print(tempfig, strcat(repodir, '\..\analysis\activitySPM\',templabel,'.png'), ...
+        '-dpng', '-r500')
     % now plot the means from the tempsubjavgs1/2
     figure(100);
     plot(welkexostruct.time, mean(tempsubjavgs2, 2), 'b-', 'LineWidth', 2)
