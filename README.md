@@ -1,11 +1,13 @@
 # How connecting the legs with a spring improves human running economy
-Experimental data that was collected of runners with and without an exotendon while running at 2.67 m/s. 
+Experimental data that was collected of runners with and without an exotendon while running at 2.67 m/s. The 3D musculoskeletal simulations utilize an optimal control problem implementation with OpenSim Moco.
 
-##Publications
+## Publications
 (pending)
 
 ## SimTK project
 https://simtk.org/projects/exotendon_sims
+
+There are 2 data share repositories here 1) with raw/processed experimental data, and 2) the results directory and files used when executing the code in this repository.
 
 ## Github
 https://github.com/stingjp/muscleEnergyModel/tree/paperSubmission
@@ -17,11 +19,6 @@ The experimental data includes 7 subjects with the following types of data:
 - Electromyography
 - metabolic energy expenditure
 
-The file SubjectInfo_MarkerEditing.xlsx includes several tabs with information on subjects, as well as info that was used in processing. Of note: 
-    1) markerediting - includes the frames that were processed from the raw files for each subject and trial. 
-    2) SpringStiffness/length - incluedes the leg length and exotendon parameters for each subject. These parameters are computed from a baseline characterization of the material and the method of fabrication. In green are the values used in the OpenSim model. 
-    3) physicalparams - includes all demographic info for the participants. 
-    - "simulations" and "grfFileExporting" were used more as checklists in processing of data. 
 
 Within each subject folder there are 4 subdirectories:
 /MarkerData
