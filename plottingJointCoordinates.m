@@ -72,8 +72,14 @@ for thing=1:length(thingstoplot)
                 time = [];
                 for t=0:temptime.size()-1
                     tempix = temptime.get(t);
-                    if tempix >= gait_start && tempix <= gait_end
-                        time = [time, tempix];
+                    try
+                        if tempix >= gait_start && tempix <= gait_end
+                            time = [time, tempix];
+                        end
+                    catch
+                        if tempix.doubleValue() >= gait_start && tempix.doubleValue() <= gait_end
+                             time = [time, tempix.doubleValue()];
+                        end
                     end
                 end
                         
@@ -202,8 +208,14 @@ for thing=1:length(thingstoplot)
                 time = [];
                 for t=0:temptime.size()-1
                     tempix = temptime.get(t);
-                    if tempix >= gait_start && tempix <= gait_end
-                        time = [time, tempix];
+                    try
+                        if tempix >= gait_start && tempix <= gait_end
+                            time = [time, tempix];
+                        end
+                    catch
+                        if tempix.doubleValue() >= gait_start && tempix.doubleValue() <= gait_end
+                            time = [time, tempix];
+                        end
                     end
                 end
                         
@@ -212,8 +224,8 @@ for thing=1:length(thingstoplot)
 %                     times(i+1) = temptime.get(i);
 %                 end
 %                 timespercent = (times - times(1)) ./ (times(end) - times(1)) .*100;
-                
-                timespercent = (time - time(1))./(time(end)-time(1)).*100;
+                testtime = double(time);
+                timespercent = (testtime - testtime(1))./(testtime(end)-testtime(1)).*100;
                 timespercent101 = [0:1:100]';
                 welknaturalstruct.time = timespercent101;
 
@@ -363,10 +375,10 @@ for thing=1:length(thingstoplot)
     markb = {'b:','b--'};
     
     % now plot across subjects
-    tempfig2 = figure('Position',[1,1,1920,1080]);
+    tempfig2 = figure('Position',[1,1,1280,1920]);
         % then loop through the muscles inside each subject
-    for i=2:length(newlabels)
-        subplot(6,7,i-1);
+    for i=2:26%length(newlabels)
+        subplot(9,3,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         temp1 = [];
@@ -382,19 +394,41 @@ for thing=1:length(thingstoplot)
 
             
             % have all of them, want the average plotted for each subject
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4);%char(markr(subj)))
+%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4);%char(markr(subj)))
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
+%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
         end
         
         plot(mean(temp1,2), 'r', 'LineWidth', 2)
         plot(mean(temp2,2), 'b', 'LineWidth', 2)
+        legend(num2str(min(mean(temp1,2))), num2str(min(mean(temp2,2))));
+
+        
+        % note that we can do max or min for flexions/extensions
+        % doing ROM now too
+        disp(strcat('nat: ', templabel))
+        maxnat = max(temp1) - min(temp1)
+        natmaxavg = mean(maxnat)
+        natsd = std(maxnat)
+        natse = natsd/sqrt(length(maxnat))
+
+        disp(strcat('exo: ',templabel))
+        maxexo = max(temp2) - min(temp2)
+        exomaxavg = mean(maxexo)
+        exosd = std(maxexo)
+        exose = exosd/sqrt(length(maxexo))
+
+
+
+
+
+
 
         templabel2 = strrep(templabel,'_',' ');
         title(templabel2)
         
         xlabel('% gait cycle')
-        ylabel('Coordinate Value [rad/m]')
+        ylabel('Coordinate Value')
         grid on;
     end
 %     subplot(5,7,i);

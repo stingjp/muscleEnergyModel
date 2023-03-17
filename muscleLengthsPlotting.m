@@ -26,6 +26,11 @@ thingstoplot = {'NormalizedFiberLength','NormFiberVelocity'};
 
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
+welkexo_peaklength = struct();
+welknat_peaklength = struct();
+welkexo_peakvel = struct();
+welknat_peakvel = struct();
+
 
 
 
@@ -36,6 +41,7 @@ for thing=1:length(thingstoplot)
     % create stucture for combined subject figures
     welknaturalstruct_combine = struct();
     welkexostruct_combine = struct();
+    
 
 
     % loop through the subjects
@@ -252,6 +258,14 @@ for thing=1:length(thingstoplot)
         welknaturalstruct_combine.(genvarname(subject)) = welknaturalstruct;
         welkexostruct_combine.(genvarname(subject)) = welkexostruct;
         
+        if strcmp(char(tempthing), 'NormalizedFiberLength')
+            welknat_peaklength.(genvarname(subject)) = [];
+            welkexo_peaklength.(genvarname(subject)) = [];
+        elseif strcmp(char(tempthing), 'NormFiberVelocity')
+            welknat_peakvel.(genvarname(subject)) = [];
+            welkexo_peakvel.(genvarname(subject)) = [];
+        end
+
     end
 
 
@@ -274,9 +288,22 @@ for thing=1:length(thingstoplot)
             j = j+1;
             % loop through the subjects
             for subj=1:length(welksubjects)
+
                 subject = char(welksubjects(subj));
                 muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
                 muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
+                
+
+                % add some stuff for post-process analysis
+                if strcmp(char(tempthing), 'NormalizedFiberLength')
+                    welkexo_peaklength.(genvarname(subject)) = [welkexo_peaklength.(genvarname(subject)), max(mean(muscleplot_exo,2))];
+                    welknat_peaklength.(genvarname(subject)) = [welknat_peaklength.(genvarname(subject)), max(mean(muscleplot_nat,2))];
+                elseif strcmp(char(tempthing), 'NormFiberVelocity')
+                    welkexo_peakvel.(genvarname(subject)) = [welkexo_peakvel.(genvarname(subject)), min(mean(muscleplot_exo,2))];
+                    welknat_peakvel.(genvarname(subject)) = [welknat_peakvel.(genvarname(subject)), min(mean(muscleplot_nat,2))];
+                end
+                
+                
                 testnat = [testnat, muscleplot_nat];
                 testexo = [testexo, muscleplot_exo];
                 % have all of them, want the average plotted for each subject

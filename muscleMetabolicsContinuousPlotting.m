@@ -394,9 +394,17 @@ for thing=1:length(thingstoplot)
 %             hold on;
 %             plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', '#7E2F8E','LineStyle',':','LineWidth',0.4)
 
-            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color',natcolor, 'LineWidth',0.4)
+            % trying to plot the change for subjects
+%             plot(welknaturalstruct.time, [mean(muscleplot_exo,2) - mean(muscleplot_nat, 2)], 'LineStyle',':','Color','k', 'LineWidth',0.4)
+            hold on
+            
+
+
+
+
+%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'LineStyle',':', 'Color',natcolor, 'LineWidth',0.4)
             hold on;
-            plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', exocolor,'LineStyle',':','LineWidth',0.4)
+%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'Color', exocolor,'LineStyle',':','LineWidth',0.4)
 
             % add them to the temp vector for plotting the average of all
             % subjects
@@ -468,7 +476,7 @@ for thing=1:length(thingstoplot)
         end
         title(templabel2);
         xlabel('% gait cycle')
-        ylabel('Metabolic rate [W/kg]')
+        ylabel('Change in Metabolic rate [W/kg]')
 %         ylim([-600 300])
 %         grid on;
         ax = gca;
@@ -477,8 +485,17 @@ for thing=1:length(thingstoplot)
         % need to average them all and plot
 %         plot(mean(tempsubj_nat,2), 'Color','#D95319','LineWidth',2);
 %         plot(mean(tempsubj_exo,2), 'Color', '#7E2F8E','LineWidth',2);
+
+        % paper version here
         plot(mean(tempsubj_nat,2), 'Color',natcolor,'LineWidth',2);
         plot(mean(tempsubj_exo,2), 'Color', exocolor,'LineWidth',2);
+
+
+        % trying to plot the change between conditions
+%         plot([mean(tempsubj_exo,2) - mean(tempsubj_nat,2)], 'Color','k','LineWidth',2);
+%         plot(mean(tempsubj_exo,2), 'Color', exocolor,'LineWidth',2);
+
+
 %         legend(strcat('nat peak max: ',num2str(max(mean(tempsubj_nat,2)))), ...
 %             strcat('exo peak max: ',num2str(max(mean(tempsubj_exo,2)))), ...
 %             strcat('nat min peak: ',num2str(min(mean(tempsubj_nat,2)))), ...

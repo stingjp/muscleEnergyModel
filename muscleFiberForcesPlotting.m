@@ -33,13 +33,25 @@ welkexostruct_passive = struct();
 welknaturalstruct_active = struct();
 welkexostruct_active = struct();
 
+natActive_Peak = struct();
+exoActive_Peak = struct();
+
+nattest_peaks = [];
+exotest_peaks = [];
+
+
 % loop through the subjects
 for subj=1:length(welksubjects)
     subject = char(welksubjects(subj));
     subjdir = strcat(resultsdir, strcat('/',subject));
 
+    % add stuff for peaks
+    natActive_Peak.(genvarname(subject)) = [];
+    exoActive_Peak.(genvarname(subject)) = [];
+        
+    
     % create stucture for combined subject figures
-
+    
 
     % loop through each of the things we want to plot
     for thing=1:length(thingstoplot)
@@ -317,7 +329,7 @@ for subj=1:length(welksubjects)
 
 end
 
-
+keyboard
 % now need a combined figure for all subjects - active and passive
 tempfig3 = figure('Position',[1,1,1920,1080]);
 
@@ -325,7 +337,8 @@ labels = fields(welkexostruct);
 % loop through the muscles inside each subject
 j = 2;
 for i=2:length(labels)
-    templabel = labels(i);
+    templabel = labels(i)
+    
     if ~contains(templabel, '_l')
         
     
@@ -339,6 +352,7 @@ for i=2:length(labels)
         % loop the subjects
         for subj=1:length(welksubjects)
             subject = char(welksubjects(subj));
+            
 
             muscleplot_nat_act = welknaturalstruct_active.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo_act = welkexostruct_active.(genvarname(subject)).(genvarname(char(templabel)));
@@ -349,6 +363,7 @@ for i=2:length(labels)
             actexo = [actexo, mean(muscleplot_exo_act, 2)];
             passnat = [passnat, mean(muscleplot_nat_pas, 2)];
             passexo = [passexo, mean(muscleplot_exo_pas, 2)];
+            
 
 
             % have all of them, want the average plotted for each subject
@@ -363,15 +378,29 @@ for i=2:length(labels)
             ylabel('Force [N]')
 %             grid on;
             % legend();
+            
+            natActive_Peak.(genvarname(subject)) = [natActive_Peak.(genvarname(subject)), max(mean(muscleplot_nat_act,2))];
+            exoActive_Peak.(genvarname(subject)) = [exoActive_Peak.(genvarname(subject)), max(mean(muscleplot_exo_act,2))];
         end
+
         plot(mean(actnat,2),'r','LineWidth',2);
         plot(mean(actexo,2),'b','LineWidth',2);
         % plot(mean(passnat,2),'r','LineWidth',2);
         % plot(mean(passexo,2),'b','LineWidth',2);
 %         legend(strcat('nat peak: ',num2str(max(mean(actnat,2)))), ...
 %             strcat('exo peak: ', num2str(max(mean(actexo,2)))));
+        
+        nattest_peaks = [nattest_peaks; max(actnat)];
+        exotest_peaks = [exotest_peaks; max(actexo)];
+        
+
+
+
     end
 end
+
+
+
 subplot(6,8,j-1);
 plot(welknaturalstruct.time, mean(muscleplot_nat_act,2), 'r', 'DisplayName', 'natural active')
 hold on;
