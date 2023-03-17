@@ -128,7 +128,8 @@ Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('invers
 % main tracking solution analysis
 %
 % analyzeMetabolicCost(solution1, 'muscletrack');
-analyzeMetabolicCostSecond(solution2, 'muscletrack');
+% here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% analyzeMetabolicCostSecond(solution2, 'muscletrack');
 [Issues, maxreservepercvalus_new, avgreservepercvalus_new, maxreservevalus_new, avgreservevalus_new, reservenames_new, ...
     maxresidualpercvalus_new, avgresidualpercvalus_new, maxresidualvalus_new, avgresidualvalus_new, residualnames_new, ...
     maxresidualmompercvalus_new, avgresidualmompercvalus_new, maxresidualmomvalus_new, avgresidualmomvalus_new, residualmomnames_new...
@@ -157,7 +158,7 @@ avgresidualmompercvalus = [avgresidualmompercvalus, avgresidualmompercvalus_new]
 
 % computing the kinematic differences
 trackorprescribe = 'track';
-computeKinematicDifferences(solution2, trackorprescribe);
+% computeKinematicDifferences(solution2, trackorprescribe);
 
 % joint coordinate errors
 [errnames_new, errvalus_new, errstruct_new, trannames_new, tranvalus_new, transtruct_new] = computeKinematicRMSE( ... 
