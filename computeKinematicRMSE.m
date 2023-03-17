@@ -273,8 +273,8 @@ function [errnames, errvalus, errstruct, trannames, tranvalus, transtruct] = com
             if ~contains(templabel, 'speed')
                 % this set of variables is for translational errors. 
                 trannames = [trannames; templabel];
-                tranvalus = [tranvalus; rmse];
-                transtruct.(genvarname(templabel)) = rmse;
+                tranvalus = [tranvalus; max(err)];% rmse
+                transtruct.(genvarname(templabel)) = max(err); %rmse
             end
 
 
@@ -315,8 +315,8 @@ function [errnames, errvalus, errstruct, trannames, tranvalus, transtruct] = com
             % add to vectors
             if ~contains(templabel, 'speed')
                 errnames = [errnames; templabel];
-                errvalus = [errvalus; rmse];
-                errstruct.(genvarname(templabel)) = rmse;
+                errvalus = [errvalus; max(err)]; % rmse
+                errstruct.(genvarname(templabel)) = max(err);
             end
 
 
