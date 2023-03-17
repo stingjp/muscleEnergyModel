@@ -192,12 +192,12 @@ for thing=1:length(thingstoplot)
     markb = {'b:','b--'};
     
     % now plot across subjects
-    tempfig2 = figure('Position',[1,1,1920,1080]);
+    tempfig2 = figure('Position',[1,1,1280,1920]);
     
     % then loop through the muscles inside each subject
 
     for i=2:length(newlabels)
-        subplot(6,5,i-1);
+        subplot(9,3,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         holding_nat = [];
@@ -222,14 +222,42 @@ for thing=1:length(thingstoplot)
             hold on;
             % plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1);% char(markr(subj)))
             % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1);% char(markb(subj)))
-            plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',.4);
-            plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
+%             plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',.4);
+%             plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
 
         end
         plot(welknaturalstruct.time, mean(holding_nat,2),'r','LineWidth',2);
         plot(welkexostruct.time, mean(holding_exo,2),'b','LineWidth',2);
+        legend(num2str(max(mean(holding_nat,2))),num2str(max(mean(holding_exo,2))));
         
+        % note that we can do max or min for flexions/extensions
+%         disp(strcat('nat: ', templabel))
+%         maxnat = min(holding_nat)
+%         natmaxavg = mean(maxnat)
+%         natsd = std(maxnat)
+%         natse = natsd/sqrt(length(maxnat))
+% 
+%         disp(strcat('exo: ',templabel))
+%         maxexo = min(holding_exo)
+%         exomaxavg = mean(maxexo)
+%         exosd = std(maxexo)
+%         exose = exosd/sqrt(length(maxexo))
         
+        % doing differences
+                % note that we can do max or min for flexions/extensions
+        disp(strcat('posdiff: ', templabel))
+        posdiff = max(holding_nat) - max(holding_exo)
+        posdiffavg = mean(posdiff)
+        posdiffsd = std(posdiff)
+        posdiffse = posdiffsd/sqrt(length(posdiff))
+
+        disp(strcat('mindiff: ',templabel))
+        mindiff = min(holding_nat) - min(holding_exo)
+        mindiffavg = mean(mindiff)
+        mindiffsd = std(mindiff)
+        mindiffse = mindiffsd/sqrt(length(mindiff))
+
+
         templabel2 = strrep(templabel,'_',' ');
         title(templabel2)
         
@@ -237,11 +265,10 @@ for thing=1:length(thingstoplot)
         ylabel('Moment [Nm/kg]')
 %         grid on;
     end
-    subplot(6,5,i);
-    plot(welkexostruct.time, mean(holding_exo,2),'b');
-    hold on;
-    plot(welknaturalstruct.time, mean(holding_nat,2),'r');
-%     legend('Exotendon','Natural') 
+%     subplot(9,3,i);
+%     plot(welkexostruct.time, mean(holding_exo,2),'b');
+%     hold on;
+%     plot(welknaturalstruct.time, mean(holding_nat,2),'r');
 
     print(tempfig2, ...
         strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_subjectAVG', '.png'),...
