@@ -43,7 +43,11 @@ analyzeSubject.m allows you to run multiple simulations/analyses on a single sub
 - muscleStatePrescribeGRFPrescribe.m -> formulates a muscle-driven problem with prescribed GRFs and states. (not used in paper)
 - muscleStateTrackGRFPrescribe.m -> formulates a muscle-driven state tracking problem with prescribed GRFs. 
 - muscleStateTrackGRFPrescribe_firstpass.m, muscleStateTrackGRFPrescribe_secondpass.m, muscleStateTrackGRFPrescribe_thirdpass.m -> these are the same as muscleStateTrackGRFPrescribe.m ^ but have approximate weights that may aid in generating progressively better results. The secondpass script is currently set up to provide the final results from the simulations. 
-- Post-simulation analysis can be run after the simulation solves in the same pass. (below)
+
+To batch process subjects, conditions or trials, call runsubjects1.m. This wrapper script will call analyzeSubject.m or analyzeSubject_setup.m - be sure to specify and set up that file for what analyses and simulations you would like to complete. 
+
+
+Post-simulation analysis can be run after the simulation solves within the same analyzeSubject script. (below)
 - analyzeMetabolicCost.m -> takes the simulated solution and performs all the metabolics computations. Computes average metaboalic cost of the gait cycle, stance and swing costs, as well as individual muscle costs. 
 - computeIDFromResults.m -> takes the solution, and performs an analysis of the dynamics. It will return instances where reserves and residuals exceed the recommended thresholds by (Hicks et al. 2015). 
 - computeKinematicDifferences.m -> takes the solution and plots differences between the dynamically consistent solution and the input kinematics. 
