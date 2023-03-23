@@ -35,15 +35,16 @@ os.chdir(resultbasedir)
 # print(os.getcwd())
 
 # subjects
-subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
+subjects = [#'wals024','wals077','wals088','wals112','wals127','wals128',
             'welk001','welk002','welk003','welk004','welk005','welk006','welk007','welk008','welk009',
             'welk010','welk011','welk012','welk013','welk014',
-            'jack001','jack002','jack003','jack004','jack005','jack006','jack007','jack008',
-            'demb005','demb007','demb009','demb010','demb011','demb012','demb014',
-            'sild001','sild001b','sild002','sild003','sild004','sild005','sild007_standing','sild007',
-            'sild009','sild010','sild012','sild013','sild001','sild016','sild017','sild018','sild020',
-            'sild022','sild024','sild025','sild026','sild027','sild028','sild029','sild030','sild031',
-            'sild032','sild033','sild034','sild035']
+            # 'jack001','jack002','jack003','jack004','jack005','jack006','jack007','jack008',
+            # 'demb005','demb007','demb009','demb010','demb011','demb012','demb014',
+            # 'sild001','sild001b','sild002','sild003','sild004','sild005','sild007_standing','sild007',
+            # 'sild009','sild010','sild012','sild013','sild001','sild016','sild017','sild018','sild020',
+            # 'sild022','sild024','sild025','sild026','sild027','sild028','sild029','sild030','sild031',
+            # 'sild032','sild033','sild034','sild035'
+            ]
 
 # conditions
 walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']

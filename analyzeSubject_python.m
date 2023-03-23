@@ -35,10 +35,7 @@ end
 % close all;
 % metabolicsModelSetup();
 % close all;
-% runRRA_1('./RRAfiles/RRA_Setup_1.xml');
-% close all;
-% runRRA_2('./RRAfiles/RRA_Setup_2.xml');
-% close all;
+
 % torqueMarkerTrackGRFPrescribe();
 % close all;
 % torqueStateTrackGRFPrescribe();
