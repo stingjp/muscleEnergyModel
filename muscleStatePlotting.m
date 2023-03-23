@@ -5,18 +5,6 @@ resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
 
-% conditions
-% walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
-% jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
-%                   'jacktau1','jacktau2','jacktau3','jacktau4','jacktau5']
-% dembconditions = ['dembnoloadfree','dembnoloadslow','dembloadedfree','dembloadedmatched']
-% sildconditions = ['sildbw0','sildbw5','sildbw10','sild10w0','sild10w5','sild10w10',
-%                   'sild20w0','sild20w5','sild20w10','sild30w0','sild30w5','sild30w10',
-%                   'sildbwrun0','sild10wrun0','sild20wrun0','sild30wrun0']
-
-%%%%% - remember to only put in the exo conditions that you are looking to see the reductions from
-% dembconditions = {'dembnoloadfree', 'dembloadedfree'}; %
-% dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
 welkconditions = {'welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
 welkaltconditions = {'welknatural'};
@@ -263,9 +251,7 @@ while f<=target
     print(tempfig, ...
         strcat('G:\Shared drives\Exotendon\muscleModel\analysis\muscleMetabolics','\',musc(21:end-6), '_metabolicBreakdown_subjects.png'),...
         '-dpng', '-r500')
-    %%% oh crap need to do this for each of the muscles... need the
-    %%% title to be the muscle... 
-
+   
     %%% TODO fix 4 indexing
     f = f+4;
     f

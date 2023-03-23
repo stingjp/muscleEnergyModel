@@ -73,9 +73,9 @@ end
 % close all;
 % metabolicsModelSetup();
 % close all;
-% runRRA_1('./RRAfiles/RRA_Setup_1.xml');
+% runRRA_1('./RRAfiles/RRA_Setup_1.xml');  % this is not tested, run manually
 % close all;
-% runRRA_2('./RRAfiles/RRA_Setup_2.xml');
+% runRRA_2('./RRAfiles/RRA_Setup_2.xml');  % this is not tested, run manually
 % close all;
 % torqueMarkerTrackGRFPrescribe();
 % close all;
@@ -101,7 +101,9 @@ end
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 % solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
 
-disp('need to fixx!!!!!')
+disp('only run the rest of the file when the simulations have completed. Code following will analyze the solutions.')
+keyboard
+
 
 try
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
@@ -124,6 +126,9 @@ end
 disp('switching to the 100 con solution')
 % analyze the tracking simulations 
 Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
+
+
+
 
 % main tracking solution analysis
 %
