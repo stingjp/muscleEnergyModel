@@ -9,10 +9,6 @@ https://simtk.org/projects/exotendon_sims
 
 There are 2 data share repositories here 1) with raw/processed experimental data, and 2) the results directory and files used when executing the code in this repository.
 
-## Github
-https://github.com/stingjp/muscleEnergyModel/tree/paperSubmission
-Note: branch: paperSubmission is specifically for the project on simulating the exotendon. 
-
 The experimental data includes 7 subjects with the following types of data: 
 - Motion capture
 - ground reaction forces
@@ -20,13 +16,16 @@ The experimental data includes 7 subjects with the following types of data:
 - metabolic energy expenditure
 
 All the needed experimental data files are contained within the code results directory as well. 
-
 Within each subject folder the subdirectories are:
 - /welkexo - Exotendon running condition
 - /welknatural - Natural running condition
 
 Within each of these are subdirectories for each trial, or gait cycle simulated. Each of those then contains the results and files for the simulation of that gait cycle, /RRAfiles (which contains the RRA setup and results), /expdata (which contains all necessary experimental data and model files for that subject and gait cycle. 
 
+
+## Github
+https://github.com/stingjp/muscleEnergyModel/tree/paperSubmission
+Note: branch: paperSubmission is specifically for the project on simulating the exotendon. 
 
 
 ## Running the code
