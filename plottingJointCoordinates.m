@@ -4,7 +4,8 @@ import org.opensim.modeling.*
 repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
-
+exocolor = '#AB82FF'
+natcolor = '#FF7F00'
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
@@ -378,7 +379,7 @@ for thing=1:length(thingstoplot)
     tempfig2 = figure('Position',[1,1,1280,1920]);
         % then loop through the muscles inside each subject
     for i=2:26%length(newlabels)
-        subplot(9,3,i-1);
+        subplot(5,6,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         temp1 = [];
@@ -399,9 +400,9 @@ for thing=1:length(thingstoplot)
 %             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
         end
         
-        plot(mean(temp1,2), 'r', 'LineWidth', 2)
-        plot(mean(temp2,2), 'b', 'LineWidth', 2)
-        legend(num2str(min(mean(temp1,2))), num2str(min(mean(temp2,2))));
+        plot(mean(temp1,2), 'Color',natcolor, 'LineWidth', 2)
+        plot(mean(temp2,2), 'Color', exocolor, 'LineWidth', 2)
+%         legend(num2str(min(mean(temp1,2))), num2str(min(mean(temp2,2))));
 
         
         % note that we can do max or min for flexions/extensions
