@@ -72,8 +72,8 @@ for subj=1:length(welksubjects)
             cd(trialdir)
             % run the analysis
             try
-%                 analyzeSubject()
-                analyzeSubject_setup()
+                analyzeSubject()
+%                 analyzeSubject_setup()
                 disp('ran');
             catch
                 disp('issue');
