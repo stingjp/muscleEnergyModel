@@ -40,6 +40,7 @@ function analyzeMetabolicCost(solution, tag)
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
     analyze.updAnalysisSet().cloneAndAppend(BodyKinematics());
+    analyze.updAnalysisSet().cloneAndAppend(JointReaction())
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
     analyze.print(strcat(tag,"_AnalyzeTool_setup.xml"));
