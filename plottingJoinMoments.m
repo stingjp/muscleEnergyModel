@@ -4,7 +4,8 @@ import org.opensim.modeling.*
 repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
-
+exocolor = '#AB82FF'
+natcolor = '#FF7F00'
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
@@ -197,7 +198,7 @@ for thing=1:length(thingstoplot)
     % then loop through the muscles inside each subject
 
     for i=2:length(newlabels)
-        subplot(9,3,i-1);
+        subplot(5,6,i-1);
         templabel = newlabels(i);
         templabel = char(templabel);
         holding_nat = [];
@@ -226,9 +227,9 @@ for thing=1:length(thingstoplot)
 %             plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
 
         end
-        plot(welknaturalstruct.time, mean(holding_nat,2),'r','LineWidth',2);
-        plot(welkexostruct.time, mean(holding_exo,2),'b','LineWidth',2);
-        legend(num2str(max(mean(holding_nat,2))),num2str(max(mean(holding_exo,2))));
+        plot(welknaturalstruct.time, mean(holding_nat,2),'Color', natcolor,'LineWidth',2);
+        plot(welkexostruct.time, mean(holding_exo,2),'Color', exocolor,'LineWidth',2);
+%         legend(num2str(max(mean(holding_nat,2))),num2str(max(mean(holding_exo,2))));
         
         % note that we can do max or min for flexions/extensions
 %         disp(strcat('nat: ', templabel))

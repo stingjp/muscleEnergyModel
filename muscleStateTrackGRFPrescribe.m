@@ -24,7 +24,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     % model = modelProcessor.process();
-
+    
     % set up the base model
     % modelProcessor.append(ModOpIgnoreTendonCompliance());
     modelProcessor.append(ModOpReplaceMusclesWithDeGrooteFregly2016());
@@ -241,18 +241,37 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     
     % set our initial guesses
-    twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
-    % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+    twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
     
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
-    solver.resetProblem(problem)
+    solver.resetProblem(problem) 
 
     
-    solver.set_optim_convergence_tolerance(.01); % 1e-2
+    solver.set_optim_convergence_tolerance(.001); % 1e-2
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    
+%     solver = study.initCasADiSolver();
+    solver.set_optim_finite_difference_scheme('forward')
+    solver.set_parameters_require_initsystem(false);
+%     duration = finalTime - track.get_initial_time();
+%     num_mesh = round(duration/stepsize);
+%     solver.set_num_mesh_intervals(num_mesh);
+    solver.set_verbosity(2);
+    solver.set_optim_solver('ipopt');
+%     solver.set_optim_convergence_tolerance(convergeTolerance);
+%     solver.set_optim_constraint_tolerance(constraintTolerance);
+    solver.set_optim_max_iterations(10000);
+    solver.set_scale_variables_using_bounds(true);
+    solver.set_minimize_implicit_auxiliary_derivatives(true);
+    solver.set_implicit_auxiliary_derivatives_weight(1e-6);
+
+
+
+
     % solver.set_parallel(24);
     % solver.set_parallel(8);
     % solver.set_parallel(12);
@@ -320,18 +339,18 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % solve and visualize
     solution = study.solve();
-    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+%     solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
     % study.visualize(solution);
     % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution_100con.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution_100con001_2.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con001_2.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con001_2.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
-                                    'muscle_statetrack_grfprescribe_solution.sto', ...
+                                    'muscle_statetrack_grfprescribe_solution_100con001_2.sto', ...
                                     'bilateral', true);
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
@@ -344,7 +363,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle track')
 
-
+    keyboard
     % post analysis and validation
     solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');

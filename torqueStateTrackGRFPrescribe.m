@@ -37,9 +37,9 @@ function torqueStateTrackGRFPrescribe()
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
     % 2 
-    % tableProcessor = TableProcessor('coordinates_updated.mot');
+    tableProcessor = TableProcessor('coordinates_updated.mot');
     % 3
-    tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot')); %***
+%     tableProcessor = TableProcessor(tabletrimming('coordinates_updated.mot')); %***
     tableProcessor.append(TabOpLowPassFilter(6));
     % 4 
     % tempTable = TimeSeriesTable('./ResultsRRA_2/subject01_walk1_RRA_Kinematics_q.sto');

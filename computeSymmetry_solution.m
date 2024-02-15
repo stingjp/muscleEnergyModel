@@ -4,8 +4,7 @@ import org.opensim.modeling.*
 repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
-exocolor = '#AB82FF'
-natcolor = '#FF7F00'
+
 % conditions
 % walsconditions = ['walsslack','walslow','walsmed','walshigh','walsmax']
 % jackconditions = ['jackpower1','jackpower2','jackpower3','jackpower4','jackpower5','jackpower6',
@@ -25,6 +24,8 @@ welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','wel
 thingstoplot = {'coordinates'}; % 'probes', 'shortening', 'mechanical', 'activation'
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
 
+
+
 % loop through each of the things we want to plot
 for thing=1:length(thingstoplot)
     tempthing = char(thingstoplot(thing))
@@ -32,6 +33,9 @@ for thing=1:length(thingstoplot)
     % create stucture for combined subject figures
     welknaturalstruct_combine = struct();
     welkexostruct_combine = struct();
+
+    naturalstruct_combine = struct();
+    exostruct_combine = struct();
 
 
     % loop through the subjects
@@ -62,7 +66,9 @@ for thing=1:length(thingstoplot)
                 % do I want to do average or individual?
                 % tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
                 % tempfile = strcat(trialdir, '/torque_statetrack_grfprescribe_tracked_states','.sto');
-                tempfile = strcat(trialdir, '/coordinates_updated.mot');
+                
+%                 tempfile = strcat(trialdir, '/coordinates_updated.mot');
+                tempfile = strcat(trialdir, '/muscle_coordinates_short.sto');
                 
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
@@ -70,6 +76,16 @@ for thing=1:length(thingstoplot)
                 gait_start = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).initial;
                 gait_end = subjectgaitcycles.(genvarname(subject)).(genvarname(condition)).(genvarname(test)).final;
                 
+                keyboard
+                % need a way to match right and left curves. 
+                kneer = tempTimeSeriesTable.getDependentColumn('knee_angle_r').getAsMat();
+                kneel = tempTimeSeriesTable.getDependentColumn('knee_angle_l').getAsMat();
+                [rm, ixr] = max(kneer);
+                [lm, ixl] = max(kneel);
+                newkneer = [kneer(ixr:end); kneer(1:ixr-1)];
+                newkneel = [kneel(ixl:end); kneel(1:ixl-1)];
+
+
                 time = [];
                 for t=0:temptime.size()-1
                     tempix = temptime.get(t);
@@ -94,18 +110,21 @@ for thing=1:length(thingstoplot)
                 timespercent101 = [0:1:100]';
                 welkexostruct.time = timespercent101;
 
-                % grab the start and finish index for the rows in the
-                % table
-                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
-                    row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
-                else
-                    row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
-                end
-                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
-                    row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
-                else
-                    row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
-                end
+
+                % using the solution files now, and so just need first and
+                % end
+%                 % grab the start and finish index for the rows in the
+%                 % table
+%                 if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
+%                     row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
+%                 else
+%                     row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
+%                 end
+%                 if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
+%                     row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
+%                 else
+%                     row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
+%                 end
 
                 % now for each of the things
                 numCols = tempTimeSeriesTable.getNumColumns(); % including time
@@ -114,19 +133,28 @@ for thing=1:length(thingstoplot)
                 for i=0:labels.size()-1
                     coord = char(labels.get(i));
                     
-                   
+
                     % we want it all
                     % tempsplit = split(coord,'/');
                     % coordshort = string(tempsplit(4));
                     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(coord)).getAsMat();
                     % now take the rows that we want
-                    col = tempcol(row_idx_start:row_idx_end);
-
+%                     col = tempcol(row_idx_start:row_idx_end);
+                    col = tempcol;
                     tempcolinterp = interp1(timespercent, col, timespercent101);
+                    
+                    % get the range, as well as average value
+                    temprange = range(tempcolinterp);
+                    tempavg = mean(tempcolinterp);
+
                     if ~isfield(welkexostruct, coord)
                         welkexostruct.(genvarname(coord)) = [];
                     end
-                    welkexostruct.(genvarname(coord)) = [welkexostruct.(genvarname(coord)), tempcolinterp];
+                    if ~isfield(exostruct_combine, coord)
+                        exostruct_combine.(genvarname(coord)) = [];
+                    end
+                    welkexostruct.(genvarname(coord)) = [welkexostruct.(genvarname(coord)), [temprange, tempavg]];
+                    exostruct_combine.(genvarname(coord)) = [exostruct_combine.(genvarname(coord)); [temprange, tempavg]];
 
                     
                     
@@ -199,7 +227,8 @@ for thing=1:length(thingstoplot)
                 % have all the muscle analysis files already
                 % do I want to do average or individual?
 %                 tempfile = strcat(trialdir, '/muscle_statetrack_grfprescribe_solution', '.sto');
-                tempfile = strcat(trialdir, '/coordinates_updated.mot');
+%                 tempfile = strcat(trialdir, '/coordinates_updated.mot');
+                tempfile = strcat(trialdir, '/muscle_coordinates_short.sto');
                 tempTimeSeriesTable = TimeSeriesTable(tempfile);
                 temptime = tempTimeSeriesTable.getIndependentColumn();
                 
@@ -230,18 +259,19 @@ for thing=1:length(thingstoplot)
                 timespercent101 = [0:1:100]';
                 welknaturalstruct.time = timespercent101;
 
-                % grab the start and finish index for the rows in the
-                % table
-                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
-                    row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
-                else
-                    row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
-                end
-                if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
-                    row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
-                else
-                    row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
-                end
+                % using the solutions - just full column
+%                 % grab the start and finish index for the rows in the
+%                 % table
+%                 if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_start)) == time(1)
+%                     row_idx_start = tempTimeSeriesTable.getRowIndexAfterTime(gait_start);
+%                 else
+%                     row_idx_start = tempTimeSeriesTable.getRowIndexBeforeTime(gait_start);
+%                 end
+%                 if temptime.get(tempTimeSeriesTable.getRowIndexAfterTime(gait_end)) == time(end)
+%                     row_idx_end = tempTimeSeriesTable.getRowIndexAfterTime(gait_end);
+%                 else
+%                     row_idx_end = tempTimeSeriesTable.getRowIndexBeforeTime(gait_end);
+%                 end
                 %{
                 times = zeros(temptime.size(),1);
                 for i=0:temptime.size()-1
@@ -261,13 +291,23 @@ for thing=1:length(thingstoplot)
                         
                         % we also want the whole body measure
                     tempcol = tempTimeSeriesTable.getDependentColumn(java.lang.String(coord)).getAsMat();
-                    col = tempcol(row_idx_start:row_idx_end);
+                    col = tempcol;
+%                     col = tempcol(row_idx_start:row_idx_end);
                     tempcolinterp = interp1(timespercent, col, timespercent101);
+
+                    % get range and avg
+                    temprange = range(tempcolinterp);
+                    tempavg = mean(tempcolinterp);
+
+
                     if ~isfield(welknaturalstruct, coord)                         
                         welknaturalstruct.(genvarname(coord)) = [];
                     end
-                    welknaturalstruct.(genvarname(coord)) = [welknaturalstruct.(genvarname(coord)), tempcolinterp];
-                   
+                    if ~isfield(naturalstruct_combine, coord)
+                        naturalstruct_combine.(genvarname(coord)) = [];
+                    end
+                    welknaturalstruct.(genvarname(coord)) = [welknaturalstruct.(genvarname(coord)), [temprange, tempavg]];
+                    naturalstruct_combine.(genvarname(coord)) = [naturalstruct_combine.(genvarname(coord)); [temprange, tempavg]];
                    
                     %{
                     % need to screen only the things that we want
@@ -368,70 +408,92 @@ for thing=1:length(thingstoplot)
         
     end
 
-
-    newlabels = fields(welkexostruct);
+    keyboard
+    newlabels = fields(exostruct_combine);
+    
+    exo_stds = exostruct_combine;
+    nat_stds = naturalstruct_combine;
+    
+    exo_means = exostruct_combine;
+    nat_means = naturalstruct_combine;
 
     % loop through the subjects again?
-    markr = {'r:','r--'};
-    markb = {'b:','b--'};
+%     markr = {'r:','r--'};
+%     markb = {'b:','b--'};
     
     % now plot across subjects
-    tempfig2 = figure('Position',[1,1,1280,1920]);
+%     tempfig2 = figure('Position',[1,1,1280,1920]);
         % then loop through the muscles inside each subject
-    for i=2:26%length(newlabels)
-        subplot(5,6,i-1);
+    for i=1:length(newlabels)
+%         subplot(9,3,i-1);
         templabel = newlabels(i);
-        templabel = char(templabel);
-        temp1 = [];
-        temp2 = [];
-        % loop through the subjects
-        for subj=1:length(welksubjects)
-            subject = char(welksubjects(subj));
-            muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
-            muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
-            
-            temp1 = [temp1, mean(muscleplot_nat,2)];
-            temp2 = [temp2, mean(muscleplot_exo,2)];
+        templabel = char(templabel)
+%         temp1 = [];
+%         temp2 = [];
 
-            
-            % have all of them, want the average plotted for each subject
-%             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4);%char(markr(subj)))
-            hold on;
-%             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
-        end
-        
-        plot(mean(temp1,2), 'Color',natcolor, 'LineWidth', 2)
-        plot(mean(temp2,2), 'Color', exocolor, 'LineWidth', 2)
-%         legend(num2str(min(mean(temp1,2))), num2str(min(mean(temp2,2))));
+        % output the mean range
+        exo_means.(genvarname(templabel)) = mean(exostruct_combine.(genvarname(templabel)),1);
+        nat_means.(genvarname(templabel)) = mean(naturalstruct_combine.(genvarname(templabel)),1);
+        exo_stds.(genvarname(templabel)) = std(exostruct_combine.(genvarname(templabel)),1);
+        nat_stds.(genvarname(templabel)) = std(naturalstruct_combine.(genvarname(templabel)),1);
 
-        
-        % note that we can do max or min for flexions/extensions
-        % doing ROM now too
-        disp(strcat('nat: ', templabel))
-        maxnat = max(temp1) - min(temp1)
-        natmaxavg = mean(maxnat)
-        natsd = std(maxnat)
-        natse = natsd/sqrt(length(maxnat))
-
-        disp(strcat('exo: ',templabel))
-        maxexo = max(temp2) - min(temp2)
-        exomaxavg = mean(maxexo)
-        exosd = std(maxexo)
-        exose = exosd/sqrt(length(maxexo))
-
-
-
-
-
-
-
-        templabel2 = strrep(templabel,'_',' ');
-        title(templabel2)
-        
-        xlabel('% gait cycle')
-        ylabel('Coordinate Value')
-        grid on;
+        % output the mean mean
     end
+    % first is range, second is avg
+
+    
+
+
+
+% 
+% %         % loop through the subjects
+% %         for subj=1:length(welksubjects)
+% %             subject = char(welksubjects(subj));
+% %             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
+% %             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
+% %             
+% %             temp1 = [temp1, mean(muscleplot_nat,2)];
+% %             temp2 = [temp2, mean(muscleplot_exo,2)];
+% 
+%             
+%             % have all of them, want the average plotted for each subject
+% %             plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',0.4);%char(markr(subj)))
+% %             hold on;
+% %             plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',0.4);%char(markb(subj)))
+% %         end
+%         
+% %         plot(mean(temp1,2), 'r', 'LineWidth', 2)
+% %         plot(mean(temp2,2), 'b', 'LineWidth', 2)
+% %         legend(num2str(min(mean(temp1,2))), num2str(min(mean(temp2,2))));
+%         
+%         
+%         % note that we can do max or min for flexions/extensions
+%         % doing ROM now too
+%         disp(strcat('nat: ', templabel))
+%         maxnat = max(temp1) - min(temp1)
+%         natmaxavg = mean(maxnat)
+%         natsd = std(maxnat)
+%         natse = natsd/sqrt(length(maxnat))
+% 
+%         disp(strcat('exo: ',templabel))
+%         maxexo = max(temp2) - min(temp2)
+%         exomaxavg = mean(maxexo)
+%         exosd = std(maxexo)
+%         exose = exosd/sqrt(length(maxexo))
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+%         templabel2 = strrep(templabel,'_',' ');
+%         title(templabel2)
+%         
+%         xlabel('% gait cycle')
+%         ylabel('Coordinate Value')
+%         grid on;
+%     end
 %     subplot(5,7,i);
 %     plot(welknaturalstruct.time, mean(muscleplot_nat,2), char(markr(subj-1)))
 %     hold on;
