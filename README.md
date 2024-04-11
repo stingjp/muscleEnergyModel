@@ -2,7 +2,8 @@
 Experimental data that was collected of runners with and without an exotendon while running at 2.67 m/s. The 3D musculoskeletal simulations utilize an optimal control problem implementation with OpenSim Moco.
 
 ## Publications
-(pending)
+J. P. Stingel, J. L. Hicks, S. D. Uhlrich, and S. L. Delp, “Simulating Muscle-Level Energetic Cost Savings When Humans Run With a Passive Assistive Device,” IEEE Robotics and Automation Letters, vol. 8, no. 10, pp. 6267–6274, Oct. 2023, doi: 10.1109/LRA.2023.3303094.
+https://ieeexplore.ieee.org/abstract/document/10210485
 
 ## SimTK project
 https://simtk.org/projects/exotendon_sims
