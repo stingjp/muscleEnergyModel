@@ -1,4 +1,5 @@
 import os
+os.add_dll_directory('C:/Users/jonstingel/opensim/opensim-core-4.5-2024-05-15-a1a2282/bin')
 import opensim as osim
 import numpy as np
 import pdb
@@ -1214,9 +1215,9 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk002','welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk002']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces'];
-    trials = ['trial01','trial02','trial03','trial04']
+    trials = ['trial01']#,'trial02','trial03','trial04']
 
 
 

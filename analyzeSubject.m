@@ -59,12 +59,12 @@ close all;
 % this will load the existing solutions and perform the post analyses
 % solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
-% solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
 
 % 
-% Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
-% analyzeMetabolicCost(solution1);
-% Issues = computeIDFromResult(Issues, solution1, tag);
+Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
+analyzeMetabolicCost(solution1, '100con_rra_muscletrack');
+Issues = computeIDFromResult(Issues, solution1, tag);
 % analyzeMetabolicCost(solution1);
 % trackorprescribe = 'prescribe';
 % computeKinematicDifferences(solution1, trackorprescribe);

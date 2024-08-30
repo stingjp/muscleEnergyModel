@@ -77,7 +77,10 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
-    tableProcessor = TableProcessor('coordinates_updated.mot');
+     
+    % tableProcessor = TableProcessor('coordinates_updated.mot');
+    tableProcessor = TableProcessor('./ResultsRRA_testing_2_2/subject01_walk1_RRA_Kinematics_q.sto');
+
 %     tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto'));
 %     tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
     tableProcessor.append(TabOpLowPassFilter(6));
@@ -156,7 +159,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % tableProcessor is the coordinates_updated
 
-    tempkintable = TimeSeriesTable('coordinates_updated.mot');
+    % tempkintable = TimeSeriesTable('coordinates_updated.mot');
+
     %now need to go through and try to get them better
 
 
@@ -342,15 +346,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 %     solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
     % study.visualize(solution);
     % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution_100con001_2.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con001_2.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con001_2.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con_rra.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con_rra.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
-                                    'muscle_statetrack_grfprescribe_solution_100con001_2.sto', ...
+                                    'muscle_statetrack_grfprescribe_solution_100con_rra.sto', ...
                                     'bilateral', true);
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
@@ -365,16 +369,16 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     keyboard
     % post analysis and validation
-    solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
 
 
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution1, 'muscletrack');
-    % Issues = computeIDFromResult(Issues, solution);
+%     Issues = computeIDFromResult(Issues, solution1);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);
-    analyzeMetabolicCostSecond(solution2, 'muscletrack');
+%     analyzeMetabolicCostSecond(solution2, 'muscletrack');
 
 % end
