@@ -23,7 +23,7 @@ function analyzeMetabolicCost(solution, tag)
     
     % full moco method
     analyze = AnalyzeTool();
-    analyze.setName(strcat("analyzemuscles",tag));
+    analyze.setName(strcat("analyzemuscles_",tag,'_100con_rra'));
     analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
     % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
     %     analyze.setStatesFileName("muscleprescribe_states.sto");
@@ -32,8 +32,8 @@ function analyzeMetabolicCost(solution, tag)
     %     analyze.setStatesFileName(strcat(tag, "_states.sto"));
     %     analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
     % end
-    analyze.setStatesFileName(strcat(tag, "_states.sto"));
-    analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
+    analyze.setStatesFileName(strcat(tag, "_states_100con_rra.sto"));
+    analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con_rra.sto")));
 
 
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
