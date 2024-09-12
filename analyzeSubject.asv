@@ -42,7 +42,7 @@ end
 % torqueMarkerTrackGRFPrescribe();
 % close all;
 muscleStatePrescribeGRFPrescribe_2();
-close all;
+close all
 % torqueStateTrackGRFTrack();
 % close all;
 % torqueMarkerTrackGRFTrack();

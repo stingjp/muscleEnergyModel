@@ -1,23 +1,23 @@
-function torqueMarkerTrackGRFPrescribe()
+function torqueMarkerTrackGRFTrack()
     
     import org.opensim.modeling.*;
 
     % create and name an instance of the MocoTrack tool
     track = MocoTrack();
-    track.setName("torque_markertrack_grfprescribe");
+    track.setName("torque_markertrack_grftrack");
 
     % construct a ModelProcessor and add it to the tool.
-    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes_contact.osim");
     weldem = StdVectorString();
     weldem.add('subtalar_r');
-    weldem.add('mtp_r');
+    % weldem.add('mtp_r');
     weldem.add('subtalar_l');
-    weldem.add('mtp_l');
+    % weldem.add('mtp_l');
     weldem.add('radius_hand_r');
     weldem.add('radius_hand_l');
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     % add ground reaction external loads in lieu of ground-contact model. 
-    modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
+    % modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
     % remove all muscles for torque driven analysis
     modelProcessor.append(ModOpRemoveMuscles());
     % add CoordinateActuators to the model DOF. 
@@ -91,7 +91,7 @@ function torqueMarkerTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 5000); % here
+            effort.setWeightForControl(forcePath, 10000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -101,17 +101,51 @@ function torqueMarkerTrackGRFPrescribe()
         % end
     end
     
+%     keyboard
+    contactTracking = MocoContactTrackingGoal('contact', 1e0)    
+    contactTracking.setExternalLoadsFile('grf_walk.xml');
+    
+    forceNamesRightFoot = StdVectorString();
+    forceNamesRightFoot.add('/contactHeel_r');
+    % # forceNamesRightFoot.add('/forceset/contactLateralRearfoot_r');
+    forceNamesRightFoot.add('/contactLateralMidfoot_r');
+    % # forceNamesRightFoot.add('/contactLateralToe_r');
+    forceNamesRightFoot.add('/contactMedialToe_r');
+    forceNamesRightFoot.add('/contactMedialMidfoot_r');
+    % # contactTracking.addContactGroup(forceNamesRightFoot, 'Right_GRF');
+    contactTrackingSplitRight = MocoContactTrackingGoalGroup(forceNamesRightFoot, 'Right_GRF');
+    contactTrackingSplitRight.append_alternative_frame_paths('/bodyset/toes_r')
+    contactTracking.addContactGroup(contactTrackingSplitRight);
+
+    forceNamesLeftFoot = StdVectorString();
+    forceNamesLeftFoot.add('/contactHeel_l');
+    % # forceNamesLeftFoot.add('/forceset/contactLateralRearfoot_l');
+    forceNamesLeftFoot.add('/contactLateralMidfoot_l');
+    % # forceNamesLeftFoot.add('/contactLateralToe_l');
+    forceNamesLeftFoot.add('/contactMedialToe_l');
+    forceNamesLeftFoot.add('/contactMedialMidfoot_l');
+    % # contactTracking.addContactGroup(forceNamesLeftFoot, 'Left_GRF');
+    contactTrackingSplitLeft = MocoContactTrackingGoalGroup(forceNamesLeftFoot, 'Left_GRF');
+    contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
+    contactTracking.addContactGroup(contactTrackingSplitLeft);
+    
+    contactTracking.setProjection('plane');
+    contactTracking.setProjectionVector(Vec3(0, 0, 1));
+
+    contactTracking.setDivideByDisplacement(false)
+    contactTracking.setDivideByMass(true)
+    problem.addGoal(contactTracking);
 
 
     % solve - the bool indicates to visualize the solution
     % solution = track.solve(true); % to visualize
     solution = study.solve();
-    solution.write('torque_markertrack_grfprescribe_solution.sto');
+    solution.write('torque_markertrack_grftrack_solution.sto');
 
     % generate a pdf report containing plots of the variables in the solution. 
     % for details see osimMocoTrajectoryReport.m in moco resource/code/matlab/utilities 
     model = modelProcessor.process();
-    report = osimMocoTrajectoryReport(model, 'torque_markertrack_grfprescribe_solution.sto');
+    report = osimMocoTrajectoryReport(model, 'torque_markertrack_grftrack_solution.sto');
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
     pdfFilePath = strcat(pdfFilePath, 'pdf');

@@ -1,4 +1,4 @@
-function torqueStateTrackGRFPrescribe()
+function torqueStateTrackGRFTrack()
     import org.opensim.modeling.*;
     
     % create and name an instance of the MocoTrack tool
@@ -6,27 +6,27 @@ function torqueStateTrackGRFPrescribe()
     track.setName("torque_statetrack_grfprescribe");
     
     % construct a ModelProcessor and add it to the tool.
-    % modelProcessor = ModelProcessor("simple_model_all_the_probes_adjusted.osim");
-    % modelProcessor = ModelProcessor("subject_redoarms.osim");
-    modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+%     modelProcessor = ModelProcessor("simple_model_all_the_probes_adjusted.osim");
+%     modelProcessor = ModelProcessor("subject_redoarms.osim");
+    modelProcessor = ModelProcessor("simple_model_all_the_probes_contact.osim");
 
 
     
-    % modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
+%     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     % now to do stuff with the model
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
     weldem = StdVectorString();
     weldem.add('subtalar_r');
-    weldem.add('mtp_r');
+    % weldem.add('mtp_r');
     weldem.add('subtalar_l');
-    weldem.add('mtp_l');
+    % weldem.add('mtp_l');
     weldem.add('radius_hand_r');
     weldem.add('radius_hand_l');
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     % model = modelProcessor.process();
     % add ground reaction external loads in lieu of ground-contact model. 
-    modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
+    % modelProcessor.append(ModOpAddExternalLoads("grf_walk.xml"));
     % remove all muscles for torque driven analysis
     modelProcessor.append(ModOpRemoveMuscles());
     % add CoordinateActuators to the model DOF. 
@@ -61,19 +61,19 @@ function torqueStateTrackGRFPrescribe()
     track.set_track_reference_position_derivatives(true);
     
     % set specific weights for the individual weight set
-    coordinateweights = MocoWeightSet();
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
+%     coordinateweights = MocoWeightSet();
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
+    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 0));
-    
-    track.set_states_weight_set(coordinateweights);
+%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 0));
+%     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 0));
+%     
+%     track.set_states_weight_set(coordinateweights);
     
     
 
@@ -128,40 +128,40 @@ function torqueStateTrackGRFPrescribe()
         % end
     end
     
+%     keyboard
+    contactTracking = MocoContactTrackingGoal('contact', 1e0)    
+    contactTracking.setExternalLoadsFile('grf_walk.xml');
     
-    % contactTracking = osim.MocoContactTrackingGoal('contact', GRFTrackingWeight)    
-    % contactTracking.setExternalLoadsFile('grf_walk_nat_1.xml');
-    
-    % forceNamesRightFoot = osim.StdVectorString();
-    % forceNamesRightFoot.append('/contactHeel_r');
-    % % # forceNamesRightFoot.append('/forceset/contactLateralRearfoot_r');
-    % forceNamesRightFoot.append('/contactLateralMidfoot_r');
-    % % # forceNamesRightFoot.append('/contactLateralToe_r');
-    % forceNamesRightFoot.append('/contactMedialToe_r');
-    % forceNamesRightFoot.append('/contactMedialMidfoot_r');
-    % % # contactTracking.addContactGroup(forceNamesRightFoot, 'Right_GRF');
-    % contactTrackingSplitRight = osim.MocoContactTrackingGoalGroup(forceNamesRightFoot, 'Right_GRF');
-    % contactTrackingSplitRight.append_alternative_frame_paths('/bodyset/toes_r')
-    % contactTracking.addContactGroup(contactTrackingSplitRight);
+    forceNamesRightFoot = StdVectorString();
+    forceNamesRightFoot.add('/contactHeel_r');
+    % # forceNamesRightFoot.add('/forceset/contactLateralRearfoot_r');
+    forceNamesRightFoot.add('/contactLateralMidfoot_r');
+    % # forceNamesRightFoot.add('/contactLateralToe_r');
+    forceNamesRightFoot.add('/contactMedialToe_r');
+    forceNamesRightFoot.add('/contactMedialMidfoot_r');
+    % # contactTracking.addContactGroup(forceNamesRightFoot, 'Right_GRF');
+    contactTrackingSplitRight = MocoContactTrackingGoalGroup(forceNamesRightFoot, 'Right_GRF');
+    contactTrackingSplitRight.append_alternative_frame_paths('/bodyset/toes_r')
+    contactTracking.addContactGroup(contactTrackingSplitRight);
 
-    % forceNamesLeftFoot = osim.StdVectorString();
-    % forceNamesLeftFoot.append('/contactHeel_l');
-    % % # forceNamesLeftFoot.append('/forceset/contactLateralRearfoot_l');
-    % forceNamesLeftFoot.append('/contactLateralMidfoot_l');
-    % % # forceNamesLeftFoot.append('/contactLateralToe_l');
-    % forceNamesLeftFoot.append('/contactMedialToe_l');
-    % forceNamesLeftFoot.append('/contactMedialMidfoot_l');
-    % % # contactTracking.addContactGroup(forceNamesLeftFoot, 'Left_GRF');
-    % contactTrackingSplitLeft = osim.MocoContactTrackingGoalGroup(forceNamesLeftFoot, 'Left_GRF');
-    % contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
-    % contactTracking.addContactGroup(contactTrackingSplitLeft);
+    forceNamesLeftFoot = StdVectorString();
+    forceNamesLeftFoot.add('/contactHeel_l');
+    % # forceNamesLeftFoot.add('/forceset/contactLateralRearfoot_l');
+    forceNamesLeftFoot.add('/contactLateralMidfoot_l');
+    % # forceNamesLeftFoot.add('/contactLateralToe_l');
+    forceNamesLeftFoot.add('/contactMedialToe_l');
+    forceNamesLeftFoot.add('/contactMedialMidfoot_l');
+    % # contactTracking.addContactGroup(forceNamesLeftFoot, 'Left_GRF');
+    contactTrackingSplitLeft = MocoContactTrackingGoalGroup(forceNamesLeftFoot, 'Left_GRF');
+    contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
+    contactTracking.addContactGroup(contactTrackingSplitLeft);
     
-    % contactTracking.setProjection('plane');
-    % contactTracking.setProjectionVector(osim.Vec3(0, 0, 1));
+    contactTracking.setProjection('plane');
+    contactTracking.setProjectionVector(Vec3(0, 0, 1));
 
-    % contactTracking.setDivideByDisplacement(False)
-    % contactTracking.setDivideByMass(True)
-    % problem.addGoal(contactTracking);
+    contactTracking.setDivideByDisplacement(false)
+    contactTracking.setDivideByMass(true)
+    problem.addGoal(contactTracking);
 
 
 
@@ -179,10 +179,10 @@ function torqueStateTrackGRFPrescribe()
     solution = study.solve();
     % study.visualize(solution);
     % generate a report and save
-    solution.write('torque_statetrack_grfprescribe_solution.sto');
+    solution.write('torque_statetrack_grftrack_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
         
-    report = osimMocoTrajectoryReport(model, 'torque_statetrack_grfprescribe_solution.sto');
+    report = osimMocoTrajectoryReport(model, 'torque_statetrack_grftrack_solution.sto');
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);
     pdfFilePath = strcat(pdfFilePath, 'pdf');

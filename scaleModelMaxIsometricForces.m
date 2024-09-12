@@ -60,9 +60,10 @@ function [subj_model] = scaleModelMaxIsometricForces(subjectmass, subjectheight)
         haveheight = false;
     end
     
-    % get the generic model file. 
+    % get the generic model file.
     generic_model = Model('G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\Rajagopal_40_abdChg_passiveCalib_hippathsadjust_welkrecollect.osim');
-    subj_model = Model('./subject_updated.osim');
+    % subj_model = Model('./subject_updated.osim');
+    subj_model = Model('./subject_redoarms.osim');
 
 
     function [output] = total_muscle_volume_regression_mass(mass)
@@ -128,7 +129,7 @@ function [subj_model] = scaleModelMaxIsometricForces(subjectmass, subjectheight)
         end
     end
     
-    subj_model.print('subject_updated_Fscaled.osim');
+    subj_model.print('subject_updated_Fscaled_redoarms.osim');
 end
 
 
