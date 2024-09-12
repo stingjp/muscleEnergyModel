@@ -134,7 +134,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set the times and mesh interval, mesh points are computed internally. 
     track.set_initial_time(gait_start);
     track.set_final_time(gait_end);
-    track.set_mesh_interval(0.04); % 0.03 for all current subjects %.05 % .01% 
+    track.set_mesh_interval(0.03); % 0.03 for all current subjects %.05 % .01% 
     
     % initialize and set goals
     study = track.initialize();    
@@ -206,7 +206,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(5.15); % 0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(0.5); % 0.1 for the new %.5 % been trying .25. previous was .1
     % whatever the weight was before the alienware did really well withit
     % for 007 natural1
     
@@ -243,13 +243,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % set our initial guesses
     % twosteptraj = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % twosteptraj = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+
     steps = twosteptraj.getNumTimes();
 
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem)
 
-
-    % solver.set_optim_convergence_tolerance(.01); % 1e-2
+    
+    solver.set_optim_convergence_tolerance(.01); % 1e-2
     solver.set_optim_constraint_tolerance(1e-4); % 1e-2
     % solver.set_parallel(24);
     % solver.set_parallel(8);
@@ -319,11 +321,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(solution);
     % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution_100con.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
@@ -342,12 +344,15 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
 
     % post analysis and validation
-    
+    solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+
+
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
-    analyzeMetabolicCost(solution, 'muscletrack');
+    analyzeMetabolicCost(solution1, 'muscletrack');
     % Issues = computeIDFromResult(Issues, solution);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);
-
+    analyzeMetabolicCostSecond(solution2, 'muscletrack');
 % end
