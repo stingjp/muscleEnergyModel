@@ -32,7 +32,7 @@ function muscleStateTrackGRFPrescribe()
     % musclemuscles = musclemodel.updMuscles();
     % nummusclemuscles = musclemuscles.getSize();
 
-    musclemodel.print('musclemodel.osim');
+    musclemodel.print('post_simple_model_all_the_probes_muscleprescribe.osim');
     inverse.setModel(ModelProcessor(musclemodel));
     
     % tableProcessor = TableProcessor('results_IK_redoarms.mot');
@@ -84,7 +84,7 @@ function muscleStateTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'reserve')
-            effort.setWeightForControl(forcePath, 100); % here
+            effort.setWeightForControl(forcePath, 1000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -109,6 +109,9 @@ function muscleStateTrackGRFPrescribe()
     solution.write('muscle_stateprescribe_grfprescribe_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
         
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls_redoarms.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states_redoarms.sto');
+
     report = osimMocoTrajectoryReport(model, 'muscle_stateprescribe_grfprescribe_solution.sto');
     reportFilePath = report.generate();
     pdfFilePath = reportFilePath(1:end-2);

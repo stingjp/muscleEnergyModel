@@ -17,9 +17,16 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     workingdir = pwd;
 
     idtool = InverseDynamicsTool(java.lang.String('idguitesting.xml'));
-    modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
+    if strcmp(tag, 'muscletrack')
+        modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
+        modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
+    else
+        modelid1 = Model('post_simple_model_all_the_probes_muscleprescribe.osim');
+        modelid2 = Model('simple_model_all_the_probes.osim');
+    end
+    % modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
     modelid1.initSystem();
-    modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
+    % modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
     idtool.setModel(modelid2);
 
     if strcmp(tag, 'grftrack')
@@ -92,7 +99,7 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     
     % idtool.setCoordinateValues(sto);
     idtool.setCoordinatesFileName('muscle_coordinates_short.sto');
-    idresult = 'muscle_joint_moment_breakdown.sto';
+    idresult = strcat(tag, '_muscle_joint_moment_breakdown.sto');
     idtool.setResultsDir(workingdir);
     idtool.setOutputGenForceFileName(idresult);
     idtool.setEndTime(endtime);
@@ -100,7 +107,7 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     idtool.set_results_directory(java.lang.String(workingdir));
     
     % run the tool
-    idtool.print('idtesting.xml');
+    idtool.print(strcat(tag,'idtesting.xml'));
     idtool.run();
 
     % load the net joint moments
@@ -111,7 +118,6 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     
     % get the states
     statestraj = solution.exportToStatesTrajectory(modelid1);
-
 
     %% get some details from the model
     % muscles

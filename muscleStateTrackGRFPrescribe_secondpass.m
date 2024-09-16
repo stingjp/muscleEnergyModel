@@ -342,7 +342,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle track')
 
-
+    
     % post analysis and validation
     solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');

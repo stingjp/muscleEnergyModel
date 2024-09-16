@@ -63,15 +63,19 @@ function torqueStateTrackGRFPrescribe()
     % set specific weights for the individual weight set
     coordinateweights = MocoWeightSet();
     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0.1));
     coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_r", 4));
+    coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_l", 4));
+    coordinateweights.cloneAndAppend(MocoWeight("knee_angle_r", 5));
+    coordinateweights.cloneAndAppend(MocoWeight("knee_angle_l", 5));
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 6));
+    coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 6));
     
     track.set_states_weight_set(coordinateweights);
     
@@ -118,7 +122,7 @@ function torqueStateTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 10000); % here
+            effort.setWeightForControl(forcePath, 1000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -128,7 +132,24 @@ function torqueStateTrackGRFPrescribe()
         % end
     end
     
+    % Constrain the states and controls to be periodic.
+    periodicityGoal = MocoPeriodicityGoal("periodicity");
+    periodicityGoal.setMode('endpoint_constraint');
+    for i = 0:model.getNumStateVariables()-1
+        currentStateName = string(model.getStateVariableNames().getitem(i));
+        if (~contains(currentStateName,'pelvis_tx/value'))
+            periodicityGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName));
+        end
+    end
+    forceSet = model.getForceSet();
+    for i = 0:forceSet.getSize()-1
+        forcePath = forceSet.get(i).getAbsolutePathString();
+        periodicityGoal.addControlPair(MocoPeriodicityGoalPair(forcePath));
+    end
+    problem.addGoal(periodicityGoal);
     
+
+
     % contactTracking = osim.MocoContactTrackingGoal('contact', GRFTrackingWeight)    
     % contactTracking.setExternalLoadsFile('grf_walk_nat_1.xml');
     

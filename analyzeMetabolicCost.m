@@ -23,8 +23,15 @@ function analyzeMetabolicCost(solution, tag)
     
     % full moco method
     analyze = AnalyzeTool();
-    analyze.setName(strcat("analyzemuscles_",tag,'_100con_rra'));
-    analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
+    analyze.setName(strcat("analyzemuscles_",tag));
+    if strcmp(tag, 'muscletrack')
+        analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
+        analyze.setStatesFileName(strcat(tag, "_states_100con.sto"));
+        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con.sto")));
+    elseif strcmp(tag, 'muscleprescribe')
+        analyze.setModelFilename("post_simple_model_all_the_probes_muscleprescribe.osim");
+        analyze.setStatesFileName(strcat(tag, "_states_redoarms.sto"));
+        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_redoarms.sto")));
     % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
     %     analyze.setStatesFileName("muscleprescribe_states.sto");
     %     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
@@ -32,9 +39,7 @@ function analyzeMetabolicCost(solution, tag)
     %     analyze.setStatesFileName(strcat(tag, "_states.sto"));
     %     analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
     % end
-    analyze.setStatesFileName(strcat(tag, "_states_100con_rra.sto"));
-    analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_100con_rra.sto")));
-
+    end
 
     analyze.updAnalysisSet().cloneAndAppend(MuscleAnalysis());
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
@@ -286,6 +291,11 @@ function analyzeMetabolicCost(solution, tag)
     met_table.Properties.VariableNames{'Var15'} = 'experimentname';
     met_table.Properties.VariableNames{'Var16'} = 'trialname';
     
-    writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
+    if strcmp(tag, 'muscletrack')
+        writetable(met_table, 'metabolicsTableTrack.csv','WriteRowNames',true);
+    elseif strcmp(tag, 'muscleprescribe')
+        writetable(met_table, 'metabolicsTablePrescribe.csv','WriteRowNames',true);
+    end
+    % writetable(met_table, 'metabolicsTable.csv','WriteRowNames',true);
 
 end
