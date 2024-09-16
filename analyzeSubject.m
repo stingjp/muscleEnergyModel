@@ -10,6 +10,9 @@ TODO:
 making a script to set up the file structure...
 %}
 % print out issues to look at for each subject:
+
+tic
+
 import org.opensim.modeling.*
 workingdir = pwd;
 [~,trialname,~] = fileparts(pwd);
@@ -33,10 +36,10 @@ end
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
-% metabolicsModelSetup();
-% close all;
-% torqueStateTrackGRFPrescribe();
-% close all;
+metabolicsModelSetup();
+close all;
+torqueStateTrackGRFPrescribe();
+close all;
 % torqueStatePrescribeGRFPrescribe();
 % close all;
 % torqueMarkerTrackGRFPrescribe();
@@ -51,7 +54,6 @@ close all;
 % close all;
 % Issues = muscleStatePrescribeGRFPrescribeWithEMG(Issues);
 % close all;
-
 % Issues = muscleStateTrackGRFPrescribe_firstPass(Issues);
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
@@ -60,19 +62,21 @@ close all;
 % close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues); % set up as secondpass with different mesh
 % close all;
-% Issues = muscleStateTrackGRFTrack(Issues)
+% Issues = muscleStateTrackGRFTrack(Issues)s
 close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
-% solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+analyzeMetabolicCost(solution1, 'muscleprescribe');
+% Issues = computeIDFromResult(Issues, solution1, tag);
+
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 % solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
 
 % 
 % Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
-% analyzeMetabolicCost(solution1, '100con_rra_muscletrack');
-% Issues = computeIDFromResult(Issues, solution1, tag);
+
 % analyzeMetabolicCost(solution1);
 % trackorprescribe = 'prescribe';
 % computeKinematicDifferences(solution1, trackorprescribe);
@@ -80,6 +84,7 @@ close all;
 % Issues = computeIDFromResult(Issues, solution2);
 % analyzeMetabolicCostWithEMG(solution2);
 
+toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % finisher

@@ -104,15 +104,25 @@ end
 disp('only run the rest of the file when the simulations have completed. Code following will analyze the solutions.')
 keyboard
 
+tag = 'muscleprescribe';
+tag = 'muscletrack';
 
-try
-    solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
-    conornot = true;
-catch
-    disp('NO 100 CON SOLUTION');
+if strcmp(tag, 'muscletrack')
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    conornot = true;
+else
+    solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     conornot = false;
 end
+
+% try
+%     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+%     conornot = true;
+% catch
+%     disp('NO 100 CON SOLUTION');
+%     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+%     conornot = false;
+% end
 
 % 
 % if strcmp(subjectname, 'welk002') %|| strcmp(subjectname, 'welk003')
