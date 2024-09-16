@@ -1,6 +1,6 @@
 import os
 # os.add_dll_directory('C:/Users/jonstingel/opensim/opensim-core-4.5-2024-05-15-a1a2282/bin')
-os.add_dll_directory('C:/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+os.add_dll_directory('C:/Users/jonstingel/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
 
 import opensim as osim
 import numpy as np
@@ -155,7 +155,7 @@ def computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag):
     time.sleep(0.5)
     # '''
     # figure out how to do an intersegmental with proper value of forces showing up.
-    trimjra = osim.TimeSeriesTable('jr_analysis_prescribe_jra_' + tag + '_ReactionLoads.sto')
+    trimjra = osim.TimeSeriesTable('jr_analysis_prescribe_jra_prescribe_' + tag + '_ReactionLoads.sto')
     trimjralabels = trimjra.getColumnLabels()
     tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
     # pdb.set_trace()
@@ -545,7 +545,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
     
     # model.initSystem()
     if musclesWanted_split == []: # this is the inter or intersegmental condition
-        statesStorage = osim.Storage('muscleprescibe_states_redoarms.sto')
+        statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
         statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
         stateslabels = statesTable.getColumnLabels()
         statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
@@ -595,7 +595,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
     
     
     elif 'all' in musclesWanted_split:
@@ -643,7 +643,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
     
         ###
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
     
     elif 'reserve' in musclesWanted_split:
         statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
@@ -710,7 +710,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
     
     elif 'none' in musclesWanted_split:
         statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
@@ -775,7 +775,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
         
     
     else:
@@ -834,7 +834,6 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
                     controlsTableTrim.removeColumn(con)
         osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
         
-        pdb.set_trace()
         # get a version of the model with no muscles in it
         # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
         trimmodel = osim.Model('post_simple_model_all_the_probes_muscleprescribe.osim')
@@ -844,7 +843,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         count = 0
         for m in range(numMuscles):
             musc = trimmuscles.get(m-count)
-            print(musc.getName())
+            # print(musc.getName())
             getrid = True
             for mu in musclesWanted_split:
                 # print(mu)
@@ -855,7 +854,6 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
             if getrid:
                 trimmuscles.remove(musc)
                 count +=1
-        pdb.set_trace()
         # now have to do it for the forceset too?
         trimforces = trimmodel.getForceSet()
         numForces = trimforces.getSize()  
@@ -864,7 +862,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
             fo = trimforces.get(f-count)
             if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName() and 'shoulder' not in fo.getName() and 'elbow' not in fo.getName() and 'pro_sup' not in fo.getName():
             # if 'HOBL' not in fo.getName():
-                print(fo.getName())
+                # print(fo.getName())
                 getrid = True
                 for mu in musclesWanted_split:
                     if mu == fo.getName():
@@ -876,7 +874,6 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         # model should only have muscles that we want now. 
         trimmodel.initSystem()
         trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
-        pdb.set_trace()
         
         initTime = np.array(statesTable.getIndependentColumn())[0]
         finalTime = np.array(statesTable.getIndependentColumn())[-1]
@@ -891,7 +888,7 @@ def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
     
         ###
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
     
     return jray
 # method for computing the individual muscle contributions to knee contact force
@@ -1627,6 +1624,7 @@ if __name__ == '__main__':
     # now to define all the setup that he has and is required
     basedir = os.getcwd()
     repodir = 'G:\\Shared drives\\Exotendon\\muscleModel\\muscleEnergyModel';
+    repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     resultsdir = os.path.join(repodir, '..\\results');
 
     welkexoconditions = ['welkexo']
@@ -2421,7 +2419,7 @@ if __name__ == '__main__':
     # figure out subtracting the intersegmental from each of the others?
     
 
-    pdb.set_trace()
+    # pdb.set_trace()
 
     # # have the structures, now loop through and figure out how to fill them in
     # # loop the subjects
