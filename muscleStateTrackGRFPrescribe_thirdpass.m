@@ -321,11 +321,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     % study.visualize(solution);
     % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution_100con.sto');
+    solution.write('muscle_statetrack_grfprescribe_solution_100con_redoarms.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_100con_redoarms.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_100con_redoarms.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
