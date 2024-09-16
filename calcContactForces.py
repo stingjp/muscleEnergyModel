@@ -1,5 +1,7 @@
 import os
-os.add_dll_directory('C:/Users/jonstingel/opensim/opensim-core-4.5-2024-05-15-a1a2282/bin')
+# os.add_dll_directory('C:/Users/jonstingel/opensim/opensim-core-4.5-2024-05-15-a1a2282/bin')
+os.add_dll_directory('C:/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+
 import opensim as osim
 import numpy as np
 import pdb
@@ -112,7 +114,55 @@ def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag):
     # plt.figure()
     # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
     return tiby
+# this is the same script ^ but for the prescribed mocoinverse solution
+def computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag):
+    # '''
+    # intersegmental forces - method 2
+    # try the analysis
+    jr_tool = osim.AnalyzeTool()
+    jr_tool.setName('jr_analysis_prescribe')
+    # jr_tool.setModelFilename(os.path.join(trialdir, 'post_simple_model_all_the_probes_muscletrack.osim'))
+    
+    # I don't think this is going to work. 
+    # jr_tool.setStatesStorage(statesStorage)
+    # jr_tool.setStatesFileName('testfibsolution.sto')
+    trimmingstates = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+    jr_tool.setStatesStorage(trimmingstates)    
+    
+    # jr_tool.setExternalLoadsFileName('grf_walk.xml')
+    # jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'muscletrack_controls_100con.sto')))
+    jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'trimmingControls_prescribe_' + tag + '.sto')))
+    
+    jra = osim.JointReaction()
+    jra.setName('jra_prescribe_' + tag)
+    wherestr = osim.ArrayStr(); wherestr.append('child')
+    jra.setInFrame(wherestr)
+    
+    jr_tool.updAnalysisSet().cloneAndAppend(jra)
+    jr_tool.setInitialTime(initTime)
+    jr_tool.setFinalTime(finalTime)
+    jr_tool.setResultsDir(trialdir)
+    
+    # jr_tool.setModelFilename('jratestingmodel.osim')
+    trimmodel.addAnalysis(jra)
+    jr_tool.setModel(trimmodel)
 
+    ## uncomment to rerun the analysis
+    jr_tool.printToXML(os.path.join(trialdir, 'jr_setup_prescribe.xml'))
+    # time.sleep(0.5)
+    # jr_tool = osim.AnalyzeTool(os.path.join(trialdir, 'jr_setup.xml'))
+    jr_tool.run()
+    time.sleep(0.5)
+    # '''
+    # figure out how to do an intersegmental with proper value of forces showing up.
+    trimjra = osim.TimeSeriesTable('jr_analysis_prescribe_jra_' + tag + '_ReactionLoads.sto')
+    trimjralabels = trimjra.getColumnLabels()
+    tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+    # pdb.set_trace()
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
+    return tiby
 # method for computing the individual muscle contributions to knee contact force
 def getKneeContactributions(trialdir, musclesWanted_split, tag):
     # os.chdir(trialdir)
@@ -473,6 +523,372 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.addComponent(pomo)
         trimmodel.initSystem()
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
+    
+        ###
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+    
+    return jray
+# method for computing the individual muscle contributions to knee contact force
+def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
+    # os.chdir(trialdir)
+    # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+    # model = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+    # # attempting with just setting muscles to not apply force
+    # muscles = model.getMuscles()
+    # for m in range(muscles.getSize()):
+    #     musc = muscles.get(m)
+    #     muscname = musc.getName()
+    #     if muscname not in musclesWanted_split:
+    #         musc.setMaxIsometricForce(0.0)
+    #     # else:
+    #     #     print(muscname)
+    
+    # model.initSystem()
+    if musclesWanted_split == []: # this is the inter or intersegmental condition
+        statesStorage = osim.Storage('muscleprescibe_states_redoarms.sto')
+        statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        stateslabels = statesTable.getColumnLabels()
+        statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        
+        # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+        for stat in stateslabels: 
+            if 'forceset' in stat:
+                statesTableTrim.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_prescribe_' + tag + '.sto')
+
+        for stat in stateslabels:
+            if 'forceset' in stat or 'speed' in stat: 
+                statesTableTrim2.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_prescribe_' + tag + '.sto')
+
+        # get a version of the controls that matches. 
+        controlsTable = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        controlslabels = controlsTable.getColumnLabels()
+        controlsTableTrim = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        
+        # get a version of the controls that is trimmed down. 
+        for con in controlslabels:
+            if 'reserve' not in con and 'lumbar' not in con:
+                controlsTableTrim.removeColumn(con)
+        osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
+        
+        # get a version of the model with no muscles in it
+        # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscleprescribe.osim')
+        trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+        trimmodel = trimmodelprocessor.process()
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
+        
+        initTime = np.array(statesTable.getIndependentColumn())[0]
+        finalTime = np.array(statesTable.getIndependentColumn())[-1]
+        
+        # now try the positionMotion
+        # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+        pomostorage = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+        pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+        pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+        
+        trimmodel.addComponent(pomo)
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
+        
+        # call the analyze tool to actually do the analysis and get the values. 
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+    
+    
+    elif 'all' in musclesWanted_split:
+        statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
+        statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        stateslabels = statesTable.getColumnLabels()
+        statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        # in this case, we want all the muscles in the model
+        osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_prescribe_' + tag + '.sto')
+        
+        for stat in stateslabels:
+            if 'speed' in stat:
+                statesTableTrim2.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_prescribe_' + tag + '.sto')
+
+
+        # get a version of the controls that matches. 
+        controlsTable = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        controlslabels = controlsTable.getColumnLabels()
+        controlsTableTrim = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        
+        # in this case we want all the controls, not getting rid of any muscles
+        osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
+        
+        
+        # get a version of the model with no muscles in it
+        # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        trimmodel = osim.Model('post_simple_model_all_the_probes_muscleprescribe.osim')
+        
+        # model keeping all the muscles again for this one
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
+        
+        initTime = np.array(statesTable.getIndependentColumn())[0]
+        finalTime = np.array(statesTable.getIndependentColumn())[-1]
+        
+        # now try the positionMotion
+        pomostorage = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+        pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+        pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+        
+        trimmodel.addComponent(pomo)
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
+    
+        ###
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+    
+    elif 'reserve' in musclesWanted_split:
+        statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
+        statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        stateslabels = statesTable.getColumnLabels()
+        statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        
+        # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+        for stat in stateslabels: 
+            if 'forceset' in stat:
+                statesTableTrim.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_prescribe_' + tag + '.sto')
+
+        for stat in stateslabels:
+            if 'forceset' in stat or 'speed' in stat: 
+                statesTableTrim2.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_prescribe_' + tag + '.sto')
+
+        # get a version of the controls that matches. 
+        controlsTable = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        controlslabels = controlsTable.getColumnLabels()
+        controlsTableTrim = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        
+        # get a version of the controls that is trimmed down. 
+        for con in controlslabels:
+            if 'lumbar' not in con:
+                controlsTableTrim.removeColumn(con)
+        osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
+        
+        # get a version of the model with no muscles in it (or reserves?)
+        # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscleprescribe.osim')
+        trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+        trimmodel = trimmodelprocessor.process()
+        trimmodel.initSystem()
+        
+        # now have to do it for the forceset too?
+        trimforces = trimmodel.getForceSet()
+        numForces = trimforces.getSize()  
+        count = 0
+        for f in range(numForces):
+            fo = trimforces.get(f-count)
+            # print(fo.getName())
+            if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName():
+                getrid = True
+                trimforces.remove(f-count)
+                count += 1
+        
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
+        
+        initTime = np.array(statesTable.getIndependentColumn())[0]
+        finalTime = np.array(statesTable.getIndependentColumn())[-1]
+        
+        # now try the positionMotion
+        # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+        pomostorage = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+        pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+        pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+        
+        trimmodel.addComponent(pomo)
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
+        
+        # call the analyze tool to actually do the analysis and get the values. 
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+    
+    elif 'none' in musclesWanted_split:
+        statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
+        statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        stateslabels = statesTable.getColumnLabels()
+        statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        
+        # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+        for stat in stateslabels: 
+            if 'forceset' in stat:
+                statesTableTrim.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_prescribe_' + tag + '.sto')
+
+        for stat in stateslabels:
+            if 'forceset' in stat or 'speed' in stat: 
+                statesTableTrim2.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_prescribe_' + tag + '.sto')
+
+        # get a version of the controls that matches. 
+        controlsTable = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        controlslabels = controlsTable.getColumnLabels()
+        controlsTableTrim = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        
+        # get a version of the controls that is trimmed down. 
+        for con in controlslabels:
+            controlsTableTrim.removeColumn(con)
+        osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
+        
+        # get a version of the model with no muscles in it (or reserves?)
+        # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscleprescribe.osim')
+        trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+        trimmodel = trimmodelprocessor.process()
+        trimmodel.initSystem()
+        
+        # now have to do it for the forceset too?
+        trimforces = trimmodel.getForceSet()
+        numForces = trimforces.getSize()
+        count = 0
+        for f in range(numForces):
+            fo = trimforces.get(f-count)
+            if 'HOBL' not in fo.getName():
+                getrid = True
+                trimforces.remove(f-count)
+                count += 1
+        
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
+        
+        initTime = np.array(statesTable.getIndependentColumn())[0]
+        finalTime = np.array(statesTable.getIndependentColumn())[-1]
+        
+        # now try the positionMotion
+        # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+        pomostorage = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+        pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+        pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+        
+        trimmodel.addComponent(pomo)
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
+        
+        # call the analyze tool to actually do the analysis and get the values. 
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        
+    
+    else:
+        statesStorage = osim.Storage('muscleprescribe_states_redoarms.sto')
+        statesTable = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        stateslabels = statesTable.getColumnLabels()
+        statesTableTrim = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscleprescribe_states_redoarms.sto')
+        
+        # musclesWanted_split = ['1'2'3'4']
+        # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+        for stat in stateslabels:
+            if 'forceset' in stat:
+                # print(stat)
+                getrid = True
+                for want in musclesWanted_split:
+                    if want in stat:
+                        # want this one
+                        # print('want this one')
+                        # print(stat)
+                        getrid = False
+                if getrid:
+                    statesTableTrim.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_prescribe_' + tag + '.sto')
+
+        for stat in stateslabels:
+            if 'forceset' in stat or 'speed' in stat:
+                getrid = True
+                for want in musclesWanted_split:
+                    if want in stat:
+                        # want to keep this one
+                        # print(stat)
+                        getrid = False
+                if getrid:
+                    statesTableTrim2.removeColumn(stat)
+        osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_prescribe_' + tag + '.sto')
+
+
+        # get a version of the controls that matches. 
+        controlsTable = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        controlslabels = controlsTable.getColumnLabels()
+        controlsTableTrim = osim.TimeSeriesTable('muscleprescribe_controls_redoarms.sto')
+        
+        # get a version of the controls that is trimmed down. 
+        for con in controlslabels:
+            # print(con)
+            if 'lumbar' not in con:
+                getrid = True
+                for want in musclesWanted_split:
+                    if want in con:
+                        # want this
+                        # print('want this one')
+                        # print(con)
+                        getrid = False
+                if getrid:
+                    controlsTableTrim.removeColumn(con)
+        osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_prescribe_' + tag + '.sto')
+        
+        pdb.set_trace()
+        # get a version of the model with no muscles in it
+        # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        trimmodel = osim.Model('post_simple_model_all_the_probes_muscleprescribe.osim')
+        # get rid of muscles that we don't want
+        trimmuscles = trimmodel.getMuscles()
+        numMuscles = trimmuscles.getSize()
+        count = 0
+        for m in range(numMuscles):
+            musc = trimmuscles.get(m-count)
+            print(musc.getName())
+            getrid = True
+            for mu in musclesWanted_split:
+                # print(mu)
+                if mu == musc.getName():
+                    # print(musc.getName())
+                    # print(mu)
+                    getrid = False
+            if getrid:
+                trimmuscles.remove(musc)
+                count +=1
+        pdb.set_trace()
+        # now have to do it for the forceset too?
+        trimforces = trimmodel.getForceSet()
+        numForces = trimforces.getSize()  
+        count = 0
+        for f in range(numForces):
+            fo = trimforces.get(f-count)
+            if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName() and 'shoulder' not in fo.getName() and 'elbow' not in fo.getName() and 'pro_sup' not in fo.getName():
+            # if 'HOBL' not in fo.getName():
+                print(fo.getName())
+                getrid = True
+                for mu in musclesWanted_split:
+                    if mu == fo.getName():
+                        getrid = False
+                if getrid:
+                    trimforces.remove(f-count)
+                    count += 1
+        
+        # model should only have muscles that we want now. 
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel_prescribe_' + tag + '.osim')
+        pdb.set_trace()
+        
+        initTime = np.array(statesTable.getIndependentColumn())[0]
+        finalTime = np.array(statesTable.getIndependentColumn())[-1]
+        
+        # now try the positionMotion
+        pomostorage = osim.Storage('trimmingStates_prescribe_' + tag + '.sto')
+        pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+        pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+        
+        trimmodel.addComponent(pomo)
+        trimmodel.initSystem()
+        trimmodel.printToXML('trimmingmodel2_prescribe_' + tag + '.osim')
     
         ###
         jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
@@ -1215,7 +1631,7 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk002']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk009']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces'];
     trials = ['trial01']#,'trial02','trial03','trial04']
 
@@ -2030,6 +2446,7 @@ if __name__ == '__main__':
                 
                 # grab the model weight
                 modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes_adjusted.osim')
+                # modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes.osim')
                 naturalstruct_combine[subject] = modelmass
                 
                 ### now what do we want to do at each of the trials
@@ -2166,7 +2583,8 @@ if __name__ == '__main__':
                 # print(spot)
                 
                 # grab the model weight
-                modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes_adjusted.osim')
+                # modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes_adjusted.osim')
+                modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes.osim')
                 naturalstruct_combine[subject] = modelmass
                 
                 ### now what do we want to do at each of the trials
@@ -2225,14 +2643,14 @@ if __name__ == '__main__':
                 # plt.figure(); plt.plot(test)
                 
                 ## okay now going to focus on the figures that I actually wanted 
-                jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                jrasrquads = getKneeContactributionsPrescribe(trialdir, musclesWanted['quads'], 'quads')
+                jrasrhams = getKneeContactributionsPrescribe(trialdir, musclesWanted['hams'], 'hams')
+                jrasrgas = getKneeContactributionsPrescribe(trialdir, musclesWanted['gas'], 'gas')
+                jrasrtfl = getKneeContactributionsPrescribe(trialdir, musclesWanted['tfl'], 'tfl')
+                jrasrinter = getKneeContactributionsPrescribe(trialdir, musclesWanted['inter'], 'inter')
+                jrasrall = getKneeContactributionsPrescribe(trialdir, musclesWanted['all'], 'all')
+                jrasrinterreserve = getKneeContactributionsPrescribe(trialdir, musclesWanted['reserve'], 'reserve')
+                jrasrnone = getKneeContactributionsPrescribe(trialdir, musclesWanted['none'], 'none')
                 
                 # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...                
                 

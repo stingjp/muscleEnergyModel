@@ -65,7 +65,7 @@ close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
-% solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
 % solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
 
