@@ -172,7 +172,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribeStrict(Issues)
     
     % for post problem processing
     model = modelProcessorDC.process();
-    model.print('post_simple_model_all_the_probes_muscletrack.osim');
+    model.print('post_simple_model_all_the_probes_muscleprescribe.osim');
 
     %%% moving on to solve
     % set up the solver and solve the problem
