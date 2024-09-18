@@ -49,7 +49,8 @@ function muscleStateTrackGRFPrescribe()
     inverse.setKinematics(tableprocessorkin);
     
     % get the subject name and gait timings
-    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    % load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'C:\Users\jonstingel\code\musclemodel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
@@ -75,7 +76,7 @@ function muscleStateTrackGRFPrescribe()
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('excitation_effort'));
-
+    effort.setWeight(0.5);
     % put large weight on the pelvis CoordinateActuators, which act as the 
     % residual, or 'hand-of-god' forces which we would like to keep small    
     model = modelProcessor.process();
@@ -84,7 +85,7 @@ function muscleStateTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'reserve')
-            effort.setWeightForControl(forcePath, 1000); % here
+            effort.setWeightForControl(forcePath, 1); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -94,14 +95,23 @@ function muscleStateTrackGRFPrescribe()
         % end
     end
 
+    % activations = MocoControlGoal.safeDownCast(problem.updGoal('activation_effort'));
+    % keyboard
+    % activations.setWeight(0.1);
+
+
 
     % solver changes
-%     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
-%     solver.resetProblem(problem);
-%     solver.set_optim_convergence_tolerance(1e-5); % 1e-2
-%     solver.set_optim_constraint_tolerance(1e-5); % 1e-2
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    % solver.resetProblem(problem);
+    solver.set_optim_convergence_tolerance(1e-2); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-2); % 1e-2
+    solver.set_minimize_implicit_auxiliary_derivatives(true);
+    solver.set_implicit_auxiliary_derivatives_weight(1e-3); 
+    solver.set_optim_finite_difference_scheme('forward');
+    solver.set_parameters_require_initsystem(false);
     
-    
+
     % solve and visualize
     solution = study.solve();
     solution.write('muscle_stateprescribe_grfprescribe_solution_nokinematics.sto');
