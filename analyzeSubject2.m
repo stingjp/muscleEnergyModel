@@ -36,16 +36,16 @@ end
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
-metabolicsModelSetup();
-close all;
+% metabolicsModelSetup();
+% close all;
 % torqueStateTrackGRFPrescribe();
 % close all;
 % torqueStatePrescribeGRFPrescribe();
 % close all;
 % torqueMarkerTrackGRFPrescribe();
 % close all;
-% muscleStatePrescribeGRFPrescribe_2();
-% close all;
+muscleStatePrescribeGRFPrescribe_2();
+close all;
 % torqueStateTrackGRFTrack();
 % close all;
 % torqueMarkerTrackGRFTrack();
@@ -58,8 +58,8 @@ close all;
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
-Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
-close all;
+% Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
+% close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues); % set up as secondpass with different mesh
 % close all;
 % Issues = muscleStateTrackGRFTrack(Issues)s
@@ -67,8 +67,8 @@ close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
-% solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
-% analyzeMetabolicCost(solution1, 'muscleprescribe');
+solution1 = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+analyzeMetabolicCost(solution1, 'muscleprescribe');
 % Issues = computeIDFromResult(Issues, solution1, tag);
 
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
