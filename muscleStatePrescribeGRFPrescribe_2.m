@@ -76,7 +76,7 @@ function muscleStateTrackGRFPrescribe()
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('excitation_effort'));
-    effort.setWeight(0.5);
+    effort.setWeight(0.05);
     % put large weight on the pelvis CoordinateActuators, which act as the 
     % residual, or 'hand-of-god' forces which we would like to keep small    
     model = modelProcessor.process();
@@ -107,7 +107,7 @@ function muscleStateTrackGRFPrescribe()
     solver.set_optim_convergence_tolerance(1e-2); % 1e-2
     solver.set_optim_constraint_tolerance(1e-2); % 1e-2
     solver.set_minimize_implicit_auxiliary_derivatives(true);
-    solver.set_implicit_auxiliary_derivatives_weight(1e-3); 
+    solver.set_implicit_auxiliary_derivatives_weight(1e-8); 
     solver.set_optim_finite_difference_scheme('forward');
     solver.set_parameters_require_initsystem(false);
     
