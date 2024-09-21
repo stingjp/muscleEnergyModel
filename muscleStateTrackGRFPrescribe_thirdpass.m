@@ -207,7 +207,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % effort goal
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-    effort.setWeight(0.1); % 0.1 for the new %.5 % been trying .25. previous was .1
+    effort.setWeight(0.15); % 0.1 for the new %.5 % been trying .25. previous was .1
     % whatever the weight was before the alienware did really well withit
     % for 007 natural1
     
@@ -320,14 +320,14 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     % solve and visualize
     solution = study.solve();
-    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
+    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution_redo.sto');
     % study.visualize(solution);
     % generate a report and save
     solution.write('muscle_statetrack_grfprescribe_solution_redo.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
     
-    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_controls_redo.sto');
-    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_states_redo.sto');
+    STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls.sto');
+    STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states.sto');
 
         
     report = osimMocoTrajectoryReport(model, ...
@@ -352,8 +352,10 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution1, 'muscletrack_redo');
+    disp('this is the new redo');
     % Issues = computeIDFromResult(Issues, solution);
-    % analyzeMetabolicCost(solution);
+    analyzeMetabolicCost(solution,'muscletrack');
+    disp('this is the old 100con'); 
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);
     % analyzeMetabolicCostSecond(solution2, 'muscletrack');
