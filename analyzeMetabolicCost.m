@@ -32,7 +32,12 @@ function analyzeMetabolicCost(solution, tag)
         analyze.setModelFilename("post_simple_model_all_the_probes_muscleprescribe.osim");
         analyze.setStatesFileName(strcat(tag, "_states_redoarms.sto"));
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_redoarms.sto")));
-    % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
+    elseif strcmp(tag, 'muscletrack_redo')
+        analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
+        analyze.setStatesFileName(strcat(tag, "_states.sto"));
+        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
+    
+        % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
     %     analyze.setStatesFileName("muscleprescribe_states.sto");
     %     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
     % else
@@ -45,7 +50,7 @@ function analyzeMetabolicCost(solution, tag)
     analyze.updAnalysisSet().cloneAndAppend(ProbeReporter());
     analyze.updAnalysisSet().cloneAndAppend(ForceReporter());
     analyze.updAnalysisSet().cloneAndAppend(BodyKinematics());
-    analyze.updAnalysisSet().cloneAndAppend(JointReaction())
+    analyze.updAnalysisSet().cloneAndAppend(JointReaction());
     analyze.setInitialTime(Time(1));
     analyze.setFinalTime(Time(end));
     analyze.print(strcat(tag,"_AnalyzeTool_setup.xml"));
@@ -56,11 +61,11 @@ function analyzeMetabolicCost(solution, tag)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % tables
-    table_activefiberforce = TimeSeriesTable(strcat("analyzemuscles",tag,"_MuscleAnalysis_ActiveFiberForce.sto"));
-    table_fibervelocity = TimeSeriesTable(strcat("analyzemuscles",tag,"_MuscleAnalysis_FiberVelocity.sto"));
-    table_metabolics = TimeSeriesTable(strcat("analyzemuscles",tag,'_ProbeReporter_probes.sto'));
-    table_lMT = TimeSeriesTable(strcat("analyzemuscles",tag,'_MuscleAnalysis_Length.sto'));
-    table_fiberlength = TimeSeriesTable(strcat("analyzemuscles",tag,'_MuscleAnalysis_FiberLength.sto'));
+    table_activefiberforce = TimeSeriesTable(strcat("analyzemuscles_",tag,"_MuscleAnalysis_ActiveFiberForce.sto"));
+    table_fibervelocity = TimeSeriesTable(strcat("analyzemuscles_",tag,"_MuscleAnalysis_FiberVelocity.sto"));
+    table_metabolics = TimeSeriesTable(strcat("analyzemuscles_",tag,'_ProbeReporter_probes.sto'));
+    table_lMT = TimeSeriesTable(strcat("analyzemuscles_",tag,'_MuscleAnalysis_Length.sto'));
+    table_fiberlength = TimeSeriesTable(strcat("analyzemuscles_",tag,'_MuscleAnalysis_FiberLength.sto'));
     
     % get time
     time_os = table_activefiberforce.getIndependentColumn();
@@ -196,7 +201,7 @@ function analyzeMetabolicCost(solution, tag)
     
     % look through the GRF file?
     % get grf for residual comparisons
-    table_grf = TimeSeriesTable(strcat('analyzemuscles',tag,'_ForceReporter_forces.sto'));
+    table_grf = TimeSeriesTable(strcat('analyzemuscles_',tag,'_ForceReporter_forces.sto'));
     grf_r_Fx = table_grf.getDependentColumn('calcn_r_Right_GRF_Fx').getAsMat();
     grf_r_Fy = table_grf.getDependentColumn('calcn_r_Right_GRF_Fy').getAsMat();
     grf_r_Fz = table_grf.getDependentColumn('calcn_r_Right_GRF_Fz').getAsMat();
