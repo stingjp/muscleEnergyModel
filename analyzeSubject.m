@@ -36,8 +36,8 @@ end
 
 % run simulations of the subject, and get metabolic cost of motion
 % close all;
-metabolicsModelSetup();
-close all;
+% metabolicsModelSetup();
+% close all;
 % torqueStateTrackGRFPrescribe();
 % close all;
 % torqueStatePrescribeGRFPrescribe();
@@ -63,7 +63,7 @@ close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues); % set up as secondpass with different mesh
 % close all;
 % Issues = muscleStateTrackGRFTrack(Issues)s
-close all;
+% close all;
 
 %%% only uncomment this if the above simulations are commented out
 % this will load the existing solutions and perform the post analyses
