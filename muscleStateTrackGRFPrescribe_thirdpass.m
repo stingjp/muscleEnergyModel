@@ -88,7 +88,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.setStatesReference(tableProcessor);
     
 %     track.set_kinematics_allow_extra_columns(true);
-    track.set_states_global_tracking_weight(20); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
+    track.set_states_global_tracking_weight(10); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
