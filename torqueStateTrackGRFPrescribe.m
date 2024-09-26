@@ -60,18 +60,18 @@ function torqueStateTrackGRFPrescribe()
     % the derivative of splined position data
     track.set_track_reference_position_derivatives(true);
     
-    % set specific weights for the individual weight set
+    % % set specific weights for the individual weight set
     coordinateweights = MocoWeightSet();
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0.1));
     coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0));
-    % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0.1));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0.1));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0.1));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0.1));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
-    coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_r", 4));
-    coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_l", 4));
+    % coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_r", 4));
+    % coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_l", 4));
     coordinateweights.cloneAndAppend(MocoWeight("knee_angle_r", 5));
     coordinateweights.cloneAndAppend(MocoWeight("knee_angle_l", 5));
     coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 6));
@@ -82,7 +82,7 @@ function torqueStateTrackGRFPrescribe()
     
 
     % get the subject name and gait timings
-    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'C:\Users\jonstingel\code\musclemodel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
@@ -122,7 +122,7 @@ function torqueStateTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 100); % here
+            effort.setWeightForControl(forcePath, 10000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
@@ -185,16 +185,70 @@ function torqueStateTrackGRFPrescribe()
     % problem.addGoal(contactTracking);
 
 
-
-
-
-
     % solver changes
-%     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
-%     solver.resetProblem(problem);
-%     solver.set_optim_convergence_tolerance(1e-5); % 1e-2
-%     solver.set_optim_constraint_tolerance(1e-5); % 1e-2
-    
+    solver = MocoCasADiSolver.safeDownCast(study.updSolver());
+    % solver.resetProblem(problem);
+    solver.set_optim_convergence_tolerance(1e-2); % 1e-2
+    solver.set_optim_constraint_tolerance(1e-2); % 1e-2
+    % solver.set_minimize_implicit_auxiliary_derivatives(true);
+    % solver.set_implicit_auxiliary_derivatives_weight(1e-8); 
+    solver.set_optim_finite_difference_scheme('forward');
+    solver.set_parameters_require_initsystem(false);
+
+
+    % % create an initial guess
+    % twosteptraj = MocoTrajectory('torque_statetrack_grfprescribe_solution.sto');
+    % steps = twosteptraj.getNumTimes();
+    % guess = solver.createGuess('bounds'); % bounds or random  
+    % guess.write('boundsguess.sto');
+    % % solver.setGuess(guess);
+
+    % randomguess = MocoTrajectory('boundsguess.sto');
+    % randomguess.resampleWithNumTimes(steps);
+    % % go through and overwrite the states first
+    % randomstatenames = randomguess.getStateNames();
+    % % this will cover joint values, speeds, muscle activations, and norm
+    % % tendon force
+    % for s = 0:randomstatenames.size()-1
+    %     statename = randomstatenames.get(s);
+    %     % temprandom = randomguess.getStateMat(statename);
+    %     temp2step = twosteptraj.getStateMat(statename);
+    %     randomguess.setState(statename,temp2step);       
+    % end
+    % % go through all the controls - excitations
+    % randomcontrolnames = randomguess.getControlNames();
+    % % this covers all excitations and reserves
+    % for c = 0:randomcontrolnames.size()-1
+    %     controlname = randomcontrolnames.get(c);
+    %     % temprandom = randomguess.getControlMat(controlname);
+    %     temp2step = twosteptraj.getControlMat(controlname);
+    %     randomguess.setControl(controlname, temp2step);
+    % end
+    % % go through others??
+    % % randomparamnames = randomguess.getParameterNames();
+    % % this is empty in the normal condition 
+    % % multipliers
+    % randommultnames = randomguess.getMultiplierNames();
+    % for m = 0:randommultnames.size()-1
+    %     multname = randommultnames.get(m);
+    %     % temprandom = randomguess.getMultiplierMat(multname)
+    %     try
+    %         temp2step = twosteptraj.getMultiplierMat(mutlname);
+    %         randomguess.setMultiplier(multname, temp2step);
+    %     catch
+    %         disp('did not have the multiplier in the 2 step problem solution');
+    %     end
+    % end
+    % % now for the implicit derivatives
+    % randomderivnames = randomguess.getDerivativeNames();
+    % for d = 0:randomderivnames.size()-1
+    %     derivname = randomderivnames.get(d);
+    %     % temprandom = randomguess.getDerivativeMat(derivname);
+    %     temp2step = twosteptraj.getDerivativeMat(derivname);
+    %     randomguess.setDerivative(derivname, temp2step);
+    % end    
+    % % now set the guess for the solver
+    % solver.setGuess(randomguess);
     
     % solve and visualize
     solution = study.solve();
@@ -203,14 +257,14 @@ function torqueStateTrackGRFPrescribe()
     solution.write('torque_statetrack_grfprescribe_solution.sto');
     % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
         
-    report = osimMocoTrajectoryReport(model, 'torque_statetrack_grfprescribe_solution.sto');
-    reportFilePath = report.generate();
-    pdfFilePath = reportFilePath(1:end-2);
-    pdfFilePath = strcat(pdfFilePath, 'pdf');
-    ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-        'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
-        'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
-        'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
+    % report = osimMocoTrajectoryReport(model, 'torque_statetrack_grfprescribe_solution.sto');
+    % reportFilePath = report.generate();
+    % pdfFilePath = reportFilePath(1:end-2);
+    % pdfFilePath = strcat(pdfFilePath, 'pdf');
+    % ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
+    %     'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
+    %     'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
+    %     'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
     % open(pdfFilePath);
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state torque track')
