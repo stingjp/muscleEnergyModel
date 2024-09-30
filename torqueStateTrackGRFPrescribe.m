@@ -62,12 +62,12 @@ function torqueStateTrackGRFPrescribe()
     
     % % set specific weights for the individual weight set
     coordinateweights = MocoWeightSet();
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0.1));
-    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0.1));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tx", 0.01));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_ty", 0.01));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tz", 0.01));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_list", 0.01));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_rotation", 0.01));
+    coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 0.01));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 0));
     % coordinateweights.cloneAndAppend(MocoWeight("hip_flexion_r", 4));
@@ -122,7 +122,7 @@ function torqueStateTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 10000); % here
+            effort.setWeightForControl(forcePath, 5000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
