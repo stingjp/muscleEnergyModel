@@ -112,6 +112,13 @@ function muscleStateTrackGRFPrescribe()
     solver.set_parameters_require_initsystem(false);
     
 
+
+
+    
+
+
+
+
     % solve and visualize
     solution = study.solve();
     solution.write('muscle_stateprescribe_grfprescribe_solution_nokinematics.sto');
@@ -122,14 +129,14 @@ function muscleStateTrackGRFPrescribe()
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls_redoarms.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states_redoarms.sto');
 
-    report = osimMocoTrajectoryReport(model, 'muscle_stateprescribe_grfprescribe_solution.sto');
-    reportFilePath = report.generate();
-    pdfFilePath = reportFilePath(1:end-2);
-    pdfFilePath = strcat(pdfFilePath, 'pdf');
-    ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
-        'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
-        'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
-        'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
+    % report = osimMocoTrajectoryReport(model, 'muscle_stateprescribe_grfprescribe_solution.sto');
+    % reportFilePath = report.generate();
+    % pdfFilePath = reportFilePath(1:end-2);
+    % pdfFilePath = strcat(pdfFilePath, 'pdf');
+    % ps2pdf('psfile',reportFilePath,'pdffile',pdfFilePath, ...
+    %     'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
+    %     'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
+    %     'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
     % open(pdfFilePath);
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle inverse')
