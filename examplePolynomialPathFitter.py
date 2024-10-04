@@ -22,7 +22,8 @@
 # -------------------------------------------------------------------------- #
 
 import os
-os.add_dll_directory('C:/Users/jonstingel/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+os.add_dll_directory('C:/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+# os.add_dll_directory('C:/Users/jonstingel/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
 import opensim as osim
 from examplePolynomialPathFitter_plotting import (plot_coordinate_samples,
                                                   plot_path_lengths,
@@ -57,6 +58,7 @@ weldem.append('radius_hand_r');
 weldem.append('radius_hand_l');
 modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem));
 # fitter.setModel(osim.ModelProcessor(model))
+model = modelProcessor.process()
 fitter.setModel(modelProcessor)
 # Set the coordinate values table.
 
@@ -97,17 +99,17 @@ fitter.setMaximumPolynomialOrder(5)
 
 # Set the number of random samples taken at each frame around the nominal 
 # coordinate values.
-fitter.setNumSamplesPerFrame(10)
+fitter.setNumSamplesPerFrame(30)
 
 # By default, coordinate values are sample around the nominal coordinate
 # values using bounds of [-10, 10] degrees. You can set custom bounds for
 # individual coordinates using the appendCoordinateSamplingBounds() method.
-fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', osim.Vec2(-60, 60))
-fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', osim.Vec2(-60, 60))
-fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_r/knee_angle_r', osim.Vec2(-60, 60))
-fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_l/knee_angle_l', osim.Vec2(-60, 60))
-fitter.appendCoordinateSamplingBounds('/jointset/ankle_r/ankle_angle_r', osim.Vec2(-60, 60))
-fitter.appendCoordinateSamplingBounds('/jointset/ankle_l/ankle_angle_l', osim.Vec2(-60, 60))
+fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', osim.Vec2(-50, 50))
+fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', osim.Vec2(-50, 50))
+fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_r/knee_angle_r', osim.Vec2(-50, 50))
+fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_l/knee_angle_l', osim.Vec2(-50, 50))
+fitter.appendCoordinateSamplingBounds('/jointset/ankle_r/ankle_angle_r', osim.Vec2(-50, 50))
+fitter.appendCoordinateSamplingBounds('/jointset/ankle_l/ankle_angle_l', osim.Vec2(-50, 50))
 
 # Set the global coordinate sampling bounds. This will be used for any
 # coordinates that do not have custom bounds set. We use reasonably
@@ -129,8 +131,8 @@ fitter.setUseStepwiseRegression(True)
 # stop for a given path. Tighter tolerances may result in a better fit,
 # but at the expense of higher polynomial orders (or more polynomial 
 # terms, if using stepwise regression).
-fitter.setPathLengthTolerance(1e-4)
-fitter.setMomentArmTolerance(1e-5)
+fitter.setPathLengthTolerance(1e-3)
+fitter.setMomentArmTolerance(1e-3)
 
 # Run the fitter
 # --------------
@@ -184,9 +186,9 @@ osim.PolynomialPathFitter.evaluateFunctionBasedPaths(
 # with the fitted paths. This can be useful if you want to use the fitted
 # paths in a simulation or analysis tool but keep the original paths in the
 # model file.
-modelProcessor = osim.ModelProcessor('subject_walk_scaled.osim')
+modelProcessor = osim.ModelProcessor('simple_model_all_the_probes.osim')
 modelProcessor.append(osim.ModOpReplacePathsWithFunctionBasedPaths(
     functionBasedPathsFile))
 model = modelProcessor.process()
 model.initSystem()
-model.printToXML('subject_walk_scaled_fitted_paths.osim')
+model.printToXML('simple_model_all_the_probes_paths_redo.osim')
