@@ -1,7 +1,8 @@
 % written by Jon Stingel
 % 20211022
 import org.opensim.modeling.*
-repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
+% repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
+repodir = "C:\Users\jonstingel\code\muscleModel\muscleEnergyModel";
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 exocolor = '#AB82FF'
@@ -26,9 +27,7 @@ welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','wel
 thingstoplot = {'netjointmoments'}; % 'probes', 'shortening', 'mechanical', 'activation'
 
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
-
 load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectmass.mat';
-
 
 % loop through each of the things we want to plot
 for thing=1:length(thingstoplot)
@@ -38,6 +37,13 @@ for thing=1:length(thingstoplot)
     welknaturalstruct_combine = struct();
     welkexostruct_combine = struct();
 
+    allsubj_nat = struct();
+    allsubj_exo = struct();
+
+    meansall_nat = struct();
+    meansall_exo = struct();
+    stdsall_nat = struct();
+    stdsall_exo = struct();
 
     % loop through the subjects
     for subj=1:length(welksubjects)
@@ -51,9 +57,9 @@ for thing=1:length(thingstoplot)
 
         % loop through conditions - exo first
         for cond=1:length(welkexoconditions)
-           condition = char(welkexoconditions(cond));
-           conddir = strcat(subjdir, strcat('/',condition));
-           trials = fieldnames(subjectgaitcycles.(genvarname(subject)).(genvarname(condition)));
+            condition = char(welkexoconditions(cond));
+            conddir = strcat(subjdir, strcat('/',condition));
+            trials = fieldnames(subjectgaitcycles.(genvarname(subject)).(genvarname(condition)));
             % loop the trials
             for trial=1:length(trials)
                 % what do we actually want to do here
@@ -187,7 +193,7 @@ for thing=1:length(thingstoplot)
         
     end
 
-    
+    keyboard
     % loop through the subjects again?
     markr = {'r:','r--'};
     markb = {'b:','b--'};
@@ -208,44 +214,48 @@ for thing=1:length(thingstoplot)
             subject = char(welksubjects(subj));
             model_mass = subjectmass.(genvarname(subject));
             % disp(model_mass)
-            
             muscleplot_nat = welknaturalstruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
             muscleplot_exo = welkexostruct_combine.(genvarname(subject)).(genvarname(char(templabel)));
-            
             temp_nat = mean(muscleplot_nat,2);
             temp_nat_norm = temp_nat./model_mass;
             temp_exo = mean(muscleplot_exo,2);
             temp_exo_norm = temp_exo./model_mass;
-            
             holding_nat = [holding_nat, temp_nat_norm];
             holding_exo = [holding_exo, temp_exo_norm];
             % have all of them, want the average plotted for each subject
             hold on;
-            % plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1);% char(markr(subj)))
-            % plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1);% char(markb(subj)))
-%             plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',.4);
-%             plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
+            plot(welknaturalstruct.time, mean(muscleplot_nat,2), 'r:','LineWidth',1);% char(markr(subj)))
+            plot(welkexostruct.time, mean(muscleplot_exo,2), 'b:','LineWidth',1);% char(markb(subj)))
+            % plot(welknaturalstruct.time, temp_nat_norm,'r:','LineWidth',.4);
+            % plot(welkexostruct.time, temp_exo_norm,'b:','LineWidth',.4);
+            
+            if ~isfield(allsubj_nat, templabel)
+                allsubj_nat.(genvarname(templabel)) = [];
+                allsubj_exo.(genvarname(templabel)) = [];
+            end
+            allsubj_nat.(genvarname(templabel)) = [allsubj_nat.(genvarname(templabel)), temp_nat_norm];
+            allsubj_exo.(genvarname(templabel)) = [allsubj_exo.(genvarname(templabel)), temp_exo_norm];
 
         end
         plot(welknaturalstruct.time, mean(holding_nat,2),'Color', natcolor,'LineWidth',2);
         plot(welkexostruct.time, mean(holding_exo,2),'Color', exocolor,'LineWidth',2);
-%         legend(num2str(max(mean(holding_nat,2))),num2str(max(mean(holding_exo,2))));
-        
+        % legend(num2str(max(mean(holding_nat,2))),num2str(max(mean(holding_exo,2))));
+        % 
         % note that we can do max or min for flexions/extensions
-%         disp(strcat('nat: ', templabel))
-%         maxnat = min(holding_nat)
-%         natmaxavg = mean(maxnat)
-%         natsd = std(maxnat)
-%         natse = natsd/sqrt(length(maxnat))
-% 
-%         disp(strcat('exo: ',templabel))
-%         maxexo = min(holding_exo)
-%         exomaxavg = mean(maxexo)
-%         exosd = std(maxexo)
-%         exose = exosd/sqrt(length(maxexo))
-        
+        % disp(strcat('nat: ', templabel))
+        % maxnat = min(holding_nat)
+        % natmaxavg = mean(maxnat)
+        % natsd = std(maxnat)
+        % natse = natsd/sqrt(length(maxnat))
+        % 
+        % disp(strcat('exo: ',templabel))
+        % maxexo = min(holding_exo)
+        % exomaxavg = mean(maxexo)
+        % exosd = std(maxexo)
+        % exose = exosd/sqrt(length(maxexo))
+        % 
         % doing differences
-                % note that we can do max or min for flexions/extensions
+        % note that we can do max or min for flexions/extensions
         disp(strcat('posdiff: ', templabel))
         posdiff = max(holding_nat) - max(holding_exo)
         posdiffavg = mean(posdiff)
@@ -270,9 +280,40 @@ for thing=1:length(thingstoplot)
 %     plot(welkexostruct.time, mean(holding_exo,2),'b');
 %     hold on;
 %     plot(welknaturalstruct.time, mean(holding_nat,2),'r');
-
+    
     print(tempfig2, ...
         strcat('G:\Shared drives\Exotendon\muscleModel\analysis\', tempthing, '_combined_subjectAVG', '.png'),...
         '-dpng', '-r500')
     disp('print 2')
+
+    % now need to loop through all the labels and get the across subject
+    % sample means and standard deviations. 
+    for i=2:length(newlabels)
+        templabel = newlabels(i);
+        templabel = char(templabel);
+        if ~isfield(meansall_exo, templabel)
+            meansall_nat.(genvarname(templabel)) = [];
+            meansall_exo.(genvarname(templabel)) = [];
+            stdsall_nat.(genvarname(templabel)) = [];
+            stdsall_exo.(genvarname(templabel)) = [];
+        end
+        meansall_nat.(genvarname(templabel)) = [meansall_nat.(genvarname(templabel)), mean(allsubj_nat.(genvarname(templabel)),2)];
+        meansall_exo.(genvarname(templabel)) = [meansall_exo.(genvarname(templabel)), mean(allsubj_exo.(genvarname(templabel)),2)];
+        stdsall_nat.(genvarname(templabel)) = [stdsall_nat.(genvarname(templabel)), std(allsubj_nat.(genvarname(templabel)),0,2)];
+        stdsall_exo.(genvarname(templabel)) = [stdsall_exo.(genvarname(templabel)), std(allsubj_exo.(genvarname(templabel)),0,2)];
+    end
+    
+    cd("G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\")
+
+    % save the data from the means and stds
+    meansall_nat_table = struct2table(meansall_nat);
+    meansall_exo_table = struct2table(meansall_exo);
+    stdsall_nat_table = struct2table(stdsall_nat);
+    stdsall_exo_table = struct2table(stdsall_exo);
+
+    writetable(meansall_nat_table, 'meansall_moments_nat.csv');
+    writetable(meansall_exo_table, 'meansall_moments_exo.csv');
+    writetable(stdsall_nat_table, 'stdsall_moments_nat.csv');
+    writetable(stdsall_exo_table, 'stdsall_moments_exo.csv');
+
 end
