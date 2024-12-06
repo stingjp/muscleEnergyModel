@@ -22,8 +22,8 @@
 # -------------------------------------------------------------------------- #
 
 import os
-os.add_dll_directory('C:/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
-# os.add_dll_directory('C:/Users/jonstingel/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+# os.add_dll_directory('C:/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
+os.add_dll_directory('C:/Users/jonstingel/opensim-core-4.5.1-2024-08-23-cf3ef35/bin')
 import opensim as osim
 from examplePolynomialPathFitter_plotting import (plot_coordinate_samples,
                                                   plot_path_lengths,
@@ -104,12 +104,12 @@ fitter.setNumSamplesPerFrame(30)
 # By default, coordinate values are sample around the nominal coordinate
 # values using bounds of [-10, 10] degrees. You can set custom bounds for
 # individual coordinates using the appendCoordinateSamplingBounds() method.
-fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', osim.Vec2(-50, 50))
-fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', osim.Vec2(-50, 50))
-fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_r/knee_angle_r', osim.Vec2(-50, 50))
-fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_l/knee_angle_l', osim.Vec2(-50, 50))
-fitter.appendCoordinateSamplingBounds('/jointset/ankle_r/ankle_angle_r', osim.Vec2(-50, 50))
-fitter.appendCoordinateSamplingBounds('/jointset/ankle_l/ankle_angle_l', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_r/knee_angle_r', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_l/knee_angle_l', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/ankle_r/ankle_angle_r', osim.Vec2(-50, 50))
+# fitter.appendCoordinateSamplingBounds('/jointset/ankle_l/ankle_angle_l', osim.Vec2(-50, 50))
 
 # Set the global coordinate sampling bounds. This will be used for any
 # coordinates that do not have custom bounds set. We use reasonably
