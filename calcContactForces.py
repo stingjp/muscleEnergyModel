@@ -2037,18 +2037,18 @@ def getKneeContactributions01_wt2(trialdir, musclesWanted_split, tag):
 if __name__ == '__main__':
     # now to define all the setup that he has and is required
     basedir = os.getcwd()
-    repodir = 'G:\\Shared drives\\Exotendon\\muscleModel\\muscleEnergyModel';
+    # repodir = 'G:\\Shared drives\\Exotendon\\muscleModel\\muscleEnergyModel';
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     resultsdir = os.path.join(repodir, '..\\results');
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
     welksubjects = ['welk009']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
-    thingstoplot = ['contactForces'];
-    trials = ['trial01']#,'trial02','trial03','trial04']
+    thingstoplot = ['contactForces']
+    trials = ['trial01','trial02','trial03','trial04']
 
-    oldnotredo = True
-
+    oldnotredo = False
+    
     # get some results structures going
     welknaturalstruct_combine = {}
     welkexostruct_combine = {}
@@ -3066,6 +3066,15 @@ if __name__ == '__main__':
                 # plt.figure(); plt.plot(test)
                 
                 if oldnotredo:
+                    jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
+                    jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
+                    jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
+                    jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
+                    jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
+                    jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
+                    jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
+                    jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                else:
                     ## okay now going to focus on the figures that I actually wanted 
                     jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
                     jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
@@ -3075,15 +3084,6 @@ if __name__ == '__main__':
                     jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
                     jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
                     jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
-                else:
-                    jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                    jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                    jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                    jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                    jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                    jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                    jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                    jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
                 
                 # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...                
                 

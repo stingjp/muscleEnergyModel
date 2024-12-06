@@ -76,11 +76,11 @@ def analyzeSubject_post(subject, condition, trial):
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
     # muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname)
-    solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_py.sto')
+    # solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_py.sto')
     solution2 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
 
     # ID plotter
-    ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
+    # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
     ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True)
 
 
@@ -490,6 +490,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     solver.resetProblem(problem)
     solver.set_optim_convergence_tolerance(1e-2)
     solver.set_optim_constraint_tolerance(1e-4)
+    solver.set_optim_max_iterations(3)
     # solver.set_optim_finite_difference_scheme('forward')
     # solver.set_optim_finite_difference_scheme('central')
 
@@ -552,7 +553,14 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # now set the guess for the solver
     solver.setGuess(randomguess)
     # solve and visualize
-    solution = study.solve()
+    try:
+        solution = study.solve()
+        pdb.set_trace()
+    except:
+        pdb.set_trace()
+        print('could not solve the problem')
+        solution = solution.unseal()
+    
     solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
     osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')

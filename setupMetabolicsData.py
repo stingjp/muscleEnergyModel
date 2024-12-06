@@ -13,13 +13,13 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-import statsmodels.api as sm
+# from sklearn.linear_model import LinearRegression
+# from sklearn.metrics import r2_score
+# import statsmodels.api as sm
 
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score,mean_squared_error
+# from sklearn.model_selection import train_test_split
+# from sklearn.ensemble import RandomForestRegressor
+# from sklearn.metrics import r2_score,mean_squared_error
 import seaborn as sns
 import pdb
 import matplotlib.lines as mlines
@@ -51,24 +51,92 @@ print(expmetcost_df)
 simresultspath = os.path.join(repobasedir,'..\\metabolicsResults\\')
 muscleinversepath = os.path.join(simresultspath,'muscleInverse\\')
 muscleInverseWithEMGpath = os.path.join(simresultspath,'muscleInverseWithEMG\\')
+muscleMetabolicspath = os.path.join(simresultspath,'muscleInverse_100con\\')
+# muscletestpath = 'G:\\Shared drives\\Exotendon\\muscleModel\\metabolicsResults\\muscleInverse_100con\\'
+# musclestancepath = 'G:\\Shared drives\\Exotendon\\muscleModel\\metabolicsResults\\muscleStance\\'
+# muscleswingpath = 'G:\\Shared drives\\Exotendon\\muscleModel\\metabolicsResults\\muscleSwing\\'
+muscletestpath = os.path.join(simresultspath,'muscleInverse_100con\\')
+musclestancepath = os.path.join(simresultspath,'muscleStance\\')
+muscleswingpath = os.path.join(simresultspath,'muscleSwing\\')
+
 
 ## first handle the values in the regular muscle driven inverse problem
 # get all the filenames
-musclefiles = glob.glob(os.path.join(muscleinversepath,'*.csv'))
+musclefiles = glob.glob(os.path.join(muscletestpath,'*.csv'))
+
 # load them all into a single dataframe
 df_from_each_file = (pd.read_csv(f) for f in musclefiles)
-# print(df_from_each_file)
+print(df_from_each_file)
 muscle_df = pd.concat(df_from_each_file, ignore_index=True)
 print(muscle_df)
-import pdb
-# pdb.set_trace()
+
+# testcode to get the full set of stance and swing data all condensed into one dataframe each...
+stancepath = glob.glob(os.path.join(musclestancepath,'*.csv'))
+swingpath = glob.glob(os.path.join(muscleswingpath,'*.csv'))
+# load all the stance files into a dataframe
+df_stance_files = (pd.read_csv(f) for f in stancepath)
+stance_df = pd.concat(df_stance_files, ignore_index=True)
+print(stance_df)
+
+# load all the swing files into a dataframe
+df_swing_files = (pd.read_csv(f) for f in swingpath)
+swing_df = pd.concat(df_swing_files, ignore_index=True)
+print(swing_df)
+
+## working on formatting the dataframe for an excel sheet where I do all the muscle combinations
+stance1 = stance_df.groupby(['Var2','subjectname','condname','trialname']).agg({'Var1':['mean']})
+stance1.columns = ['metabolics_stance_avg']
+stance1 = stance1.reset_index()
+# Filter out rows where 'Var2' does not contain 'TOTAL'
+stance2 = stance1[stance1['Var2'].str.contains('metabolics_combined')]
+stance2 = stance2.reset_index()
+stance3 = stance2.groupby(['Var2','condname','subjectname']).agg({'metabolics_stance_avg':['mean']})
+stance3.columns = ['metabolics_stance_avg']
+stance3 = stance3.reset_index()
+# Save stance3 to a CSV file
+stance3.to_csv('stance3_output.csv', index=False)
+# Pivot the stance3 dataframe to get the desired orientation
+stance3_pivot = stance3.pivot(index='Var2', columns=['condname','subjectname'], values='metabolics_stance_avg')
+# Save the pivoted dataframe to a CSV file
+stance3_pivot.to_csv('stance3_pivot_output.csv')
+
+# now do the same for the swing data
+swing1 = swing_df.groupby(['Var2','subjectname','condname','trialname']).agg({'Var1':['mean']})
+swing1.columns = ['metabolics_swing_avg']
+swing1 = swing1.reset_index()
+# Filter out rows where 'Var2' does not contain 'TOTAL'
+swing2 = swing1[swing1['Var2'].str.contains('metabolics_combined')]
+swing2 = swing2.reset_index()
+swing3 = swing2.groupby(['Var2','condname','subjectname']).agg({'metabolics_swing_avg':['mean']})
+swing3.columns = ['metabolics_swing_avg']
+swing3 = swing3.reset_index()
+# Save swing3 to a CSV file
+swing3.to_csv('swing3_output.csv', index=False)
+# Pivot the swing3 dataframe to get the desired orientation
+swing3_pivot = swing3.pivot(index='Var2', columns=['condname','subjectname'], values='metabolics_swing_avg')
+# Save the pivoted dataframe to a CSV file
+swing3_pivot.to_csv('swing3_pivot_output.csv')
+
+
+
+
+
+pdb.set_trace()
+### working on organizing the data frame - test full first
+print(muscle_df)
 
 # get the full metabolics dataframe
 test_df = muscle_df.groupby(['subjectname','condname','trialname']).agg({'metabolics_all_avg':['mean']})
+print(test_df)
 test_df.columns = ['metabolics_all_avg_mean']
+print(test_df)
 test_df = test_df.reset_index()
 print('test_df: full metabolics df')
 print(test_df)
+pdb.set_trace()
+
+
+
 
 # get the swing metabolics dataframe
 swing_df = muscle_df.groupby(['subjectname','condname','trialname']).agg({'metabolics_swing_avg':['mean']})
@@ -107,10 +175,18 @@ print(stance_means)
 print(swing_means)
 
 # get all the values in a workable format
-swings_exo = swing_df.loc[swing_df['condname'] == 'welkexo']
-swings_natural = swing_df.loc[swing_df['condname'] == 'welknatural']
-stances_exo = stance_df.loc[stance_df['condname'] == 'welkexo']
-stances_natural = stance_df.loc[stance_df['condname'] == 'welknatural']
+# swings_exo = swing_df.loc[swing_df['condname'] == 'welkexo']
+# swings_natural = swing_df.loc[swing_df['condname'] == 'welknatural']
+# stances_exo = stance_df.loc[stance_df['condname'] == 'welkexo']
+# stances_natural = stance_df.loc[stance_df['condname'] == 'welknatural']
+### edits on 20241105 - pretty sure these are what we were going for. 
+swings_exo = swing_means.loc[swing_means.index == 'welkexo']
+swings_natural = swing_means.loc[swing_means.index == 'welknatural']
+stances_exo = stance_means.loc[stance_means.index == 'welkexo']
+stances_natural = stance_means.loc[stance_means.index == 'welknatural']
+
+
+
 
 # get the average raw differences for both stance and swing - check with above
 stance_change = np.mean(stances_exo) - np.mean(stances_natural)
