@@ -30,7 +30,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % modelProcessor.append(ModOpIgnorePassiveFiberForcesDGF());
     % only valid for degroote
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
-    modelProcessor.append(ModOpAddReserves(250.0));
+    modelProcessor.append(ModOpAddReserves(10.0));
     basemodel = modelProcessor.process();
     basemodel.print('post_simple_model_all_the_probes_muscletrack_redo.osim');
     
@@ -70,22 +70,22 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % construct a TableProcessor of the coordinate data and pass it to the tracking tool. 
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
-    % tableProcessor = TableProcessor('coordinates_updated.mot');
-    tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto', false));
+    tableProcessor = TableProcessor('coordinates_updated.mot');
+    % tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto', false));
     % tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
     tableProcessor.append(TabOpLowPassFilter(6));
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     track.setStatesReference(tableProcessor);
-
+    
     % prescribeTable = TableProcessor('muscleprescribe_states.sto');
     % tableProcessor is the coordinates_updated
     % tempkintable = TimeSeriesTable('coordinates_updated.mot');
-    tempkintable = TimeSeriesTable('coordinates_updated.mot');
+    tempkintable = TimeSeriesTable('results_IK_redoarms.mot');
+    %now need to go through and try to get them better
 
 
-    
-    % track.set_kinematics_allow_extra_columns(true);
-    track.set_states_global_tracking_weight(100); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
+%     track.set_kinematics_allow_extra_columns(true);
+    track.set_states_global_tracking_weight(500); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
     track.set_allow_unused_references(true);
     % since there is only coordinate position data in the states references, 
@@ -115,6 +115,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
+    % load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
     load 'C:\Users\jonstingel\code\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
@@ -238,7 +239,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     
     solver.set_optim_convergence_tolerance(1e-2); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-2); % 1e-4
+    solver.set_optim_constraint_tolerance(1e-3); % 1e-4
     % solver.set_parallel(24);
     % solver.set_parallel(8);
     % solver.set_parallel(12);
@@ -304,15 +305,16 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     
     % solve and visualize
     solution = study.solve();
-    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
-    % study.visualize(solution);
-    % generate a report and save
-    solution.write('muscle_statetrack_grfprescribe_solution_redoarms.sto');
-    % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
-    
+    solution.write('muscle_statetrack_grfprescribe_solution_redoarms.sto');    
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states.sto');
 
+
+    % keyboard
+    % solution = MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms.sto');
+    % study.visualize(solution);
+    % study.visualize(MocoTrajectory("torque_statetrack_grfprescribe_solution.sto"));
+    
 
     % report = osimMocoTrajectoryReport(model, ...
     %                                 'muscle_statetrack_grfprescribe_solution_redoarms.sto', ...
@@ -324,8 +326,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     %     'gscommand','C:\Program Files\gs\gs9.54.0\bin\gswin64.exe', ...
     %     'gsfontpath','C:\Program Files\gs\gs9.54.0\Resource\Font', ...
     %     'gslibpath','C:\Program Files\gs\gs9.54.0\lib');
-    % open(pdfFilePath);
-    % save('torque_statetrack_grfprescribe.mat');
+    % % open(pdfFilePath);
+    % % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle track')
 
     
@@ -333,10 +335,9 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms.sto');
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
 
-
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution1, 'muscletrack_redo');
-    % Issues = computeIDFromResult(Issues, solution);
+    % Issues = computeIDFromResult(Issues, solution1, 'muscletrack_redo');
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);

@@ -58,8 +58,10 @@ end
 % close all;
 % Issues = muscleStateTrackGRFPrescribe_secondpass(Issues);
 % close all;
-Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
-close all;
+% Issues = muscleStateTrackGRFPrescribe_thirdpass(Issues);
+% close all;
+% Issues = muscleStateTrackGRFPrescribe_fourthpass(Issues);
+% close all;
 % Issues = muscleStateTrackGRFPrescribe(Issues); % set up as secondpass with different mesh
 % close all;
 % Issues = muscleStateTrackGRFTrack(Issues)s
@@ -72,15 +74,17 @@ close all;
 % Issues = computeIDFromResult(Issues, solution1, tag);
 
 % solution2 = MocoTrajectory('muscle_stateprescribe_grfprescribe_withemg_solution.sto');
-% solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_rra.sto');
+solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
+% analyzeMetabolicCost(solution1, 'muscletrack');
+Issues = computeIDFromResult(Issues, solution1, 'muscletrack');
 
-% 
+
 % Issues = [Issues; [java.lang.String('muscledrivensim'), java.lang.String('inverseproblem')]];
 
-% analyzeMetabolicCost(solution1);
 % trackorprescribe = 'prescribe';
 % computeKinematicDifferences(solution1, trackorprescribe);
 % Issues = [Issues; [java.lang.String('muscledrivensimwithEMG'); java.lang.String('inverseproblem')]];
+
 % Issues = computeIDFromResult(Issues, solution2);
 % analyzeMetabolicCostWithEMG(solution2);
 
@@ -90,5 +94,5 @@ toc
 % finisher
 disp('finished the subject-condition-trial');
 % Issues
-save('issuesfile.mat','Issues');
+% save('issuesfile.mat','Issues');
 disp('end this subject-condition-trial')

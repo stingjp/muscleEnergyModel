@@ -33,7 +33,45 @@ function muscleStateTrackGRFPrescribe()
     % nummusclemuscles = musclemuscles.getSize();
 
     musclemodel.print('post_simple_model_all_the_probes_muscleprescribe.osim');
-    inverse.setModel(ModelProcessor(musclemodel));
+
+
+    %%% TODO poly path fitter figure out
+    % create the fitter for polynomial muscle paths based on the tracked data
+    fitter = PolynomialPathFitter()
+    fitter.setModel(modelProcessor)
+    values = TimeSeriesTable('./coordinates_updated.mot')
+    times = values.getIndependentColumn()
+    % can potentially remove some rows here
+    fitter.setCoordinateValues(TableProcessor(values))
+    % configure optional settings
+    path_results = './pathResults/'
+    fitter.setOutputDirectory(path_results)
+    fitter.setMaximumPolynomialOrder(6) % probably higher 
+    % default bounds on sampling of the coordinates is [-10, 10]
+    % set some custom bounds on these to sample a little more or less
+    fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', Vec2(-15, 15))
+    fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', Vec2(-15, 15))
+    % run the fitter
+    fitter.run()
+    % plot the results
+    pathmodel = modelProcessor.process()
+    pathmodel.initSystem()
+    examplePolynomialPathFitter_plotting.plot_coordinate_samples(path_results, pathmodel.getName())
+    examplePolynomialPathFitter_plotting.plot_path_lengths(path_results, pathmodel.getName())
+    examplePolynomialPathFitter_plotting.plot_moment_arms(path_results, pathmodel.getName())
+    % evaluate the paths on new trajectories
+    % functionBasedPathsFile = os.path.join(path_results, f'{pathmodel.getName()}_FunctionBasedPathSet.xml')
+    functionBasedPathsFile = fullfile(path_results, sprintf('%s_FunctionBasedPathSet.xml', pathmodel.getName()));
+    % osim.PolynomialPathFitter.evaluateFunctionBasedPaths(pathmodel, osim.TableProcessor('5ms_2D3D_OG_muscles_Tracking_solution_FullStride.sto'), functionBasedPathsFile)
+    % replace the original paths with the fitted paths. 
+    modelProcessor.append(ModOpReplacePathsWithFunctionBasedPaths(functionBasedPathsFile))
+    newpathmodel = modelProcessor.process()
+    newpathmodel.initSystem()
+    newpathmodel.printToXML('strong_mk14_poly_dgf.osim')
+
+    pdb.set_trace()
+    % inverse.setModel(ModelProcessor(musclemodel));
+    inverse.setModel(ModelProcessor(newpathmodel));
     
     % tableProcessor = TableProcessor('results_IK_redoarms.mot');
     tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
@@ -108,19 +146,14 @@ function muscleStateTrackGRFPrescribe()
     solver.set_optim_constraint_tolerance(1e-2); % 1e-2
     solver.set_minimize_implicit_auxiliary_derivatives(true);
     solver.set_implicit_auxiliary_derivatives_weight(1e-8); 
-    solver.set_optim_finite_difference_scheme('forward');
+    solver.set_optim_finite_difference_scheme('central');
     solver.set_parameters_require_initsystem(false);
-    
-
-
-
-    
-
-
-
 
     % solve and visualize
-    solution = study.solve();
+    solution_sealed = study.solve();
+    solution = solution_sealed.unseal();
+    keyboard
+
     solution.write('muscle_stateprescribe_grfprescribe_solution_nokinematics.sto');
     solution.insertStatesTrajectory(tempkintable);
     solution.write('muscle_stateprescribe_grfprescribe_solution.sto');

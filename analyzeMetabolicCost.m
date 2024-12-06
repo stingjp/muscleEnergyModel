@@ -11,7 +11,7 @@ function analyzeMetabolicCost(solution, tag)
     
     % get the subject name and mass
     load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectmass.mat';
-    workdir = pwd;
+    workdir = pwd
     [~,trialname,~] = fileparts(pwd);
     cd ../
     [~,condname,~] = fileparts(pwd);
@@ -33,7 +33,11 @@ function analyzeMetabolicCost(solution, tag)
         analyze.setStatesFileName(strcat(tag, "_states_redoarms.sto"));
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_redoarms.sto")));
     elseif strcmp(tag, 'muscletrack_redo')
-        analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack.osim");
+        analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack_redo.osim");
+        analyze.setStatesFileName(strcat(tag, "_states.sto"));
+        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
+    elseif strcmp(tag, 'muscletrack_paths_redo')
+        analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack_paths_redo.osim");
         analyze.setStatesFileName(strcat(tag, "_states.sto"));
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
     
@@ -119,7 +123,6 @@ function analyzeMetabolicCost(solution, tag)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % workspace - working on the typical metabolic outputs that we have
-    
     % get metabolics probe information
     metabolics_all_os = table_metabolics.getDependentColumn('all_metabolics_TOTAL');
     metabolics_act_os = table_metabolics.getDependentColumn('all_activation_maintenance_rate_TOTAL');
@@ -131,8 +134,7 @@ function analyzeMetabolicCost(solution, tag)
     metabolics_sol_os = table_metabolics.getDependentColumn('soleus_metabolics_TOTAL');
     metabolics_bifemlh_os = table_metabolics.getDependentColumn('bifemlh_metabolics_TOTAL');
     metabolics_recfem_os = table_metabolics.getDependentColumn('recfem_metabolics_TOTAL');
-
-    
+    % convert to matrices
     metabolics_all = metabolics_all_os.getAsMat;
     metabolics_act = metabolics_act_os.getAsMat;
     metabolics_short = metabolics_short_os.getAsMat;
@@ -151,7 +153,6 @@ function analyzeMetabolicCost(solution, tag)
 
     %%% workspace %%%
     % TODO figure out how to get all the muscles averages
-    
     table_musc_metabolics = table_metabolics;
     table_musc_metabolics.removeColumn('all_metabolics_TOTAL');
     table_musc_metabolics.removeColumn('all_activation_maintenance_rate_TOTAL');
@@ -192,12 +193,11 @@ function analyzeMetabolicCost(solution, tag)
     % get everything set up for the table printout
     % met_rows = {'trial'};
 
-%     avgMuscMetMat2 = num2cell(avgMuscMetMat);
-%     musc_table = cell2table(avgMuscMetMat2);
-%     musc_table.Properties.VariableNames = muscMetabolicsLabels;
+    % avgMuscMetMat2 = num2cell(avgMuscMetMat);
+    % musc_table = cell2table(avgMuscMetMat2);
+    % musc_table.Properties.VariableNames = muscMetabolicsLabels;
     musc_table = table((avgMuscMetMat)', (muscMetabolicsLabels)');        
     writetable(musc_table, 'muscleMetabolicsALL.csv');% ,'WriteRowNames',true);
-    
     
     % look through the GRF file?
     % get grf for residual comparisons
@@ -219,12 +219,41 @@ function analyzeMetabolicCost(solution, tag)
     % grab a list of indices that are nonzero in the Fy direction, indicating stance. 
     % get the corresponding others for swing of that leg. 
     tempstanceix = find(grf_r_Fy);
+    % Check if the indices in tempstanceix are consecutive
+    if any(diff(tempstanceix) ~= 1)
+        % Find the start and end of consecutive sequences
+        diff_indices = [true; diff(tempstanceix) ~= 1; true];
+        start_indices = find(diff_indices(1:end-1) & ~diff_indices(2:end));
+        end_indices = find(~diff_indices(1:end-1) & diff_indices(2:end));
+        
+        % Keep only the longest consecutive sequence
+        [~, longest_seq_idx] = max(end_indices - start_indices);
+        tempstanceix = tempstanceix(start_indices(longest_seq_idx):end_indices(longest_seq_idx));
+    end
+    tempswingix = setdiff(1:length(time), tempstanceix)';
+    % Check if the indices in tempswingix are consecutive
+    if any(diff(tempswingix) ~= 1)
+        % Find the start and end of consecutive sequences
+        diff_indices = [true; diff(tempswingix) ~= 1; true];
+        start_indices = find(diff_indices(1:end-1) & ~diff_indices(2:end));
+        end_indices = find(~diff_indices(1:end-1) & diff_indices(2:end));
+        
+        % Keep only the longest consecutive sequence
+        [~, longest_seq_idx] = max(end_indices - start_indices);
+        tempswingix = tempswingix(start_indices(longest_seq_idx):end_indices(longest_seq_idx));
+    end
+    
     % loop through these and grab the metabolic cost values
     met_stance = [];
     met_swing = metabolics_all;
     popped = 0;
+    % Create deep copies of table_musc_metabolics for stance and swing
+    table_musc_stance = TimeSeriesTable(table_musc_metabolics);
+    table_musc_swing = TimeSeriesTable(table_musc_metabolics);
+    table_time_stance = table_musc_stance.getIndependentColumn();
+    table_time_swing = table_musc_swing.getIndependentColumn();
 
-
+    
     % loop through the number of steps we have in stance phase
     for i = 1:length(tempstanceix)
         % get the index corresponding to the next stance phase timestep
@@ -238,7 +267,103 @@ function analyzeMetabolicCost(solution, tag)
         % add one to popped
         popped = popped + 1;
     end
+    
+    % grab the last stance index and use it to trim the swing table. 
+    temptime = table_time_swing.get(tempix+1);
+    table_musc_swing.trimFrom(double(temptime));
+    STOFileAdapter.write(table_musc_swing, 'metabolicsTable_swing.sto');
 
+    start_stance = table_time_stance.get(tempstanceix(1));
+    end_stance = table_time_stance.get(tempstanceix(end));
+    table_musc_stance.trim(double(start_stance), double(end_stance));
+    STOFileAdapter.write(table_musc_stance, 'metabolicsTable_stance.sto');
+    %%% figure out how to average each muscle for the subset tables of stance and swing... 
+
+    % get the number of columns
+    numcolstance = table_musc_stance.getNumColumns();
+    numcolswing = table_musc_swing.getNumColumns();
+    % get the labels
+    stancelabels = table_musc_stance.getColumnLabels();
+    swinglabels = table_musc_swing.getColumnLabels();
+    % structures for averages of each muscle in each phase. 
+    stanceMuscleMetMat = [];
+    swingMuscleMetMat = [];
+    % and the labels
+    stanceMuscleMetLabels = {};
+    swingMuscleMetLabels = {};
+    
+    % start with stance. 
+    % loop through the number of columns
+    for i=0:numcolstance-1
+        % get the label
+        templabel = stancelabels.get(i);
+        % get the column
+        tempcolumn = table_musc_stance.getDependentColumn(templabel);
+        % add the column to the matrix
+        stanceMuscleMetMat = [stanceMuscleMetMat, tempcolumn.getAsMat()];
+        % add the label to the labels
+        stanceMuscleMetLabels{i+1} = char(templabel);
+    end
+    % now do the same for swing
+    for i=0:numcolswing-1
+        templabel = swinglabels.get(i);
+        tempcolumn = table_musc_swing.getDependentColumn(templabel);
+        swingMuscleMetMat = [swingMuscleMetMat, tempcolumn.getAsMat()];
+        swingMuscleMetLabels{i+1} = char(templabel);
+    end
+    
+    % get the average of each muscle over the gait cycle
+    avgStanceMuscleMetMat = [];
+    avgSwingMuscleMetMat = [];
+    % Convert table_time_stance to a regular vector
+    table_time_stance_vec = zeros(table_time_stance.size(), 1);
+    for i = 0:table_time_stance.size()-1
+        table_time_stance_vec(i+1) = table_time_stance.get(i);
+    end
+    % Convert table_time_swing to a regular vector
+    table_time_swing_vec = zeros(table_time_swing.size(), 1);
+    for i = 0:table_time_swing.size()-1
+        table_time_swing_vec(i+1) = table_time_swing.get(i);
+    end
+
+    
+    % loop through the number of columns
+    for i = 1:numcolstance
+        % get the integral of the muscle metabolic rate over the gait cycle
+        tempinteg = ((trapz(table_time_stance_vec, stanceMuscleMetMat(:,i))) / (table_time_stance_vec(end)-table_time_stance_vec(1))) / model_mass;
+        % add the average to the matrix
+        avgStanceMuscleMetMat = [avgStanceMuscleMetMat, tempinteg];
+    end
+    % now swing
+    for i = 1:numcolswing
+        tempinteg = ((trapz(table_time_swing_vec, swingMuscleMetMat(:,i))) / (table_time_swing_vec(end)-table_time_swing_vec(1))) / model_mass;
+        avgSwingMuscleMetMat = [avgSwingMuscleMetMat, tempinteg];
+    end
+    
+    % write each of these to a file.
+    stance_table = table((avgStanceMuscleMetMat)', (stanceMuscleMetLabels)', repmat({model_mass}, length(avgStanceMuscleMetMat), 1),...
+        repmat({subjectname}, length(avgStanceMuscleMetMat), 1), repmat({condname}, length(avgStanceMuscleMetMat), 1),...
+        repmat({experimentname}, length(avgStanceMuscleMetMat), 1), repmat({trialname}, length(avgStanceMuscleMetMat), 1));
+    stance_table.Properties.VariableNames{'Var3'} = 'modelmass';
+    stance_table.Properties.VariableNames{'Var4'} = 'subjectname';
+    stance_table.Properties.VariableNames{'Var5'} = 'condname';
+    stance_table.Properties.VariableNames{'Var6'} = 'experimentname';
+    stance_table.Properties.VariableNames{'Var7'} = 'trialname';
+    writetable(stance_table, 'muscleMetabolicsStance.csv');
+
+    swing_table = table((avgSwingMuscleMetMat)', (swingMuscleMetLabels)', repmat({model_mass}, length(avgStanceMuscleMetMat), 1),...
+        repmat({subjectname}, length(avgSwingMuscleMetMat), 1), repmat({condname}, length(avgSwingMuscleMetMat), 1),...
+        repmat({experimentname}, length(avgSwingMuscleMetMat), 1), repmat({trialname}, length(avgSwingMuscleMetMat), 1));
+    swing_table.Properties.VariableNames{'Var3'} = 'modelmass';
+    swing_table.Properties.VariableNames{'Var4'} = 'subjectname';
+    swing_table.Properties.VariableNames{'Var5'} = 'condname';
+    swing_table.Properties.VariableNames{'Var6'} = 'experimentname';
+    swing_table.Properties.VariableNames{'Var7'} = 'trialname';
+    writetable(swing_table, 'muscleMetabolicsSwing.csv');
+
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     % going to need time vecs for the integration: actual time does not matter, only amount
     % get the end time
     time_max = time(end);

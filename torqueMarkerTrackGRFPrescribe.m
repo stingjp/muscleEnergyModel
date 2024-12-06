@@ -35,20 +35,20 @@ function torqueMarkerTrackGRFPrescribe()
     track.set_markers_global_tracking_weight(100);
     % increase tracking weights for individual markers in the data set
     markerWeights = MocoWeightSet();
-    markerWeights.cloneAndAppend(MocoWeight("R.ASIS", 10));
-    markerWeights.cloneAndAppend(MocoWeight("L.ASIS", 10));
-    markerWeights.cloneAndAppend(MocoWeight("R.PSIS", 10));
-    markerWeights.cloneAndAppend(MocoWeight("L.PSIS", 10));
+    markerWeights.cloneAndAppend(MocoWeight("R.ASIS", 20));
+    markerWeights.cloneAndAppend(MocoWeight("L.ASIS", 20));
+    markerWeights.cloneAndAppend(MocoWeight("R.PSIS", 20));
+    markerWeights.cloneAndAppend(MocoWeight("L.PSIS", 20));
     markerWeights.cloneAndAppend(MocoWeight("R.Knee", 15));
-    markerWeights.cloneAndAppend(MocoWeight("R.Ankle", 20));
-    markerWeights.cloneAndAppend(MocoWeight("R.Heel", 20));
-    markerWeights.cloneAndAppend(MocoWeight("R.MT5", 20));
-    markerWeights.cloneAndAppend(MocoWeight("R.Toe", 20));
+    markerWeights.cloneAndAppend(MocoWeight("R.Ankle", 100));
+    markerWeights.cloneAndAppend(MocoWeight("R.Heel", 100));
+    markerWeights.cloneAndAppend(MocoWeight("R.MT5", 100));
+    markerWeights.cloneAndAppend(MocoWeight("R.Toe", 100));
     markerWeights.cloneAndAppend(MocoWeight("L.Knee", 15));
-    markerWeights.cloneAndAppend(MocoWeight("L.Ankle", 20));
-    markerWeights.cloneAndAppend(MocoWeight("L.Heel", 20));
-    markerWeights.cloneAndAppend(MocoWeight("L.MT5", 20));
-    markerWeights.cloneAndAppend(MocoWeight("L.Toe", 20));
+    markerWeights.cloneAndAppend(MocoWeight("L.Ankle", 100));
+    markerWeights.cloneAndAppend(MocoWeight("L.Heel", 100));
+    markerWeights.cloneAndAppend(MocoWeight("L.MT5", 100));
+    markerWeights.cloneAndAppend(MocoWeight("L.Toe", 100));
     track.set_markers_weight_set(markerWeights);
 
 
@@ -78,7 +78,7 @@ function torqueMarkerTrackGRFPrescribe()
     % get reference to the MocoControlGoal that is added to every MocoTrack problem
     problem = study.updProblem();
     effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
-%     effort.setWeight(0.1);
+    effort.setWeight(10);
     initactivationgoal = MocoInitialActivationGoal('init_activation');
     initactivationgoal.setWeight(10);
     problem.addGoal(initactivationgoal);
@@ -91,7 +91,7 @@ function torqueMarkerTrackGRFPrescribe()
     for i=0:forceSet.getSize()-1
         forcePath = forceSet.get(i).getAbsolutePathString();
         if contains(string(forcePath), 'pelvis')
-            effort.setWeightForControl(forcePath, 500); % here
+            effort.setWeightForControl(forcePath, 1000); % here
             % if contains(string(forcePath), 'pelvis_ty')
             %     effort.setWeightForControl(forcePath, 1e8);
             % end
