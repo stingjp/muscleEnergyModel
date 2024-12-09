@@ -482,15 +482,19 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 
     # set an initial guess up
     # twosteptraj = osim.MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto')
-    twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+    try:
+        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+    except:
+        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+    
     # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
-    steps = twosteptraj.getNumTimes()    
+    steps = twosteptraj.getNumTimes()
     # solver changes. 
     solver = osim.MocoCasADiSolver.safeDownCast(study.updSolver())
     solver.resetProblem(problem)
     solver.set_optim_convergence_tolerance(1e-2)
     solver.set_optim_constraint_tolerance(1e-4)
-    solver.set_optim_max_iterations(3)
+    # solver.set_optim_max_iterations(3)
     # solver.set_optim_finite_difference_scheme('forward')
     # solver.set_optim_finite_difference_scheme('central')
 
@@ -498,7 +502,15 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     guess.write('boundsguess.sto')
     # solver.setGuess(guess)
     randomguess = osim.MocoTrajectory('boundsguess.sto')
-    randomguess.resampleWithNumTimes(steps)
+    if randomguess.getNumTimes() != steps:
+        print('resampling the guess')
+        try:
+            randomguess.resampleWithNumTimes(steps)
+        except:
+            print('could not resample the guess')
+            print(os.getcwd())
+            pdb.set_trace()
+            return
     # go through and overwrite the states first
     randomstatenames = randomguess.getStateNames()
     # this will cover joint values, speeds, muscle activations, and norm tendon force
@@ -555,13 +567,15 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # solve and visualize
     try:
         solution = study.solve()
-        pdb.set_trace()
+        solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+        print('ran the base')
     except:
-        pdb.set_trace()
+        print(os.getcwd())
         print('could not solve the problem')
         solution = solution.unseal()
+        solution.write('muscle_statetrack_grfprescribe_solution_unseal_redoarms_py.sto')
+        return
     
-    solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
     osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
 
