@@ -229,11 +229,11 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
     
     # model.initSystem()
     if musclesWanted_split == []: # this is the inter or intersegmental condition
-        statesStorage = osim.Storage('muscletrack_states_100con_py.sto')
-        statesTable = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesStorage = osim.Storage('muscletrack_states_100con.sto')
+        statesTable = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         stateslabels = statesTable.getColumnLabels()
-        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
-        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         
         # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
         for stat in stateslabels: 
@@ -247,9 +247,9 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_' + tag + '.sto')
 
         # get a version of the controls that matches. 
-        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         controlslabels = controlsTable.getColumnLabels()
-        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         
         # get a version of the controls that is trimmed down. 
         for con in controlslabels:
@@ -283,11 +283,11 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
     
     
     elif 'all' in musclesWanted_split:
-        statesStorage = osim.Storage('muscletrack_states_100con_py.sto')
-        statesTable = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesStorage = osim.Storage('muscletrack_states_100con.sto')
+        statesTable = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         stateslabels = statesTable.getColumnLabels()
-        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
-        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         # in this case, we want all the muscles in the model
         osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_' + tag + '.sto')
         
@@ -298,9 +298,9 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
 
 
         # get a version of the controls that matches. 
-        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         controlslabels = controlsTable.getColumnLabels()
-        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         
         # in this case we want all the controls, not getting rid of any muscles
         osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_' + tag + '.sto')
@@ -330,11 +330,11 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
     
     elif 'reserve' in musclesWanted_split:
-        statesStorage = osim.Storage('muscletrack_states_100con_py.sto')
-        statesTable = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesStorage = osim.Storage('muscletrack_states_100con.sto')
+        statesTable = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         stateslabels = statesTable.getColumnLabels()
-        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
-        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         
         # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
         for stat in stateslabels: 
@@ -348,9 +348,9 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_' + tag + '.sto')
 
         # get a version of the controls that matches. 
-        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         controlslabels = controlsTable.getColumnLabels()
-        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         
         # get a version of the controls that is trimmed down. 
         for con in controlslabels:
@@ -397,11 +397,11 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
     
     elif 'none' in musclesWanted_split:
-        statesStorage = osim.Storage('muscletrack_states_100con_py.sto')
-        statesTable = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesStorage = osim.Storage('muscletrack_states_100con.sto')
+        statesTable = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         stateslabels = statesTable.getColumnLabels()
-        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
-        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         
         # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
         for stat in stateslabels: 
@@ -415,9 +415,9 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_' + tag + '.sto')
 
         # get a version of the controls that matches. 
-        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         controlslabels = controlsTable.getColumnLabels()
-        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         
         # get a version of the controls that is trimmed down. 
         for con in controlslabels:
@@ -463,11 +463,11 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         
     
     else:
-        statesStorage = osim.Storage('muscletrack_states_100con_py.sto')
-        statesTable = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesStorage = osim.Storage('muscletrack_states_100con.sto')
+        statesTable = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         stateslabels = statesTable.getColumnLabels()
-        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
-        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con_py.sto')
+        statesTableTrim = osim.TimeSeriesTable('muscletrack_states_100con.sto')
+        statesTableTrim2 = osim.TimeSeriesTable('muscletrack_states_100con.sto')
         
         # musclesWanted_split = ['1'2'3'4']
         # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
@@ -499,9 +499,9 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
 
 
         # get a version of the controls that matches. 
-        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTable = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         controlslabels = controlsTable.getColumnLabels()
-        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con_py.sto')
+        controlsTableTrim = osim.TimeSeriesTable('muscletrack_controls_100con.sto')
         
         # get a version of the controls that is trimmed down. 
         for con in controlslabels:
@@ -2043,11 +2043,11 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk009']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk002']#,'welk003','welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
 
-    oldnotredo = False
+    oldnotredo = True
     
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -2816,7 +2816,6 @@ if __name__ == '__main__':
     nnone_combine     = np.zeros((len(welksubjects)*len(trials), 101))
     
     
-    
     # define the muscles that we want in each of the splits
     musclesWanted = {}
     musclesWanted['inter'] = []
@@ -2831,15 +2830,12 @@ if __name__ == '__main__':
     
     # plot the stuff
     # figure out subtracting the intersegmental from each of the others?
-    
-
     # pdb.set_trace()
 
     # # have the structures, now loop through and figure out how to fill them in
     # # loop the subjects
     # '''
     spot = 0
-    
     for subj in range(len(welksubjects)):
         subject = welksubjects[subj]
         subjdir = os.path.join(resultsdir, subject)

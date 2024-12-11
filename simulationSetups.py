@@ -16,7 +16,7 @@ import pdb
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial):
+def analyzeSubject(subject, condition, trial, whatfailed):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -44,7 +44,9 @@ def analyzeSubject(subject, condition, trial):
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed)
+    return whatfailed
+
 
 # analyze mimic to just do some post processing
 def analyzeSubject_post(subject, condition, trial):
@@ -82,7 +84,6 @@ def analyzeSubject_post(subject, condition, trial):
     # ID plotter
     # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
     ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True)
-
 
 
 # muscle driven state tracking simulation - second pass 
@@ -307,7 +308,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed):
     # create the tracking problem
     track = osim.MocoTrack()
     track.setName("muscle_statetrack_grfprescribe")
@@ -572,9 +573,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     except:
         print(os.getcwd())
         print('could not solve the problem')
+        whatfailed[subjectname + '_' + conditionname + '_' + trialname] = os.getcwd()
         solution = solution.unseal()
         solution.write('muscle_statetrack_grfprescribe_solution_unseal_redoarms_py.sto')
-        return
+        return whatfailed
     
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
     osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
@@ -597,7 +599,6 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     osim.STOFileAdapter.write(table_jointMoments, 'muscletrack_redo_moments_py.sto');
     ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', False)
 
-
     # study.visualize(solution)
 
     # post analysis etc. 
@@ -606,7 +607,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 
     # likely just use the matlab infrastructure to do the post analysis.
     # otherwise have to update everything to python - not worth the time likely for post analysis. s
-    return
+    return whatfailed
 
 
 
