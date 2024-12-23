@@ -581,6 +581,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
     osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
 
+
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
 
     # do some post analysis
@@ -598,6 +599,32 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     table_jointMoments = study.calcGeneralizedForces(solution, analyzeStrings_forcePaths);
     osim.STOFileAdapter.write(table_jointMoments, 'muscletrack_redo_moments_py.sto');
     ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', False)
+
+    # add muscle forces to the post analysis
+    analyzeStrings_muscleForces = osim.StdVectorString();
+    analyzeStrings_muscleForces.append('.*active_fiber_force');
+    analyzeStrings_muscleForces.append('.*passive_fiber_force');
+    analyzeStrings_muscleForces.append('.*fiber_force_along_tendon');
+    table_muscleForces = study.analyze(solution, analyzeStrings_muscleForces);
+    osim.STOFileAdapter.write(table_muscleForces, 'muscletrack_redo_muscleforces_py.sto');
+
+    # pdb.set_trace()
+
+    # analyzeStrings_probe = osim.StdVectorString()
+    # analyzeStrings_probe.append('/probeset/.*')
+    # table_probe = study.analyze(solution, analyzeStrings_probe)
+    # osim.STOFileAdapter.write(table_probe, 'muscletrack_redo_probes_py.sto')
+
+    # pdb.set_trace()
+
+
+
+    analyzeStrings_all = osim.StdVectorString()
+    analyzeStrings_all.append('.*')
+    table_all = study.analyze(solution, analyzeStrings_all)
+    osim.STOFileAdapter.write(table_all, 'muscletrack_redo_all_py.sto')
+
+    # pdb.set_trace()
 
     # study.visualize(solution)
 

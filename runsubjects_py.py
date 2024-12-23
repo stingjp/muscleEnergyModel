@@ -178,7 +178,7 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk002', 'welk003']#, welk003', 'welk005', 'welk008', 'welk009', 'welk010', 'welk013'] 
+subjects = ['welk008'] #, 'welk003']#, welk003', 'welk005', 'welk008', 'welk009', 'welk010', 'welk013'] 
 welkconditions = ['welknatural', 'welkexo'] 
 trials = ['trial01', 'trial02', 'trial03', 'trial04'] # nat 1,2 done
 whatfailed = {}
@@ -205,7 +205,7 @@ for subj in subjects:
                 print('\n')
                 print(trialdir)
                 whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed)
-                # simset.analyzeSubject_post(subj, cond, keys, whatfailed)
+                # simset.analyzeSubject_post(subj, cond, keys)
 
 
     elif subj[0:4] == 'jack':
@@ -238,3 +238,4 @@ for subj in subjects:
 
 print('\n...end')
 print('Ran batch simulations - need to check the: \nmetabolic costs, \nkinematics, \nand any Issues for the subject.')
+print(whatfailed)
