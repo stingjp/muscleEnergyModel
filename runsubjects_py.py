@@ -13,6 +13,7 @@ import opensim as osim
 import OsimUtilityfunctions as ouf
 import time
 import simulationSetups as simset
+import pdb
 
 # setting up the paths
 setup_matlab_path = "G:/Shared drives/Exotendon/musclemodel/muscleEnergyModel/"
@@ -178,9 +179,9 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk008'] #, 'welk003']#, welk003', 'welk005', 'welk008', 'welk009', 'welk010', 'welk013'] 
-welkconditions = ['welknatural', 'welkexo'] 
-trials = ['trial01', 'trial02', 'trial03', 'trial04'] # nat 1,2 done
+subjects = ['welk002']#, 'welk003', 'welk005', 'welk010', 'welk013'] #  'welk008', 'welk009',
+welkconditions = ['welknatural']#, 'welkexo'] 
+trials = ['trial04']#, 'trial02', 'trial03', 'trial04'] # nat 1,2 done
 whatfailed = {}
 
 ########################################## 
@@ -239,3 +240,4 @@ for subj in subjects:
 print('\n...end')
 print('Ran batch simulations - need to check the: \nmetabolic costs, \nkinematics, \nand any Issues for the subject.')
 print(whatfailed)
+pdb.set_trace()

@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import scipy.io as sio
 import time
+import pdb
 
 
 # activate the metabolics probe for use in simulations
@@ -140,3 +141,97 @@ def subjectGaitTimings():
     # Issues = muscleStatePrescribeGRFPrescribe(Issues)
     # close all
     return
+
+# function for getting the muscle activations. 
+def getMuscleActivations(trialdir, muscleacts):
+    # first need to establish the file that we are going to load
+    trialactfile = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_redo_states_py.sto'))
+    trialtime = trialactfile.getIndependentColumn()
+    time100 = np.linspace(trialtime[0], trialtime[-1], 100).reshape(100,1)
+    # get the column labels
+    labels = trialactfile.getColumnLabels()
+    # get the number of columns
+    numCols = trialactfile.getNumColumns()
+    # loop through the columns and store the muscle activations
+    for i in range(numCols):
+        temp = labels[i]
+        if '_r/activation' in temp:
+            tempact = trialactfile.getDependentColumn(temp).to_numpy()
+            tempact = tempact.reshape(len(tempact),1)
+            tempact = np.interp(time100.flatten(), trialtime, tempact.flatten())
+            # check if the key exists in the dictionary
+            if temp not in muscleacts:
+                muscleacts[temp] = tempact.reshape(len(tempact),1)
+            else: # add the data as a new column in the same key
+                muscleacts[temp] = np.column_stack((muscleacts[temp], tempact))
+    return muscleacts
+
+# function for getting the muscle moments. 
+def getJointMoments(trialdir, moments, modelmass):
+    # load the right file for the given trial 
+    trialmomfile = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_redo_moments_py.sto'))
+    trialtime = trialmomfile.getIndependentColumn()
+    time100 = np.linspace(trialtime[0], trialtime[-1], 100).reshape(100,1)
+    # get the column labels
+    labels = trialmomfile.getColumnLabels()
+    # get the number of columns
+    numCols = trialmomfile.getNumColumns()
+    # loop through the columns and store the muscle moments
+    for i in range(numCols):
+        temp = labels[i]
+        if '_l_moment' not in temp:
+            tempmom = trialmomfile.getDependentColumn(temp).to_numpy()
+            tempmom = tempmom / modelmass
+            tempmom = tempmom.reshape(len(tempmom),1)
+            tempmom = np.interp(time100.flatten(), trialtime, tempmom.flatten())
+            # check if the key exists in the dictionary
+            if temp not in moments:
+                moments[temp] = tempmom.reshape(len(tempmom),1)
+            else: # add the data as a new column in the same key
+                moments[temp] = np.column_stack((moments[temp], tempmom))
+    return moments
+
+# function for gathering the muscle forces
+def getMuscleForces(trialdir, activeForces, passiveForces, totalForces, modelmass):
+    # load in all the right files
+    forcesdata = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_redo_muscleforces_py.sto'))
+    forcetime = forcesdata.getIndependentColumn()
+    time100 = np.linspace(forcetime[0], forcetime[-1], 100).reshape(100,1)
+    # get the column labels
+    labels = forcesdata.getColumnLabels()
+    # get the number of columns
+    numCols = forcesdata.getNumColumns()
+    # loop through and store the forces data
+    for i in range(numCols):
+        temp = labels[i]
+        if '_r|active_fiber_force_along_tendon' in temp:
+            tempact = forcesdata.getDependentColumn(temp).to_numpy()
+            tempact = tempact / modelmass
+            tempact = tempact.reshape(len(tempact),1)
+            tempact = np.interp(time100.flatten(), forcetime, tempact.flatten())
+            # check if the key exists in the dictionary
+            if temp not in activeForces:
+                activeForces[temp] = tempact.reshape(len(tempact),1)
+            else: # add the data as a new column in the same key
+                activeForces[temp] = np.column_stack((activeForces[temp], tempact))
+        elif '_r|passive_fiber_force_along_tendon' in temp:
+            temppass = forcesdata.getDependentColumn(temp).to_numpy()
+            temppass = temppass / modelmass
+            temppass = temppass.reshape(len(temppass),1)
+            temppass = np.interp(time100.flatten(), forcetime, temppass.flatten())
+            # check if the key exists in the dictionary
+            if temp not in passiveForces:
+                passiveForces[temp] = temppass.reshape(len(temppass),1)
+            else: # add the data as a new column in the same key
+                passiveForces[temp] = np.column_stack((passiveForces[temp], temppass))
+        elif '_r|fiber_force_along_tendon' in temp:
+            temptotal = forcesdata.getDependentColumn(temp).to_numpy()
+            temptotal = temptotal / modelmass
+            temptotal = temptotal.reshape(len(temptotal),1)
+            temptotal = np.interp(time100.flatten(), forcetime, temptotal.flatten())
+            # check if the key exists in the dictionary
+            if temp not in totalForces:
+                totalForces[temp] = temptotal.reshape(len(temptotal),1)
+            else: # add the data as a new column in the same key
+                totalForces[temp] = np.column_stack((totalForces[temp], temptotal))
+    return activeForces, passiveForces, totalForces

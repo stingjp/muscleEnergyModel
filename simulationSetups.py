@@ -581,9 +581,13 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
     osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
 
-
-    # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
-
+    # try:
+    #     solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+    # except:
+    #     print('could not read the solution')
+    #     whatfailed[subjectname + '_' + conditionname + '_' + trialname] = os.getcwd()
+    #     return whatfailed
+    
     # do some post analysis
     analyzeStrings_forcePaths = osim.StdVectorString();
     analyzeStrings_forcePaths.append('.*externalloads.*');
