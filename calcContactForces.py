@@ -2916,30 +2916,30 @@ if __name__ == '__main__':
                 
                 # test = jrasr0001 - jrasr01
                 # plt.figure(); plt.plot(test)
-                # try: 
-                #     if oldnotredo:
-                #         ## okay now going to focus on the figures that I actually wanted 
-                #         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                #         jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                #         jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                #         jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                #         jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                #         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                #         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                #         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
-                #     else:
-                #         ## okay now going to focus on the figures that I actually wanted 
-                #         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
-                #         jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
-                #         jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
-                #         jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
-                #         jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
-                #         jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
-                #         jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
-                #         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
-                # except:
-                #     print('Error with: ' + trialdir)
-                #     continue
+                try: 
+                    if oldnotredo:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
+                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
+                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
+                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
+                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
+                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
+                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
+                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                    else:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
+                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
+                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
+                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
+                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
+                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
+                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
+                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
+                except:
+                    print('Error with: ' + trialdir)
+                    continue
                     
                 #### do some other data grabs here for the other data that we care about in each trial. 
 
@@ -2962,43 +2962,43 @@ if __name__ == '__main__':
                 # plt.legend()
                 # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...
                 
-                # # subtract out the inter segmental
-                # jrasrinteronly = jrasrinterreserve
-                # jrasrreserveonly = jrasrinter - jrasrinterreserve
-                # jrasrnoneonly = jrasrnone
+                # subtract out the inter segmental
+                jrasrinteronly = jrasrinterreserve
+                jrasrreserveonly = jrasrinter - jrasrinterreserve
+                jrasrnoneonly = jrasrnone
 
-                # jrasrquadsonly = jrasrquads - jrasrnone
-                # jrasrhamsonly = jrasrhams - jrasrnone
-                # jrasrgasonly = jrasrgas - jrasrnone
-                # jrasrtflonly = jrasrtfl - jrasrnone                
+                jrasrquadsonly = jrasrquads - jrasrnone
+                jrasrhamsonly = jrasrhams - jrasrnone
+                jrasrgasonly = jrasrgas - jrasrnone
+                jrasrtflonly = jrasrtfl - jrasrnone                
                 
-                # # get percentages
-                # e_timespercent101 = np.arange(0,101,1)
-                # e_times = np.arange(0,len(jrasrquadsonly),1)
-                # e_timesinterp = np.linspace(0,len(e_times), 103)
+                # get percentages
+                e_timespercent101 = np.arange(0,101,1)
+                e_times = np.arange(0,len(jrasrquadsonly),1)
+                e_timesinterp = np.linspace(0,len(e_times), 103)
 
-                # # get something in BW and interp to 100% gait cycle points. 
-                # jrasrquadsonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrquadsonly)) / modelmass
-                # jrasrhamsonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrhamsonly)) / modelmass
-                # jrasrgasonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrgasonly)) / modelmass
-                # jrasrtflonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrtflonly)) / modelmass
-                # jrasrinteronly101 = -1*(np.interp(e_timesinterp, e_times, jrasrinteronly)) / modelmass
-                # jrasrallonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrall)) / modelmass
-                # jrasrreserveonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrreserveonly)) / modelmass
-                # jrasrnoneonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrnone)) / modelmass
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrquadsonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrquadsonly)) / modelmass
+                jrasrhamsonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrhamsonly)) / modelmass
+                jrasrgasonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrgasonly)) / modelmass
+                jrasrtflonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrtflonly)) / modelmass
+                jrasrinteronly101 = -1*(np.interp(e_timesinterp, e_times, jrasrinteronly)) / modelmass
+                jrasrallonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrall)) / modelmass
+                jrasrreserveonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrreserveonly)) / modelmass
+                jrasrnoneonly101 = -1*(np.interp(e_timesinterp, e_times, jrasrnone)) / modelmass
                 
                 
                 
-                # einterseg_combine[spot, :] = jrasrinteronly101[:-2]
-                # equads_combine[spot, :] = jrasrquadsonly101[:-2]
-                # ehams_combine[spot,:] = jrasrhamsonly101[:-2]
-                # egas_combine[spot,:] = jrasrgasonly101[:-2]
-                # etfl_combine[spot,:] = jrasrtflonly101[:-2]
-                # eall_combine[spot,:] = jrasrallonly101[:-2]
-                # ereserve_combine[spot,:] = jrasrreserveonly101[:-2]
-                # enone_combine[spot,:] = jrasrnoneonly101[:-2]
+                einterseg_combine[spot, :] = jrasrinteronly101[:-2]
+                equads_combine[spot, :] = jrasrquadsonly101[:-2]
+                ehams_combine[spot,:] = jrasrhamsonly101[:-2]
+                egas_combine[spot,:] = jrasrgasonly101[:-2]
+                etfl_combine[spot,:] = jrasrtflonly101[:-2]
+                eall_combine[spot,:] = jrasrallonly101[:-2]
+                ereserve_combine[spot,:] = jrasrreserveonly101[:-2]
+                enone_combine[spot,:] = jrasrnoneonly101[:-2]
                 
-                # ## increase the spot - count of trials                
+                ## increase the spot - count of trials                
                 spot += 1
                 ## TODO: method for all the muscles ie. don't remove any
 
@@ -3082,30 +3082,30 @@ if __name__ == '__main__':
                 
                 # test = jrasr0001 - jrasr01
                 # plt.figure(); plt.plot(test)
-                # try:    
-                #     if oldnotredo:
-                #         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                #         jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                #         jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                #         jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                #         jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                #         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                #         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                #         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
-                #     else:
-                #         ## okay now going to focus on the figures that I actually wanted 
-                #         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
-                #         jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
-                #         jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
-                #         jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
-                #         jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
-                #         jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
-                #         jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
-                #         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
-                # except:
-                #     print('Error with: ' + trialdir)
-                #     continue
-                # # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...                
+                try:    
+                    if oldnotredo:
+                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
+                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
+                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
+                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
+                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
+                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
+                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
+                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                    else:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
+                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
+                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
+                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
+                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
+                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
+                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
+                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
+                except:
+                    print('Error with: ' + trialdir)
+                    continue
+                # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...                
 
                 # start with muscle activations
                 muscleacts_nat = ouf.getMuscleActivations(trialdir, muscleacts_nat)
@@ -3118,42 +3118,42 @@ if __name__ == '__main__':
                 # and make sure to look at the residuals too
 
 
-                # # subtract out the inter segmental
-                # jrasrinteronly = jrasrinterreserve
-                # jrasrreserveonly = jrasrinter - jrasrinterreserve
-                # jrasrnoneonly = jrasrnone
+                # subtract out the inter segmental
+                jrasrinteronly = jrasrinterreserve
+                jrasrreserveonly = jrasrinter - jrasrinterreserve
+                jrasrnoneonly = jrasrnone
                 
-                # jrasrquadsonly = jrasrquads - jrasrnone
-                # jrasrhamsonly = jrasrhams - jrasrnone
-                # jrasrgasonly = jrasrgas - jrasrnone
-                # jrasrtflonly = jrasrtfl - jrasrnone
+                jrasrquadsonly = jrasrquads - jrasrnone
+                jrasrhamsonly = jrasrhams - jrasrnone
+                jrasrgasonly = jrasrgas - jrasrnone
+                jrasrtflonly = jrasrtfl - jrasrnone
                 
-                # # get percentages
-                # n_timespercent101 = np.arange(0,101,1)
-                # n_times = np.arange(0,len(jrasrquadsonly),1)
-                # n_timesinterp = np.linspace(0,len(n_times), 103)
+                # get percentages
+                n_timespercent101 = np.arange(0,101,1)
+                n_times = np.arange(0,len(jrasrquadsonly),1)
+                n_timesinterp = np.linspace(0,len(n_times), 103)
                 
-                # # get something in BW and interp to 100% gait cycle points. 
-                # jrasrquadsonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrquadsonly)) / modelmass
-                # jrasrhamsonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrhamsonly)) / modelmass
-                # jrasrgasonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrgasonly)) / modelmass
-                # jrasrtflonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrtflonly)) / modelmass
-                # jrasrinteronly101 = -1*(np.interp(n_timesinterp, n_times, jrasrinteronly)) / modelmass
-                # jrasrallonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrall)) / modelmass
-                # jrasrreserveonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrreserveonly)) / modelmass
-                # jrasrnoneonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrnoneonly)) / modelmass
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrquadsonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrquadsonly)) / modelmass
+                jrasrhamsonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrhamsonly)) / modelmass
+                jrasrgasonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrgasonly)) / modelmass
+                jrasrtflonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrtflonly)) / modelmass
+                jrasrinteronly101 = -1*(np.interp(n_timesinterp, n_times, jrasrinteronly)) / modelmass
+                jrasrallonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrall)) / modelmass
+                jrasrreserveonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrreserveonly)) / modelmass
+                jrasrnoneonly101 = -1*(np.interp(n_timesinterp, n_times, jrasrnoneonly)) / modelmass
                 
-                # # natural combine into the big structure
-                # ninterseg_combine[spot,:] = jrasrinteronly101[:-2]
-                # nquads_combine[spot,:] = jrasrquadsonly101[:-2]
-                # nhams_combine[spot,:] = jrasrhamsonly101[:-2]
-                # ngas_combine[spot,:] = jrasrgasonly101[:-2]
-                # ntfl_combine[spot,:] = jrasrtflonly101[:-2]
-                # nall_combine[spot,:] = jrasrallonly101[:-2]
-                # nreserve_combine[spot,:] = jrasrreserveonly101[:-2]
-                # nnone_combine[spot,:] = jrasrnoneonly101[:-2]
+                # natural combine into the big structure
+                ninterseg_combine[spot,:] = jrasrinteronly101[:-2]
+                nquads_combine[spot,:] = jrasrquadsonly101[:-2]
+                nhams_combine[spot,:] = jrasrhamsonly101[:-2]
+                ngas_combine[spot,:] = jrasrgasonly101[:-2]
+                ntfl_combine[spot,:] = jrasrtflonly101[:-2]
+                nall_combine[spot,:] = jrasrallonly101[:-2]
+                nreserve_combine[spot,:] = jrasrreserveonly101[:-2]
+                nnone_combine[spot,:] = jrasrnoneonly101[:-2]
                 
-                # ## increase the spot - count of trials                
+                ## increase the spot - count of trials                
                 spot += 1
 
 
@@ -3188,7 +3188,7 @@ if __name__ == '__main__':
     
 
     # create a figure for the joint moments for natural and exotendon
-    fig2, ax2 = plt.subplots(3, 8, figsize=(20, 12), dpi=500)
+    fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
     joints = list(moments_nat.keys())
     for i, joint in enumerate(joints):
         row = i // 8
@@ -3397,6 +3397,7 @@ if __name__ == '__main__':
     ax9[6].legend(handles, labels, loc='center', fontsize=14)
 
     fig9.tight_layout()
+    plt.savefig(analyzedir + '\\contact1.png')
 
 
     ###########################################################################
@@ -3472,6 +3473,7 @@ if __name__ == '__main__':
     handles, labels = ax10[5].get_legend_handles_labels()
     ax10[6].legend(handles, labels, loc='center', fontsize=14)
     fig10.tight_layout()
+    plt.savefig(analyzedir + '\\contact2.png')
     
     ###########################################################################
     ### figure: differences between conditions for each and all
@@ -3531,6 +3533,7 @@ if __name__ == '__main__':
     handles, labels = ax11[5].get_legend_handles_labels()
     ax11[6].legend(handles, labels, loc='center', fontsize=10)
     fig11.tight_layout()
+    plt.savefig(analyzedir + '\\contact3.png')
     
     
     ###########################################################################
@@ -3558,6 +3561,7 @@ if __name__ == '__main__':
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     plt.title('Exotendon change in contact force')
     plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact4.png')
 
     # TODO: figure out why the difference in total and all added together. 
     # okay so not in how I am adding/averaging. has to be something in how the analysis is done between them.... am I missing something??
@@ -3593,6 +3597,7 @@ if __name__ == '__main__':
     handles, labels = ax13[1].get_legend_handles_labels()
     ax13[2].legend(handles, labels, loc='center', fontsize=14)
     fig13.tight_layout()
+    plt.savefig(analyzedir + '\\contact5.png')
     
     ###########################################################################
     ### Figure: total pop average for right leg between nat and exo
@@ -3607,6 +3612,7 @@ if __name__ == '__main__':
     plt.title('Total vertical contact force')
     plt.legend(loc='upper right')
     plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact6.png')
 
     plt.show()
 

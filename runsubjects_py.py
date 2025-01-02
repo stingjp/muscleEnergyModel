@@ -179,9 +179,9 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk002']#, 'welk003', 'welk005', 'welk010', 'welk013'] #  'welk008', 'welk009',
+subjects = ['welk013']#,'welk005','welk008','welk009','welk010','welk013'] #  'welk008', 'welk009',
 welkconditions = ['welknatural']#, 'welkexo'] 
-trials = ['trial04']#, 'trial02', 'trial03', 'trial04'] # nat 1,2 done
+trials = ['trial01']#, 'trial02', 'trial03', 'trial04'] # nat 1,2 done
 whatfailed = {}
 
 ########################################## 
