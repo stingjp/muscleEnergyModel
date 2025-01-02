@@ -440,7 +440,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 10) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 100) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -471,7 +471,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 50)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
@@ -482,6 +482,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 
 
     # set an initial guess up
+    ## the try does the most recent solution, the except does the 100con solution from previous study.
+    
     # twosteptraj = osim.MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto')
     try:
         twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
