@@ -158,7 +158,7 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag):
     # figure out how to do an intersegmental with proper value of forces showing up.
     trimjra = osim.TimeSeriesTable('jr_analysis_redo_jra_redo_' + tag + '_ReactionLoads.sto')
     trimjralabels = trimjra.getColumnLabels()
-    tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+    tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
     # pdb.set_trace()
     # import matplotlib.pyplot as plt
     # plt.figure()
@@ -2045,9 +2045,10 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk003']#,'welk005','welk010','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
+    whichleg = 'left'
 
     oldnotredo = False
     
@@ -2831,14 +2832,24 @@ if __name__ == '__main__':
     
     # define the muscles that we want in each of the splits
     musclesWanted = {}
-    musclesWanted['inter'] = []
-    musclesWanted['quads'] = ['vaslat_r', 'vasmed_r', 'vasint_r', 'recfem_r']
-    musclesWanted['hams']  = ['bflh_r', 'bfsh_r', 'grac_r', 'sart_r', 'semimem_r', 'semiten_r']
-    musclesWanted['gas']   = ['gaslat_r', 'gasmed_r']
-    musclesWanted['tfl']   = ['tfl_r']
-    musclesWanted['all'] = ['all']
-    musclesWanted['reserve'] = ['reserve']
-    musclesWanted['none'] = ['none']
+    if whichleg == 'right':
+        musclesWanted['inter'] = []
+        musclesWanted['quads'] = ['vaslat_r', 'vasmed_r', 'vasint_r', 'recfem_r']
+        musclesWanted['hams']  = ['bflh_r', 'bfsh_r', 'grac_r', 'sart_r', 'semimem_r', 'semiten_r']
+        musclesWanted['gas']   = ['gaslat_r', 'gasmed_r']
+        musclesWanted['tfl']   = ['tfl_r']
+        musclesWanted['all'] = ['all']
+        musclesWanted['reserve'] = ['reserve']
+        musclesWanted['none'] = ['none']
+    elif whichleg == 'left':
+        musclesWanted['inter'] = []
+        musclesWanted['quads'] = ['vaslat_l', 'vasmed_l', 'vasint_l', 'recfem_l']
+        musclesWanted['hams']  = ['bflh_l', 'bfsh_l', 'grac_l', 'sart_l', 'semimem_l', 'semiten_l']
+        musclesWanted['gas']   = ['gaslat_l', 'gasmed_l']
+        musclesWanted['tfl']   = ['tfl_l']
+        musclesWanted['all'] = ['all']
+        musclesWanted['reserve'] = ['reserve']
+        musclesWanted['none'] = ['none']
     # TODO
     
     # plot the stuff
