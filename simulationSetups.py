@@ -357,7 +357,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(100)
+    track.set_states_global_tracking_weight(1)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -440,7 +440,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 100) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 500) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -480,93 +480,96 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
     problem.addGoal(jointMomentTracking)
 
-
+    wantguess = True
     # set an initial guess up
-    ## the try does the most recent solution, the except does the 100con solution from previous study.
-    
-    # twosteptraj = osim.MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto')
-    try:
-        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
-    except:
-        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
-    
-    # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
-    steps = twosteptraj.getNumTimes()
-    # solver changes. 
-    solver = osim.MocoCasADiSolver.safeDownCast(study.updSolver())
-    solver.resetProblem(problem)
-    solver.set_optim_convergence_tolerance(1e-2)
-    solver.set_optim_constraint_tolerance(1e-4)
-    # solver.set_optim_max_iterations(3)
-    # solver.set_optim_finite_difference_scheme('forward')
-    # solver.set_optim_finite_difference_scheme('central')
+    if wantguess:
+        ## the try does the most recent solution, the except does the 100con solution from previous study.
+        
+        # twosteptraj = osim.MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto')
+        try:
+            twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+        except:
+            twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+        
+        # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
+        steps = twosteptraj.getNumTimes()
+        # solver changes. 
+        solver = osim.MocoCasADiSolver.safeDownCast(study.updSolver())
+        solver.resetProblem(problem)
+        solver.set_optim_convergence_tolerance(1e-2)
+        solver.set_optim_constraint_tolerance(1e-4)
+        # solver.set_optim_max_iterations(3)
+        # solver.set_optim_finite_difference_scheme('forward')
+        # solver.set_optim_finite_difference_scheme('central')
 
-    guess = solver.createGuess('bounds')
-    guess.write('boundsguess.sto')
-    # solver.setGuess(guess)
-    randomguess = osim.MocoTrajectory('boundsguess.sto')
-    if randomguess.getNumTimes() != steps:
-        print('resampling the guess')
-        try:
-            randomguess.resampleWithNumTimes(steps)
-        except:
-            print('could not resample the guess')
-            print(os.getcwd())
-            pdb.set_trace()
-            return
-    # go through and overwrite the states first
-    randomstatenames = randomguess.getStateNames()
-    # this will cover joint values, speeds, muscle activations, and norm tendon force
-    for s in range(len(randomstatenames)):
-        statename = randomstatenames[s]
-        # temprandom = randomguess.getStateMat(statename);
-        try:
-            temp2step = twosteptraj.getStateMat(statename)
-            randomguess.setState(statename,temp2step)
-        except:
-            print('did not have the state in the 2 step problem solution - keeping random. ')
-        # temp2step = twosteptraj.getStateMat(statename)
-        # randomguess.setState(statename,temp2step)
-    # go through all the controls - excitations
-    randomcontrolnames = randomguess.getControlNames()
-    for c in range(len(randomcontrolnames)):
-        controlname = randomcontrolnames[c]
-        # temprandom = randomguess.getControlMat(controlname)
-        try:
-            temp2step = twosteptraj.getControlMat(controlname)
-            randomguess.setControl(controlname, temp2step)
-        except:
-            print('did not have the control in the 2 step problem solution - keeping random. ')
-        # temp2step = twosteptraj.getControlMat(controlname)
-        # randomguess.setControl(controlname, temp2step)
-    # go through others??
-    # randomparamnames = randomguess.getParameterNames()
-    # this is empty in the normal condition
-    # multipliers
-    randommultnames = randomguess.getMultiplierNames()
-    for m in range(len(randommultnames)):
-        multname = randommultnames[m]
-        # temprandom = randomguess.getMultiplierMat(multname)
-        try:
-            temp2step = twosteptraj.getMultiplierMat(multname)
-            randomguess.setMultiplier(multname, temp2step)
-        except:
-            print('did not have the multiplier in the 2 step problem solution')
-    # now for the implicit derivatives
-    randomderivnames = randomguess.getDerivativeNames()
-    for d in range(len(randomderivnames)):
-        derivname = randomderivnames[d]
-        # temprandom = randomguess.getDerivativeMat(derivname)
-        try:
-            temp2step = twosteptraj.getDerivativeMat(derivname)
-            randomguess.setDerivative(derivname, temp2step)
-        except:
-            print('did not have the derivative in the 2 step problem solution')
-        # temp2step = twosteptraj.getDerivativeMat(derivname)
-        # randomguess.setDerivative(derivname, temp2step)
+        guess = solver.createGuess('bounds')
+        guess.write('boundsguess.sto')
+        # solver.setGuess(guess)
+        randomguess = osim.MocoTrajectory('boundsguess.sto')
+        if randomguess.getNumTimes() != steps:
+            print('resampling the guess')
+            try:
+                randomguess.resampleWithNumTimes(steps)
+            except:
+                print('could not resample the guess')
+                print(os.getcwd())
+                pdb.set_trace()
+                return
+        # go through and overwrite the states first
+        randomstatenames = randomguess.getStateNames()
+        # this will cover joint values, speeds, muscle activations, and norm tendon force
+        for s in range(len(randomstatenames)):
+            statename = randomstatenames[s]
+            # temprandom = randomguess.getStateMat(statename);
+            try:
+                temp2step = twosteptraj.getStateMat(statename)
+                randomguess.setState(statename,temp2step)
+            except:
+                print('did not have the state in the 2 step problem solution - keeping random. ')
+            # temp2step = twosteptraj.getStateMat(statename)
+            # randomguess.setState(statename,temp2step)
+        # go through all the controls - excitations
+        randomcontrolnames = randomguess.getControlNames()
+        for c in range(len(randomcontrolnames)):
+            controlname = randomcontrolnames[c]
+            # temprandom = randomguess.getControlMat(controlname)
+            try:
+                temp2step = twosteptraj.getControlMat(controlname)
+                randomguess.setControl(controlname, temp2step)
+            except:
+                print('did not have the control in the 2 step problem solution - keeping random. ')
+            # temp2step = twosteptraj.getControlMat(controlname)
+            # randomguess.setControl(controlname, temp2step)
+        # go through others??
+        # randomparamnames = randomguess.getParameterNames()
+        # this is empty in the normal condition
+        # multipliers
+        randommultnames = randomguess.getMultiplierNames()
+        for m in range(len(randommultnames)):
+            multname = randommultnames[m]
+            # temprandom = randomguess.getMultiplierMat(multname)
+            try:
+                temp2step = twosteptraj.getMultiplierMat(multname)
+                randomguess.setMultiplier(multname, temp2step)
+            except:
+                print('did not have the multiplier in the 2 step problem solution')
+        # now for the implicit derivatives
+        randomderivnames = randomguess.getDerivativeNames()
+        for d in range(len(randomderivnames)):
+            derivname = randomderivnames[d]
+            # temprandom = randomguess.getDerivativeMat(derivname)
+            try:
+                temp2step = twosteptraj.getDerivativeMat(derivname)
+                randomguess.setDerivative(derivname, temp2step)
+            except:
+                print('did not have the derivative in the 2 step problem solution')
+            # temp2step = twosteptraj.getDerivativeMat(derivname)
+            # randomguess.setDerivative(derivname, temp2step)
 
-    # now set the guess for the solver
-    solver.setGuess(randomguess)
+        # now set the guess for the solver
+        solver.setGuess(randomguess)
+
+
     # solve and visualize
     try:
         solution = study.solve()
