@@ -116,7 +116,7 @@ def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag):
     # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
     return tiby
 # this is the same script ^ but for the prescribed mocoinverse solution
-def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag):
+def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg):
     # '''
     # intersegmental forces - method 2
     # try the analysis
@@ -158,7 +158,10 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag):
     # figure out how to do an intersegmental with proper value of forces showing up.
     trimjra = osim.TimeSeriesTable('jr_analysis_redo_jra_redo_' + tag + '_ReactionLoads.sto')
     trimjralabels = trimjra.getColumnLabels()
-    tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+    if whichleg == 'right':
+        tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+    elif whichleg == 'left':
+        tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
     # pdb.set_trace()
     # import matplotlib.pyplot as plt
     # plt.figure()
@@ -579,7 +582,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
     
     return jray
 # method for computing the individual muscle contributions to knee contact force
-def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
+def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg):
     # os.chdir(trialdir)
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
     # model = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
@@ -645,7 +648,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
     
     
     elif 'all' in musclesWanted_split:
@@ -693,7 +696,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
     
         ###
-        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
     
     elif 'reserve' in musclesWanted_split:
         statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
@@ -760,7 +763,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
     
     elif 'none' in musclesWanted_split:
         statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
@@ -825,7 +828,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
         
     
     else:
@@ -940,7 +943,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
     
         ###
-        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
     
     return jray
 # method for computing the individual muscle contributions to knee contact force
@@ -2045,7 +2048,7 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003']#,'welk005','welk010','welk009','welk010','welk013'];
+    welksubjects = ['welk013']#,'welk005','welk010','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'left'
@@ -2064,6 +2067,8 @@ if __name__ == '__main__':
     muscleacts_exo = {}
     moments_nat = {}
     moments_exo = {}
+    IDmoments_nat = {}
+    IDmoments_exo = {}
     activeforces_nat = {}
     activeforces_exo = {}
     passiveforces_nat = {}
@@ -2927,36 +2932,41 @@ if __name__ == '__main__':
                 
                 # test = jrasr0001 - jrasr01
                 # plt.figure(); plt.plot(test)
-                try: 
-                    if oldnotredo:
-                        ## okay now going to focus on the figures that I actually wanted 
-                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
-                    else:
-                        ## okay now going to focus on the figures that I actually wanted 
-                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
-                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
-                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
-                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
-                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
-                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
-                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
-                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
-                except:
-                    print('Error with: ' + trialdir)
-                    continue
+
+
+
+
+                # try: 
+                #     if oldnotredo:
+                #         ## okay now going to focus on the figures that I actually wanted 
+                #         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
+                #         jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
+                #         jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
+                #         jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
+                #         jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
+                #         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
+                #         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
+                #         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                #     else:
+                #         ## okay now going to focus on the figures that I actually wanted 
+                #         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg)
+                #         jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams', whichleg)
+                #         jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg)
+                #         jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl', whichleg)
+                #         jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg)
+                #         jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg)
+                #         jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg)
+                #         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg)
+                # except:
+                #     print('Error with: ' + trialdir)
+                #     continue
                     
                 #### do some other data grabs here for the other data that we care about in each trial. 
 
                 # start with muscle activations
                 muscleacts_exo = ouf.getMuscleActivations(trialdir, muscleacts_exo)
                 moments_exo = ouf.getJointMoments(trialdir, moments_exo, modelmass)
+                IDmoments_exo = ouf.getIDMoments(trialdir, IDmoments_exo, modelmass)
                 activeforces_exo, passiveforces_exo, totalforces_exo = ouf.getMuscleForces(trialdir, activeforces_exo, passiveforces_exo, totalforces_exo, modelmass)
 
                 # plt.figure(figsize=(11,8), dpi=300); 
@@ -3105,14 +3115,14 @@ if __name__ == '__main__':
                         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
                     else:
                         ## okay now going to focus on the figures that I actually wanted 
-                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads')
-                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams')
-                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas')
-                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl')
-                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter')
-                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all')
-                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve')
-                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none')
+                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg)
+                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams', whichleg)
+                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg)
+                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl', whichleg)
+                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg)
+                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg)
+                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg)
+                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg)
                 except:
                     print('Error with: ' + trialdir)
                     continue
@@ -3121,6 +3131,7 @@ if __name__ == '__main__':
                 # start with muscle activations
                 muscleacts_nat = ouf.getMuscleActivations(trialdir, muscleacts_nat)
                 moments_nat = ouf.getJointMoments(trialdir, moments_nat, modelmass)
+                IDmoments_nat = ouf.getIDMoments(trialdir, IDmoments_nat, modelmass)
                 activeforces_nat, passiveforces_nat, totalforces_nat = ouf.getMuscleForces(trialdir, activeforces_nat, passiveforces_nat, totalforces_nat, modelmass)
                 # now metabolics would be good as well
 
@@ -3168,7 +3179,12 @@ if __name__ == '__main__':
                 spot += 1
 
 
-    
+    ###########################################################################
+    # plotting for activations, moments, etc. muscle insights for natural and exotendon
+
+
+
+
     # TODO: figure out all the activation plots and others as well. 
     
     # create a figure for the muscle activations for natural and exotendon
@@ -3197,6 +3213,10 @@ if __name__ == '__main__':
     fig1.tight_layout()
     plt.savefig(os.path.join(analyzedir, 'muscleactivations.png'))
     
+
+    pdb.set_trace()
+
+
 
     # create a figure for the joint moments for natural and exotendon
     fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
@@ -3304,34 +3324,37 @@ if __name__ == '__main__':
     # plt.show()
 
 
+
+
+    ###########################################################################
+    # plotting for the joint contacts - natural and exotendon
+
     pdb.set_trace()
 
 
-
-
-
-
-
+    ncolors = ['#fee0b6', '#fdae6b', '#fd8d3c', '#e66101']
+    ecolors = ['#c7eae5', '#80cdc1', '#35978f', '#01665e']
     ###########################################################################
     # figure: segmenting all the muscles between exo and nat 
     ## really nice figure for seeing what is going on, but likely not going to 
     ## be in the paper...
-    fig9, ax9 = plt.subplots(1,7, figsize=(14,3))# , dpi=300)
+    fig9, ax9 = plt.subplots(2, 4, figsize=(14, 6))# , dpi=300)
+    ax9 = ax9.flatten()
     # intersegmental forces average
-    for curve in ninterseg_combine:
-        ax9[0].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in einterseg_combine:
-        ax9[0].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(ninterseg_combine):
+        ax9[0].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(einterseg_combine):
+        ax9[0].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     ax9[0].set_xlabel('% Gait cycle')
     ax9[0].set_ylabel('Force (BW)')
     ax9[0].set_title('intersegmental')
     # ax9[0].legend()
     
     # tfl forces
-    for curve in ntfl_combine:
-        ax9[1].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in etfl_combine:
-        ax9[1].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(ntfl_combine):
+        ax9[1].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(etfl_combine):
+        ax9[1].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     # ax9[1].plot(n_timespercent101, ntfl_combine, label='natural', color=ncolor)
     # ax9[1].plot(e_timespercent101, etfl_combine, label='exotendon', color=ecolor)
     ax9[1].set_xlabel('% Gait cycle')
@@ -3340,10 +3363,10 @@ if __name__ == '__main__':
     ax9[1].set_title('tfl')
 
     # gastroc forces
-    for curve in ngas_combine:
-        ax9[2].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in egas_combine:
-        ax9[2].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(ngas_combine):
+        ax9[2].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(egas_combine):
+        ax9[2].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     # ax9[2].plot(n_timespercent101, ngas_combine, label='natural', color=ncolor)
     # ax9[2].plot(e_timespercent101, egas_combine, label='exotendon', color=ecolor)
     ax9[2].set_xlabel('% Gait cycle')
@@ -3352,10 +3375,10 @@ if __name__ == '__main__':
     ax9[2].set_title('gastroc')
     
     # hamstring forces
-    for curve in nhams_combine:
-        ax9[3].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in ehams_combine:
-        ax9[3].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(nhams_combine):
+        ax9[3].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(ehams_combine):
+        ax9[3].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     # ax9[3].plot(n_timespercent101, nhams_combine, label='natural', color=ncolor)
     # ax9[3].plot(e_timespercent101, ehams_combine, label='exotendon', color=ecolor)
     ax9[3].set_xlabel('% Gait cycle')
@@ -3364,10 +3387,10 @@ if __name__ == '__main__':
     ax9[3].set_title('hamstrings')
 
     # quads forces
-    for curve in nquads_combine:
-        ax9[4].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in equads_combine:
-        ax9[4].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(nquads_combine):
+        ax9[4].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(equads_combine):
+        ax9[4].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     # ax9[4].plot(n_timespercent101, nquads_combine, label='natural', color=ncolor)
     # ax9[4].plot(e_timespercent101, equads_combine, label='exotendon', color=ecolor)
     ax9[4].set_xlabel('% Gait cycle')
@@ -3392,10 +3415,10 @@ if __name__ == '__main__':
     # ax9[5].set_title('Total vertical contact')
 
     # all forces from whole analysis
-    for curve in nall_combine:
-        ax9[5].plot(n_timespercent101, curve, label='natural', color=ncolor)
-    for curve in eall_combine:
-        ax9[5].plot(e_timespercent101, curve, label='exotendon', color=ecolor)
+    for i, curve in enumerate(nall_combine):
+        ax9[5].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i])
+    for i, curve in enumerate(eall_combine):
+        ax9[5].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i])
     # ax9[5].plot(n_timespercent101, nall_combine, label='natural', color=ncolor)
     # ax9[5].plot(e_timespercent101, eall_combine, label='exotendon', color=ecolor)
     ax9[5].set_xlabel('% Gait cycle')
