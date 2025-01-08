@@ -357,7 +357,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(1)
+    track.set_states_global_tracking_weight(10)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -425,7 +425,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         forcePath = forceSet.get(i).getAbsolutePathString()
         if 'pelvis' in forcePath:
             print('need to dial in the pelvis actuators...')
-            effort.setWeightForControl(forcePath, 1e-6)
+            effort.setWeightForControl(forcePath, 1e-2)
             # if 'pelvis_ty' in forcePath:
             #     effort.setWeightForControl(forcePath, 1e8)
             # if 'hip_rotation' in forcePath:
@@ -440,7 +440,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 500) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 50) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -644,7 +644,3 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # likely just use the matlab infrastructure to do the post analysis.
     # otherwise have to update everything to python - not worth the time likely for post analysis. s
     return whatfailed
-
-
-
-
