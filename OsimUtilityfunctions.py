@@ -24,8 +24,18 @@ def probeActivate(model):
     return model
 
 # create an ID helper function that runs the analysis and plots the moments. 
-def IDplotter(solution, tag, showornot):
-    # get the column labels
+def IDplotter(solution, tag, showornot, trialinfo):
+    subjectname = trialinfo[0]
+    conditionname = trialinfo[1]
+    trialname = trialinfo[2]
+    IDmoments = {}
+    trialdir = os.getcwd()
+    model = osim.Model(os.path.join(trialdir, 'simple_model_all_the_probes.osim'))
+    modelmass = model.getTotalMass(model.initSystem())
+    # first gather and set the ID moments
+    IDmoments = getIDMoments(trialdir, IDmoments, modelmass)
+
+    # get the simulation column labels
     labels = solution.getColumnLabels()
     # get the time
     time = solution.getIndependentColumn()
@@ -35,16 +45,24 @@ def IDplotter(solution, tag, showornot):
     fig, axs = plt.subplots(1, 3, figsize=(10, 6))
     for i in range(numCols):
         temp = labels[i]
+        if temp not in IDmoments and 'force' not in temp:
+            print('moment not found in IDmoments')
+            print(temp)
+            pdb.set_trace()
         if 'knee_angle' in temp and 'beta' not in temp:
             if '_l_' in temp:
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':', color='red')
+                axs[0].plot(np.linspace(time[0], time[-1], 100), IDmoments[temp].flatten()*modelmass, label='ID_'+temp, linestyle='-', color='red')
             else:
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle='--', color='red')
+                axs[0].plot(np.linspace(time[0], time[-1], 100), IDmoments[temp].flatten()*modelmass, label='ID_'+temp, linestyle='-', color='red')
         elif 'ankle_angle' in temp:
             if '_l_' in temp:
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':', color='blue')
+                axs[0].plot(np.linspace(time[0], time[-1], 100), IDmoments[temp].flatten()*modelmass, label='ID_'+temp, linestyle='-', color='blue')
             else:
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle='--', color='blue')
+                axs[0].plot(np.linspace(time[0], time[-1], 100), IDmoments[temp].flatten()*modelmass, label='ID_'+temp, linestyle='-', color='blue')
         elif 'pelvis' in temp: 
             axs[1].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':')   
         else:
@@ -189,6 +207,65 @@ def getJointMoments(trialdir, moments, modelmass):
                 moments[temp] = tempmom.reshape(len(tempmom),1)
             else: # add the data as a new column in the same key
                 moments[temp] = np.column_stack((moments[temp], tempmom))
+    return moments
+
+# get the moments from ID in the same way that we get the simulation ones
+def getIDMoments(trialdir, moments, modelmass):
+    # load the right file for the given trial
+    trialmomfile = osim.TimeSeriesTable(os.path.join(trialdir, 'IDactual', 'inverse_dynamics.sto'))
+    # get the start and stop times for this trial - same as the simulation script
+    cycles = subjectGaitTimings()
+    # get the subject name
+    pathnames = trialdir.split('\\')
+    subjectname = pathnames[-3]
+    conditionname = pathnames[-2]
+    trialname = pathnames[-1]
+    # get the trial key
+    trialkey_i = subjectname + '_' + conditionname + '_i'
+    trialkey_f = subjectname + '_' + conditionname + '_f'
+    if '01' in trialname:
+        gait_start = cycles[trialkey_i][0]
+        gait_end = cycles[trialkey_f][0]
+    elif '02' in trialname:
+        gait_start = cycles[trialkey_i][1]
+        gait_end = cycles[trialkey_f][1]
+    elif '03' in trialname:
+        gait_start = cycles[trialkey_i][2]
+        gait_end = cycles[trialkey_f][2]
+    elif '04' in trialname:
+        gait_start = cycles[trialkey_i][3]
+        gait_end = cycles[trialkey_f][3]
+    else:
+        print('trial name not recognized')
+        return
+
+    # okay so we have the file, now we need to get the data from it
+    trialtime = trialmomfile.getIndependentColumn()
+    trialtime = np.array(trialtime)
+    # get the column labels
+    labels = trialmomfile.getColumnLabels()
+    # get the number of columns
+    numCols = trialmomfile.getNumColumns()
+    # loop through the columns. and store the data that we want
+    for i in range(numCols):
+        # first get the column name
+        temp = labels[i]
+        # check if the column is a moment
+        if 'moment' in temp:
+            tempmom = trialmomfile.getDependentColumn(temp).to_numpy()
+            # okay now we have to shorten to the right time frame and get it all situated. 
+            # Create a mask for the time values that fall between gait_start and gait_end
+            mask = (trialtime >= gait_start) & (trialtime <= gait_end)
+            # Apply the mask to trialtime and tempmom
+            trialtime_shortened = trialtime[mask]
+            tempmom_shortened = tempmom[mask]
+            tempmom_interpolated = np.interp(np.linspace(gait_start, gait_end, 100), trialtime_shortened, tempmom_shortened).flatten()
+            tempmom_interpolated = tempmom_interpolated / modelmass
+            # Check if the key exists in the dictionary
+            if temp not in moments:
+                moments[temp] = tempmom_interpolated.reshape(len(tempmom_interpolated), 1)
+            else:  # Add the data as a new column in the same key
+                moments[temp] = np.column_stack((moments[temp], tempmom_interpolated))
     return moments
 
 # function for gathering the muscle forces
