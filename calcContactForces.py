@@ -2936,30 +2936,30 @@ if __name__ == '__main__':
 
 
 
-                # try: 
-                #     if oldnotredo:
-                #         ## okay now going to focus on the figures that I actually wanted 
-                #         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                #         jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                #         jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                #         jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                #         jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                #         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                #         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                #         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
-                #     else:
-                #         ## okay now going to focus on the figures that I actually wanted 
-                #         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg)
-                #         jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams', whichleg)
-                #         jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg)
-                #         jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl', whichleg)
-                #         jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg)
-                #         jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg)
-                #         jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg)
-                #         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg)
-                # except:
-                #     print('Error with: ' + trialdir)
-                #     continue
+                try: 
+                    if oldnotredo:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
+                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
+                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
+                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
+                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
+                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
+                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
+                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                    else:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg)
+                        jrasrhams = getKneeContactributionsRedo(trialdir, musclesWanted['hams'], 'hams', whichleg)
+                        jrasrgas = getKneeContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg)
+                        jrasrtfl = getKneeContactributionsRedo(trialdir, musclesWanted['tfl'], 'tfl', whichleg)
+                        jrasrinter = getKneeContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg)
+                        jrasrall = getKneeContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg)
+                        jrasrinterreserve = getKneeContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg)
+                        jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg)
+                except:
+                    print('Error with: ' + trialdir)
+                    continue
                     
                 #### do some other data grabs here for the other data that we care about in each trial. 
 
@@ -3103,6 +3103,9 @@ if __name__ == '__main__':
                 
                 # test = jrasr0001 - jrasr01
                 # plt.figure(); plt.plot(test)
+
+
+                
                 try:    
                     if oldnotredo:
                         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
