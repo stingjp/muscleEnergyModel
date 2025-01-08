@@ -471,7 +471,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 800)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 1)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
