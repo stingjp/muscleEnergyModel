@@ -42,7 +42,7 @@ def IDplotter(solution, tag, showornot, trialinfo):
     # get the number of columns
     numCols = solution.getNumColumns()
     # create a figure plotting all of the moments. 
-    fig, axs = plt.subplots(1, 3, figsize=(10, 6))
+    fig, axs = plt.subplots(1, 4, figsize=(12, 5))
     for i in range(numCols):
         temp = labels[i]
         if temp not in IDmoments and 'force' not in temp:
@@ -64,17 +64,21 @@ def IDplotter(solution, tag, showornot, trialinfo):
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle='--', color='blue')
                 axs[0].plot(np.linspace(time[0], time[-1], 100), IDmoments[temp].flatten()*modelmass, label='ID_'+temp, linestyle='-', color='blue')
         elif 'pelvis' in temp: 
-            axs[1].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':')   
+            axs[2].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':')   
         else:
-            axs[1].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp)
+            axs[2].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp)
     
     axs[0].set_title('Knee/Ankle - ' + tag)
-    axs[0].legend()
+    # axs[0].legend()
+    handles, heads = axs[0].get_legend_handles_labels()
+    axs[1].axis('off')
+    axs[1].legend(handles, heads, loc='center')
     axs[1].set_title('Other coordinates - ' + tag)
     # axs[1].legend()
-    axs[2].axis('off')
-    handles, heads = axs[1].get_legend_handles_labels()
-    axs[2].legend(handles, heads, loc='center')
+    axs[3].axis('off')
+    handles2, heads2 = axs[2].get_legend_handles_labels()
+    axs[3].legend(handles2, heads2, loc='center')
+    
     plt.savefig(tag + '_ID.png')
     if showornot:
         plt.show()
