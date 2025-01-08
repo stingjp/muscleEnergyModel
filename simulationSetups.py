@@ -83,7 +83,7 @@ def analyzeSubject_post(subject, condition, trial):
 
     # ID plotter
     # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
-    ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True)
+    ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True, [subject, condition, trial])
 
 
 # muscle driven state tracking simulation - second pass 
@@ -469,7 +469,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*mtp.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*subtalar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 300)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
