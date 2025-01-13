@@ -183,6 +183,8 @@ subjects = ['welk013']#,'welk005','welk008','welk009','welk010','welk013'] #  'w
 welkconditions = ['welknatural']#, 'welkexo'] 
 trials = ['trial01']#, 'trial02', 'trial03', 'trial04'] # nat 1,2 done
 whatfailed = {}
+trackGRF = True
+
 
 ########################################## 
 ## needs changed from the old script to the new function
@@ -205,8 +207,9 @@ for subj in subjects:
                 os.chdir(trialdir)
                 print('\n')
                 print(trialdir)
-                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed)
+                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF)
                 # simset.analyzeSubject_post(subj, cond, keys)
+                print(trialdir)
 
 
     elif subj[0:4] == 'jack':

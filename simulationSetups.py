@@ -16,7 +16,7 @@ import pdb
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -44,7 +44,7 @@ def analyzeSubject(subject, condition, trial, whatfailed):
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
     return whatfailed
 
 
@@ -308,16 +308,26 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF):
     # create the tracking problem
     track = osim.MocoTrack()
     track.setName("muscle_statetrack_grfprescribe")
     # construct a ModelProcessor and add it to the tool.
-    modelProcessor = osim.ModelProcessor("simple_model_all_the_probes.osim")
-    modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
+
     weldem = osim.StdVectorString()
-    weldem.append('mtp_r')
-    weldem.append('mtp_l')
+
+    if not trackGRF:
+        print('not tracking GRF')
+        time.sleep(1)
+        modelProcessor = osim.ModelProcessor("simple_model_all_the_probes.osim")
+        modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
+        weldem.append('mtp_r')
+        weldem.append('mtp_l')
+    else: 
+        print('tracking GRF')
+        time.sleep(1)
+        modelProcessor = osim.ModelProcessor("simple_model_all_the_probes_spheres.osim")
+
     weldem.append('subtalar_r')
     weldem.append('subtalar_l')
     weldem.append('radius_hand_r')
@@ -440,7 +450,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 50) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 5e3) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -471,7 +481,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 800)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 1)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
@@ -479,6 +489,60 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*pro.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
     problem.addGoal(jointMomentTracking)
+
+
+    GRFTrackingWeight = 1
+    # set up the GRF tracking goal
+    # if GRFTrackingWeight != 0:
+    if trackGRF:
+        # % Track the right and left vertical and fore-aft ground reaction forces.
+        contactTracking = osim.MocoContactTrackingGoal('contact', GRFTrackingWeight)
+        # what data are we tracking, GRF exp, or from tight tracking results
+
+
+        contactTracking.setExternalLoadsFile('grf_walk.xml')
+        # if trackIK:
+        #     contactTracking.setExternalLoadsFile('grf_walk_nat_1.xml')
+        # else:
+        #     # contactTracking.setExternalLoadsFile('grf_walk_nat_1_tight.xml'); # grf_walk - Copy
+        #     ## current work around for time changing... not easy way to access the xml and adjust the names and things... 
+        #     # contactTracking.setExternalLoadsFile('grf_walk_nat_1_tight_poly_' + str(finalTime*2)[2:] + '.xml')
+        #     # contactTracking.setExternalLoadsFile('grf_walk_nat_1_extratight_poly_' + str(finalTime*2)[2:] + '.xml')
+        #     contactTracking.setExternalLoadsFile('grf_walk_nat_1_9tight_poly_' + str(finalTime*2)[2:] + '.xml')
+
+        forceNamesRightFoot = osim.StdVectorString();
+        forceNamesRightFoot.append('/contactHeel_r');
+        # forceNamesRightFoot.append('/forceset/contactLateralRearfoot_r');
+        forceNamesRightFoot.append('/contactLateralMidfoot_r');
+        # forceNamesRightFoot.append('/contactLateralToe_r');
+        forceNamesRightFoot.append('/contactMedialToe_r');
+        forceNamesRightFoot.append('/contactMedialMidfoot_r');
+        # contactTracking.addContactGroup(forceNamesRightFoot, 'Right_GRF');
+        contactTrackingSplitRight = osim.MocoContactTrackingGoalGroup(forceNamesRightFoot, 'Right_GRF');
+        contactTrackingSplitRight.append_alternative_frame_paths('/bodyset/toes_r')
+        contactTracking.addContactGroup(contactTrackingSplitRight);
+
+        forceNamesLeftFoot = osim.StdVectorString();
+        forceNamesLeftFoot.append('/contactHeel_l');
+        # forceNamesLeftFoot.append('/forceset/contactLateralRearfoot_l');
+        forceNamesLeftFoot.append('/contactLateralMidfoot_l');
+        # forceNamesLeftFoot.append('/contactLateralToe_l');
+        forceNamesLeftFoot.append('/contactMedialToe_l');
+        forceNamesLeftFoot.append('/contactMedialMidfoot_l');
+        # contactTracking.addContactGroup(forceNamesLeftFoot, 'Left_GRF');
+        contactTrackingSplitLeft = osim.MocoContactTrackingGoalGroup(forceNamesLeftFoot, 'Left_GRF');
+        contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
+        contactTracking.addContactGroup(contactTrackingSplitLeft);
+        
+        contactTracking.setProjection('plane');
+        contactTracking.setProjectionVector(osim.Vec3(0, 0, 1));
+
+        # contactTracking.setDivideByDuration(True)
+        contactTracking.setDivideByMass(True)
+        problem.addGoal(contactTracking);
+
+
+
 
     wantguess = True
     # set an initial guess up
