@@ -44,7 +44,8 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF):
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
+    # whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
+    whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
     return whatfailed
 
 
@@ -450,7 +451,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 5e3) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 5e2) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -704,6 +705,252 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # pdb.set_trace()
 
     # study.visualize(solution)
+
+    # post analysis etc. 
+    # solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+    # solution2 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_py.sto')
+
+    # likely just use the matlab infrastructure to do the post analysis.
+    # otherwise have to update everything to python - not worth the time likely for post analysis. s
+    return whatfailed
+
+###################################################################################################
+# sets up moco track problem with a torque driven model, and tracks GRF as well. 
+def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF):
+    # establish a few weights for the problem
+    kinematicsWeight = 10
+    GRFTrackingWeight = 1
+    effortWeight = 0.01
+    momentWeight = 5e1
+        
+    
+    # create the tracking problem
+    track = osim.MocoTrack()
+    track.setName("torque_statetrack_grftrack")
+    # construct a ModelProcessor and add it to the tool.
+
+    weldem = osim.StdVectorString()
+
+    if not trackGRF:
+        print('not tracking GRF')
+        modelProcessor = osim.ModelProcessor("simple_model_all_the_probes.osim")
+        modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
+        weldem.append('mtp_r')
+        weldem.append('mtp_l')
+    else: 
+        print('tracking GRF')
+        modelProcessor = osim.ModelProcessor("simple_model_all_the_probes_spheres.osim")
+
+    weldem.append('subtalar_r')
+    weldem.append('subtalar_l')
+    weldem.append('radius_hand_r')
+    weldem.append('radius_hand_l')
+    modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
+    modelProcessor.append(osim.ModOpRemoveMuscles())
+    modelProcessor.append(osim.ModOpAddReserves(250))
+    torquemodel = modelProcessor.process()
+    torquemodel.printToXML('torquemodel_simple_model_all_the_probes_redo.osim')
+    track.setModel(modelProcessor)
+    torquemodel.initSystem()
+    
+    # get the kinematics data that we are tracking
+    tableProcessor = osim.TableProcessor('results_IK_redoarms.mot')
+    tableProcessor.append(osim.TabOpLowPassFilter(15))
+    tableProcessor.append(osim.TabOpUseAbsoluteStateNames())
+    track.setStatesReference(tableProcessor)
+    track.set_states_global_tracking_weight(kinematicsWeight)
+    track.set_allow_unused_references(True)
+    track.set_track_reference_position_derivatives(True)
+    '''
+    set specific weights for the individual weight set - note these weights are garbage
+    coordinateweights = osim.MocoWeightSet()
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tx", 1e5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_ty", 1e7))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tz", 1e3))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_list", 1e6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_rotation", 1e6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tilt", 1e6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_r", 1e-6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_l", 1e-6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_r", 1e5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_l", 1e5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_r", 1e2))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_l", 1e2))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("subtalar_angle_r", 1e-6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("subtalar_angle_l", 1e-6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_extension', 1e3))
+    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_bending', 1e3))
+    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_rotation', 1e3))
+    track.set_states_weight_set(coordinateweights)
+    '''
+
+    # get the individual subject-condition-trial timings
+    cycles = ouf.subjectGaitTimings()
+    trialkey_i = subjectname + '_' + conditionname + '_i'
+    trialkey_f = subjectname + '_' + conditionname + '_f'
+    if '01' in trialname:
+        gait_start = cycles[trialkey_i][0]
+        gait_end = cycles[trialkey_f][0]
+    elif '02' in trialname:
+        gait_start = cycles[trialkey_i][1]
+        gait_end = cycles[trialkey_f][1]
+    elif '03' in trialname:
+        gait_start = cycles[trialkey_i][2]
+        gait_end = cycles[trialkey_f][2]
+    elif '04' in trialname:
+        gait_start = cycles[trialkey_i][3]
+        gait_end = cycles[trialkey_f][3]
+    else:
+        print('trial name not recognized')
+        return
+
+    # set the times and mesh interval, mesh points are computed internally.
+    track.set_initial_time(gait_start)
+    track.set_final_time(gait_end)
+    track.set_mesh_interval(0.03)
+    
+    # initialize and set goals
+    study = track.initialize()
+    problem = study.updProblem()
+
+    # effort goal
+    effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
+    effort.setWeight(effortWeight)
+    # initial activation goals
+    initactivationgoal = osim.MocoInitialActivationGoal('init_activation')
+    initactivationgoal.setWeight(10)
+    problem.addGoal(initactivationgoal)
+    # put large weight on the pelvis CoordinateActuators, which act as the
+    # residual, or 'hand-of-god' forces which we would like to keep small
+    model = torquemodel
+    model.initSystem()
+    forceSet = model.getForceSet()
+    for i in range(forceSet.getSize()):
+        forcePath = forceSet.get(i).getAbsolutePathString()
+        if 'pelvis' in forcePath:
+            print('need to dial in the pelvis actuators...')
+            effort.setWeightForControl(forcePath, 1e-3)
+        elif 'reserve' in forcePath and 'subtalar' in forcePath:
+            effort.setWeightForControl(forcePath, 10)
+        elif 'reserve' in forcePath and 'hip_rotation' in forcePath:
+            effort.setWeightForControl(forcePath, 10)
+    
+    # Add a joint moment tracking goal to the problem.
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', momentWeight) # type: ignore
+    # low-pass filter the data at 15 Hz. The reference data should use the
+    # same column label format as the output of the Inverse Dynamics Tool.
+    jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
+    jointMomentRef.append(osim.TabOpLowPassFilter(15))
+    jointMomentTracking.setReference(jointMomentRef)
+    # Set the force paths that will be applied to the model to compute the
+    # generalized forces. Usually these are the external loads and actuators
+    # (e.g., muscles) should be excluded, but any model force can be included
+    # or excluded. Gravitational force is applied by default.
+    # Regular expression are supported when setting the force paths.
+    forcePaths = osim.StdVectorString()
+    forcePaths.append('.*externalloads.*')
+    forcePaths.append('.*contact.*')
+    jointMomentTracking.setForcePaths(forcePaths)
+    jointMomentTracking.setAllowUnusedReferences(True)
+    # Normalize the tracking error for each generalized for by the maximum
+    # absolute value in the reference data for that generalized force.
+    jointMomentTracking.setNormalizeTrackingError(True)
+    # Ignore coordinates that are locked, prescribed, or coupled to other
+    # coordinates via CoordinateCouplerConstraints (true by default).
+    jointMomentTracking.setIgnoreConstrainedCoordinates(True)
+    # Do not track generalized forces associated with pelvis residuals.
+    # testing only tracking the knee and the ankle moments, and letting everything else free
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*pelvis.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*mtp.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*subtalar.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 800)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*elbow.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*pro.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
+    problem.addGoal(jointMomentTracking)    
+    
+    # set up the GRF tracking goal
+    if trackGRF: 
+        # % Track the right and left vertical and fore-aft ground reaction forces.
+        contactTracking = osim.MocoContactTrackingGoal('contact', GRFTrackingWeight)
+        # what data are we tracking, GRF exp, or from tight tracking results
+        contactTracking.setExternalLoadsFile('grf_walk.xml')
+
+        forceNamesRightFoot = osim.StdVectorString();
+        forceNamesRightFoot.append('/contactHeel_r');
+        forceNamesRightFoot.append('/contactLateralMidfoot_r');
+        forceNamesRightFoot.append('/contactMedialToe_r');
+        forceNamesRightFoot.append('/contactMedialMidfoot_r');
+        contactTrackingSplitRight = osim.MocoContactTrackingGoalGroup(forceNamesRightFoot, 'Right_GRF');
+        contactTrackingSplitRight.append_alternative_frame_paths('/bodyset/toes_r')
+        contactTracking.addContactGroup(contactTrackingSplitRight);
+
+        forceNamesLeftFoot = osim.StdVectorString();
+        forceNamesLeftFoot.append('/contactHeel_l');
+        forceNamesLeftFoot.append('/contactLateralMidfoot_l');
+        forceNamesLeftFoot.append('/contactMedialToe_l');
+        forceNamesLeftFoot.append('/contactMedialMidfoot_l');
+        contactTrackingSplitLeft = osim.MocoContactTrackingGoalGroup(forceNamesLeftFoot, 'Left_GRF');
+        contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
+        contactTracking.addContactGroup(contactTrackingSplitLeft);
+        
+        # contactTracking.setProjection('plane');
+        # contactTracking.setProjectionVector(osim.Vec3(0, 0, 1));
+        # contactTracking.setDivideByDuration(True)
+        contactTracking.setDivideByMass(True)
+        problem.addGoal(contactTracking);
+
+    wantguess = True
+    # set an initial guess up
+    ### for now lets see if it can come up with anything on its own... and how long it takes. 
+
+
+    # solve and visualize
+    try:
+        solution = study.solve()
+        solution.write('torque_statetrack_grftrack_solution_redoarms_py.sto')
+        print('ran the base')
+    except:
+        print(os.getcwd())
+        print('could not solve the problem')
+        whatfailed[subjectname + '_' + conditionname + '_' + trialname] = os.getcwd()
+        solution = solution.unseal()
+        solution.write('torque_statetrack_grftrack_solution_unseal_redoarms_py.sto')
+        return whatfailed
+    
+    osim.STOFileAdapter.write(solution.exportToControlsTable(), 'torque_statetrack_grftrack_controls_py.sto')
+    osim.STOFileAdapter.write(solution.exportToStatesTable(), 'torque_statetrack_grftrack_states_py.sto')
+    
+    # do some post analysis
+    analyzeStrings_forcePaths = osim.StdVectorString();
+    analyzeStrings_forcePaths.append('.*externalloads.*');
+    # analyzeStrings_forcePaths.append('/contactHeel_r');
+    # analyzeStrings_forcePaths.append('/contactLateralMidfoot_r');
+    # analyzeStrings_forcePaths.append('/contactMedialToe_r');
+    # analyzeStrings_forcePaths.append('/contactMedialMidfoot_r');
+    # analyzeStrings_forcePaths.append('/contactHeel_l');
+    # analyzeStrings_forcePaths.append('/contactLateralMidfoot_l');
+    # analyzeStrings_forcePaths.append('/contactMedialToe_l');
+    # analyzeStrings_forcePaths.append('/contactMedialMidfoot_l');
+    analyzeStrings_forcePaths.append('.*contact.*');
+    table_jointMoments = study.calcGeneralizedForces(solution, analyzeStrings_forcePaths);
+    osim.STOFileAdapter.write(table_jointMoments, 'torque_statetrack_grftrack_redo_moments_py.sto');
+    ouf.IDplotter(osim.TimeSeriesTable('torque_statetrack_grftrack_redo_moments_py.sto'), 'torque_statetrack_grftrack', False, [subjectname, conditionname, trialname])
+
+    # grab anything else that might be useful
+    analyzeStrings_all = osim.StdVectorString()
+    analyzeStrings_all.append('.*')
+    table_all = study.analyze(solution, analyzeStrings_all)
+    osim.STOFileAdapter.write(table_all, 'torque_statetrack_grftrack_redo_all_py.sto')
+
+    pdb.set_trace()
+    study.visualize(solution)
 
     # post analysis etc. 
     # solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
