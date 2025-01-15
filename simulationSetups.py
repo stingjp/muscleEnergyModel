@@ -13,10 +13,12 @@ import opensim as osim
 import OsimUtilityfunctions as ouf
 import time
 import pdb
+import re
+import argparse
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -45,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF):
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
     # whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
-    whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
+    whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
 
@@ -716,14 +718,22 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 
 ###################################################################################################
 # sets up moco track problem with a torque driven model, and tracks GRF as well. 
-def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF):
+def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
     # establish a few weights for the problem
-    kinematicsWeight = 10
-    GRFTrackingWeight = 1
-    effortWeight = 0.01
-    momentWeight = 5e1
-        
+    kinematicsWeight = 40
+    GRFTrackingWeight = 1e4
+    effortWeight = 1e-2
+    momentWeight = 10
+    stepsize = 0.05
+    trackGRF = True
     
+    # argument parser
+    parser = argparse.ArgumentParser(description='Run the torque driven state tracking problem')
+    parser.add_argument('--half cycle T/F', type=str, default='False', help='do you want half cycle?')
+    args = parser.parse_args()
+    print(f"half cycle: {args.halfcycle}")
+
+
     # create the tracking problem
     track = osim.MocoTrack()
     track.setName("torque_statetrack_grftrack")
@@ -748,11 +758,25 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
     modelProcessor.append(osim.ModOpRemoveMuscles())
     modelProcessor.append(osim.ModOpAddReserves(250))
+    # go through and remove specific coordinate actuators. 
+    testmodel = modelProcessor.process()
+    forceset = testmodel.updForceSet()
+    count = 0
+    for i in range(forceset.getSize()):
+        force = forceset.get(i-count)
+        if 'reserve_jointset_mtp' in force.getName():# or 'pelvis' in force.getName():
+            forceset.remove(i-count)
+            count += 1
+        if 'pelvis' in force.getName():
+            force = osim.CoordinateActuator.safeDownCast(force)
+            force.set_optimal_force(100.0)
+    modelProcessor = osim.ModelProcessor(testmodel)
     torquemodel = modelProcessor.process()
     torquemodel.printToXML('torquemodel_simple_model_all_the_probes_redo.osim')
     track.setModel(modelProcessor)
     torquemodel.initSystem()
-    
+
+
     # get the kinematics data that we are tracking
     tableProcessor = osim.TableProcessor('results_IK_redoarms.mot')
     tableProcessor.append(osim.TabOpLowPassFilter(15))
@@ -806,12 +830,210 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
 
     # set the times and mesh interval, mesh points are computed internally.
     track.set_initial_time(gait_start)
+    if halfcycle:
+        gait_end = gait_end - (0.5*(gait_end - gait_start)) 
     track.set_final_time(gait_end)
-    track.set_mesh_interval(0.03)
+    # track.set_mesh_interval(0.01)
     
     # initialize and set goals
     study = track.initialize()
     problem = study.updProblem()
+
+    # create a symmetry/periodicity goal
+    if halfcycle: 
+        # % Symmetry (to permit simulating only one step)
+        symmetryGoal = osim.MocoPeriodicityGoal('symmetryGoal');
+        problem.addGoal(symmetryGoal);
+        # % Symmetric coordinate values (except for pelvis_tx) and speeds
+        for i in range(torquemodel.getNumStateVariables()):
+            currentStateName = str(torquemodel.getStateVariableNames().getitem(i));
+            if str.startswith(currentStateName , '/jointset') and 'beta' not in currentStateName:
+                # print('\niiii')
+                # print(currentStateName)
+                # if 'hip_rotation_r' in currentStateName:
+                #     pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('hip_rotation_r', 'hip_rotation_l', currentStateName));
+                #     symmetryGoal.addStatePair(pair);
+                # if 'hip_rotation_l' in currentStateName:
+                #     pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('hip_rotation_l', 'hip_rotation_r', currentStateName));
+                #     symmetryGoal.addStatePair(pair);
+                # right and left limb coordinates
+                if currentStateName.endswith('_r/value') or currentStateName.endswith('_r/speed') and 'hip_rotation' not in currentStateName:
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName,re.sub('_r/', '_l/', currentStateName));
+                    symmetryGoal.addStatePair(pair);
+                    # print('1 - rights and lefts - pair')
+                    # print(currentStateName)
+                    # print(re.sub('_r', '_l', currentStateName))
+                if currentStateName.endswith('_l/value') or currentStateName.endswith('_l/speed') and 'hip_rotation' not in currentStateName:
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName,re.sub('_l/', '_r/', currentStateName)); 
+                    symmetryGoal.addStatePair(pair);
+                    # print('2 - lefts and rights - pair')
+                    # print(currentStateName)
+                    # print(re.sub('_l', '_r', currentStateName))
+                # pelvis tilt
+                if currentStateName.endswith('_tilt/value') or currentStateName.endswith('_tilt/speed'):
+                    symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                    # print('3 - pelvis tilt - pair value and speed')
+                    # print(currentStateName)
+                # pelvis list
+                if currentStateName.endswith('_list/value') or currentStateName.endswith('_list/speed'):
+                    if currentStateName.endswith('/value'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('4 - pelvis list - negated pair value')
+                        # print(currentStateName)
+                    if currentStateName.endswith('/speed'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('4 - pelvis list - speed pair')
+                        # print(currentStateName)
+                # pelvis rotation
+                if currentStateName.endswith('pelvis_rotation/value') or currentStateName.endswith('pelvis_rotation/speed'):
+                    if currentStateName.endswith('/value'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('5 - pelvis rotation - negated pair value')
+                        # print(currentStateName)
+                    if currentStateName.endswith('/speed'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('5 - pelvis rotation - pair speed')
+                        # print(currentStateName)
+                # pelvis ty symmetry
+                if currentStateName.endswith('_ty/value') or currentStateName.endswith('_ty/speed'):
+                    symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                    # print('6 - pelvis ty - pair value and speed')
+                    # print(currentStateName)
+                # pelvis tx
+                if currentStateName.endswith('_tx/speed'): # overground so not value
+                    symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                    # print('7 - pelvis tx - pair speed')
+                    # print(currentStateName)
+                # # pelvis Tz
+                # if currentStateName.endswith('_tz/value') or currentStateName.endswith('_tz/speed'):
+                #     if currentStateName.endswith('value'):
+                #         symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                #         print('8 - pelvis tz - pair value')
+                #         print(currentStateName)
+                #     if currentStateName.endswith('speed'):
+                #         symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                #         print('8 - pelvis tz - negated pair speed')
+                #         print(currentStateName) 
+                # lumbar extension 
+                if currentStateName.endswith('_extension/value') or currentStateName.endswith('_extension/speed'):
+                    symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                    # print('9 - lumbar extension - pair value and speed')
+                    # print(currentStateName)
+                # lumbar bending 
+                if currentStateName.endswith('_bending/value') or currentStateName.endswith('_bending/speed'):
+                    if currentStateName.endswith('/value'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('10 - lumbar bending - negated value pair')
+                        # print(currentStateName)
+                    if currentStateName.endswith('/speed'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('10 - lumbar bending - speed pair')
+                        # print(currentStateName)
+                # lumbar rotation
+                if currentStateName.endswith('lumbar_rotation/value') or currentStateName.endswith('lumbar_rotation/speed'):
+                    if currentStateName.endswith('/value'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('11 - lumbar rotation - negated pair value')
+                        # print(currentStateName)
+                    if currentStateName.endswith('_rotation/speed'):
+                        symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                        # print('11 - lumbar rotation - pair speed')
+                        # print(currentStateName)
+
+            if 'beta' in currentStateName:
+                # print('\niiii')
+                # print(currentStateName)
+                print('beta not included in symmetry')
+
+        print('\n\naaaaaaaaaaaaaaaaaaaahahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        # % Symmetric muscle activations
+        for i in range(torquemodel.getNumStateVariables()):
+            currentStateName = str(torquemodel.getStateVariableNames().getitem(i));
+            
+            if str.endswith(currentStateName, '/normalized_tendon_force'):
+                # print('\nhhhhhh')
+                # print(currentStateName)
+            # TODO tendon forces symmetry
+                if str.endswith(currentStateName, '_r/normalized_tendon_force'):
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('_r','_l', currentStateName));
+                    symmetryGoal.addStatePair(pair);
+                    # print('norm tendon pairs')
+                    # print(re.sub('_r', '_l', currentStateName))
+                if str.endswith(currentStateName, '_l/normalized_tendon_force'):
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('_l','_r', currentStateName));
+                    symmetryGoal.addStatePair(pair);
+                    # print('norm tendon pairs')
+                    # print(re.sub('_l', '_r', currentStateName))
+
+            if str.endswith(currentStateName,'/activation'):
+                # print('\naaaa')
+                # print(currentStateName)
+                # activations squared for this actuator
+
+                if currentStateName.endswith('_r/activation'):
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('_r','_l', currentStateName));
+                    symmetryGoal.addStatePair(pair);
+                    # print('a1 - rights and lefts - pair')
+                    # # print(currentStateName)
+                    # print(re.sub('_r', '_l', currentStateName))
+                if currentStateName.endswith('_l/activation'):
+                    pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('_l', '_r', currentStateName));
+                    symmetryGoal.addStatePair(pair);
+                    # print('a2 - lefts and rights - pair')
+                    # # print(currentStateName)
+                    # print(re.sub('_l', '_r', currentStateName))
+                # bending , rotation , tz, list - these are gonna be different 
+                # if 'Bend' in currentStateName or 'Rot' in currentStateName:
+                #     symmetryGoal.addNegatedStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                #     print('a3 - lumbar bending, lumbar rotation actuators - negated pair')
+                #     print(currentStateName)
+                # if 'Ext' in currentStateName:
+                #     symmetryGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName));
+                #     print('a3 - lumbar extension actuator -  pair')
+                #     print(currentStateName)
+
+        print('\nccccccccccccccccccccccccccccccccccccccccccccccccccc')
+        # now get the controls and do symmetry for them as well
+        # controlTab = torquemodel.getControlsTable();
+        # controlnames = controlTab.getColumnLabels();
+        # for i in range(len(controlnames)):
+        #     currentcontrol = controlnames[i]
+        #     print('/controllerset/' + currentcontrol)
+        #     if str.endswith(currentcontrol, '_r'):
+        #         pair = Moco
+        forceSet = torquemodel.getForceSet();
+        for i in range(forceSet.getSize()):
+            currentforce = forceSet.get(i).getAbsolutePathString();
+            # print('\nccccc')
+            # print(currentforce)
+            if str.endswith(currentforce, '_r') and 'Passive' not in currentforce and 'mtp' not in currentforce and '_rot' not in currentforce:
+                pair = osim.MocoPeriodicityGoalPair(currentforce, re.sub('_r', '_l', currentforce));
+                symmetryGoal.addControlPair(pair);
+                # print(re.sub('_r', '_l', currentforce))
+            if str.endswith(currentforce, '_l') and 'Passive' not in currentforce and 'mtp' not in currentforce and '_rot' not in currentforce:
+                pair = osim.MocoPeriodicityGoalPair(currentforce, re.sub('_l', '_r', currentforce));
+                symmetryGoal.addControlPair(pair);
+                # print(re.sub('_l', '_r', currentforce))
+    
+    # we set up periodicity for the full gait cycle instead of symmetry between the limbs. 
+    else:
+        print('full cycle simulation')
+        # Constrain the states and controls to be periodic.
+        periodicityGoal = osim.MocoPeriodicityGoal("periodicity")
+        for i in range(torquemodel.getNumStateVariables()):
+            currentStateName = str(torquemodel.getStateVariableNames().getitem(i))
+            if 'pelvis_tx/value' not in currentStateName and 'Passive' not in currentStateName and 'mtp' not in currentStateName and '_rot' not in currentStateName:
+                periodicityGoal.addStatePair(osim.MocoPeriodicityGoalPair(currentStateName))
+            
+        forceSet = torquemodel.getForceSet()
+        for i in range(forceSet.getSize()):
+            forcePath = forceSet.get(i).getAbsolutePathString()
+            if 'Passive' not in forcePath and 'mtp' not in forcePath and '_rot' not in forcePath:
+                periodicityGoal.addControlPair(osim.MocoPeriodicityGoalPair(forcePath))
+
+        problem.addGoal(periodicityGoal)
+
+
 
     # effort goal
     effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
@@ -829,7 +1051,7 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
         forcePath = forceSet.get(i).getAbsolutePathString()
         if 'pelvis' in forcePath:
             print('need to dial in the pelvis actuators...')
-            effort.setWeightForControl(forcePath, 1e-3)
+            effort.setWeightForControl(forcePath, 1e2)
         elif 'reserve' in forcePath and 'subtalar' in forcePath:
             effort.setWeightForControl(forcePath, 10)
         elif 'reserve' in forcePath and 'hip_rotation' in forcePath:
@@ -866,8 +1088,8 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 800)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 100)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*elbow.*', 0)
@@ -900,8 +1122,8 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
         contactTrackingSplitLeft.append_alternative_frame_paths('/bodyset/toes_l')
         contactTracking.addContactGroup(contactTrackingSplitLeft);
         
-        # contactTracking.setProjection('plane');
-        # contactTracking.setProjectionVector(osim.Vec3(0, 0, 1));
+        contactTracking.setProjection('plane');
+        contactTracking.setProjectionVector(osim.Vec3(0, 0, 1));
         # contactTracking.setDivideByDuration(True)
         contactTracking.setDivideByMass(True)
         problem.addGoal(contactTracking);
@@ -909,6 +1131,30 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     wantguess = True
     # set an initial guess up
     ### for now lets see if it can come up with anything on its own... and how long it takes. 
+
+    
+    #Configure the solver
+    # % ====================
+    solver = study.initCasADiSolver();
+    solver.set_optim_finite_difference_scheme('forward')
+    solver.set_parameters_require_initsystem(False);
+    duration = gait_end - gait_start
+    num_mesh = round(duration/stepsize);
+    solver.set_num_mesh_intervals(num_mesh);
+    solver.set_verbosity(2);
+    solver.set_optim_solver('ipopt');
+    solver.set_optim_convergence_tolerance(1e-2);
+    solver.set_optim_constraint_tolerance(1e-4);
+    # solver.set_optim_max_iterations(6000);
+    solver.set_scale_variables_using_bounds(True);
+    # solver.set_minimize_implicit_auxiliary_derivatives(True);
+    # solver.set_implicit_auxiliary_derivatives_weight(implicitWeight);
+
+    if not trackGRF: 
+        solver.set_optim_max_iterations(3000)
+    else: 
+        solver.set_optim_max_iterations(6000)    
+
 
 
     # solve and visualize
@@ -943,11 +1189,11 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     osim.STOFileAdapter.write(table_jointMoments, 'torque_statetrack_grftrack_redo_moments_py.sto');
     ouf.IDplotter(osim.TimeSeriesTable('torque_statetrack_grftrack_redo_moments_py.sto'), 'torque_statetrack_grftrack', False, [subjectname, conditionname, trialname])
 
-    # grab anything else that might be useful
-    analyzeStrings_all = osim.StdVectorString()
-    analyzeStrings_all.append('.*')
-    table_all = study.analyze(solution, analyzeStrings_all)
-    osim.STOFileAdapter.write(table_all, 'torque_statetrack_grftrack_redo_all_py.sto')
+    # # grab anything else that might be useful
+    # analyzeStrings_all = osim.StdVectorString()
+    # analyzeStrings_all.append('.*')
+    # table_all = study.analyze(solution, analyzeStrings_all)
+    # osim.STOFileAdapter.write(table_all, 'torque_statetrack_grftrack_redo_all_py.sto')
 
     pdb.set_trace()
     study.visualize(solution)

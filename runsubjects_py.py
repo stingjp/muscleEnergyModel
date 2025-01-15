@@ -14,6 +14,14 @@ import OsimUtilityfunctions as ouf
 import time
 import simulationSetups as simset
 import pdb
+import argparse
+
+# input arguments
+parser = argparse.ArgumentParser(description='are we siming half cycle?')
+parser.add_argument('--half', action='store_true', help='are we simulating half cycle?')
+args = parser.parse_args()
+halfcycle = args.half
+
 
 # setting up the paths
 setup_matlab_path = "G:/Shared drives/Exotendon/musclemodel/muscleEnergyModel/"
@@ -207,7 +215,7 @@ for subj in subjects:
                 os.chdir(trialdir)
                 print('\n')
                 print(trialdir)
-                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF)
+                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF, halfcycle)
                 # simset.analyzeSubject_post(subj, cond, keys)
                 print(trialdir)
 
