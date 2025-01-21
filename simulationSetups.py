@@ -46,8 +46,8 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle):
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    # whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
-    whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
+    # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
 
@@ -721,17 +721,11 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
     # establish a few weights for the problem
     kinematicsWeight = 40
-    GRFTrackingWeight = 1e4
+    GRFTrackingWeight = 1e1
     effortWeight = 1e-2
     momentWeight = 10
-    stepsize = 0.05
+    stepsize = 0.03
     trackGRF = True
-    
-    # argument parser
-    parser = argparse.ArgumentParser(description='Run the torque driven state tracking problem')
-    parser.add_argument('--half cycle T/F', type=str, default='False', help='do you want half cycle?')
-    args = parser.parse_args()
-    print(f"half cycle: {args.halfcycle}")
 
 
     # create the tracking problem
@@ -767,9 +761,9 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
         if 'reserve_jointset_mtp' in force.getName():# or 'pelvis' in force.getName():
             forceset.remove(i-count)
             count += 1
-        if 'pelvis' in force.getName():
-            force = osim.CoordinateActuator.safeDownCast(force)
-            force.set_optimal_force(100.0)
+        # if 'pelvis' in force.getName():
+        #     force = osim.CoordinateActuator.safeDownCast(force)
+        #     force.set_optimal_force(100.0)
     modelProcessor = osim.ModelProcessor(testmodel)
     torquemodel = modelProcessor.process()
     torquemodel.printToXML('torquemodel_simple_model_all_the_probes_redo.osim')
@@ -785,28 +779,26 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     track.set_states_global_tracking_weight(kinematicsWeight)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
-    '''
-    set specific weights for the individual weight set - note these weights are garbage
+    
+    # set up specific weights for individual coordinates
     coordinateweights = osim.MocoWeightSet()
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tx", 1e5))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_ty", 1e7))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tz", 1e3))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_list", 1e6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_rotation", 1e6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tilt", 1e6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_r", 1e-6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_l", 1e-6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_r", 1e5))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_l", 1e5))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_r", 1e2))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_l", 1e2))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("subtalar_angle_r", 1e-6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("subtalar_angle_l", 1e-6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_extension', 1e3))
-    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_bending', 1e3))
-    coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_rotation', 1e3))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tx", 0.01))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_ty", 0))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tz", 0.01))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_list", 0.01))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_rotation", 0.01))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tilt", 0.01))
+    # coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_r", 0))
+    # coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_l", 0))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_r", 2))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_l", 2))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_flexion_r", 4))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_flexion_l", 4))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("knee_angle_r", 5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("knee_angle_l", 5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_r", 6))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_l", 6))
     track.set_states_weight_set(coordinateweights)
-    '''
 
     # get the individual subject-condition-trial timings
     cycles = ouf.subjectGaitTimings()
@@ -1128,10 +1120,7 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
         contactTracking.setDivideByMass(True)
         problem.addGoal(contactTracking);
 
-    wantguess = True
-    # set an initial guess up
-    ### for now lets see if it can come up with anything on its own... and how long it takes. 
-
+    
     
     #Configure the solver
     # % ====================
@@ -1155,19 +1144,34 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     else: 
         solver.set_optim_max_iterations(6000)    
 
+    wantguess = True
+    # set an initial guess up
+    ### for now lets see if it can come up with anything on its own... and how long it takes. 
+    if wantguess:
+        if halfcycle:
+            lastguess = osim.MocoTrajectory('torque_statetrack_grftrack_solution_redoarms_halfcycle_py.sto')
+        else:
+            lastguess = osim.MocoTrajectory('torque_statetrack_grftrack_solution_redoarms_py.sto')
+        solver.setGuess(lastguess)
 
 
     # solve and visualize
     try:
         solution = study.solve()
-        solution.write('torque_statetrack_grftrack_solution_redoarms_py.sto')
+        if halfcycle:
+            solution.write('torque_statetrack_grftrack_solution_redoarms_halfcycle_py.sto')
+        else:
+            solution.write('torque_statetrack_grftrack_solution_redoarms_py.sto')
         print('ran the base')
     except:
         print(os.getcwd())
         print('could not solve the problem')
         whatfailed[subjectname + '_' + conditionname + '_' + trialname] = os.getcwd()
         solution = solution.unseal()
-        solution.write('torque_statetrack_grftrack_solution_unseal_redoarms_py.sto')
+        if halfcycle:
+            solution.write('torque_statetrack_grftrack_solution_unseal_redoarms_halfcycle_py.sto')
+        else: 
+            solution.write('torque_statetrack_grftrack_solution_unseal_redoarms_py.sto')
         return whatfailed
     
     osim.STOFileAdapter.write(solution.exportToControlsTable(), 'torque_statetrack_grftrack_controls_py.sto')
@@ -1205,3 +1209,24 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     # likely just use the matlab infrastructure to do the post analysis.
     # otherwise have to update everything to python - not worth the time likely for post analysis. s
     return whatfailed
+
+
+###################################################################################################
+# sets up moco track problem with a torque driven model, and prescribed GRF.
+def torqueStateTrackGRFPrescribe(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
+    # establish a few weights for the problem
+
+
+
+
+
+    return whatfailed
+
+###################################################################################################
+# sets up moco track problem with a torque driven model, and prescribed GRF.
+def muscleInverse(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
+    # establish a few weights for the problem
+
+
+    return whatfailed
+

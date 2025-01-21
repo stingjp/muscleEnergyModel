@@ -62,6 +62,9 @@ track.set_states_weight_set(coordinateweights)
 gait_start = 67.197
 gait_end = 67.965
 
+# gait_start = 2.071
+# gait_end = 2.754
+
 # % get the subject name and gait timings
 # load 'C:\Users\jonstingel\code\musclemodel\muscleEnergyModel\subjectgaitcycles.mat';
 # workdir = pwd;
@@ -95,7 +98,7 @@ forceSet = model.getForceSet()
 for i in range(forceSet.getSize()):
     forcePath = forceSet.get(i).getAbsolutePathString()
     if 'pelvis' in forcePath:
-        effort.setWeightForControl(forcePath, 100)
+        effort.setWeightForControl(forcePath, 150)
         # if 'pelvis_ty' in forcePath:
         #     effort.setWeightForControl(forcePath, 1e8)
         # if 'hip_rotation' in forcePath:
