@@ -156,8 +156,13 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichl
     
     # commented out since I have all the results currently processed
     # unmcomment in order to actually reproduce the files with new results. 
-    # jr_tool.run()
-    time.sleep(0.5)
+    
+    runtool = False
+    if runtool:
+        jr_tool.run()
+        time.sleep(0.5)
+    else:
+        print('\n TOOL NOT RUNNING - JUST COLLECTING OLD RESULTS')
     
     
     # '''
