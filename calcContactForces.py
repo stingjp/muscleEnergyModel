@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import scipy
 import sys
 import OsimUtilityfunctions as ouf
+import pandas as pd
 
 # naturalcolor = '#fdb863'
 ncolor = '#e66101'
@@ -2056,7 +2057,7 @@ if __name__ == '__main__':
     welksubjects = ['welk003','welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'right'
+    whichleg = 'left'
 
     oldnotredo = False
     
@@ -3659,7 +3660,52 @@ if __name__ == '__main__':
 
     plt.show()
 
-    # pdb.set_trace()
+    # Create a dictionary to hold all the data
+    data_dict = {
+        'ninterseg_combine': ninterseg_combine,
+        'einterseg_combine': einterseg_combine,
+        'nquads_combine': nquads_combine,
+        'equads_combine': equads_combine,
+        'nhams_combine': nhams_combine,
+        'ehams_combine': ehams_combine,
+        'ngas_combine': ngas_combine,
+        'egas_combine': egas_combine,
+        'ntfl_combine': ntfl_combine,
+        'etfl_combine': etfl_combine,
+        'nall_combine': nall_combine,
+        'eall_combine': eall_combine,
+        'nreserve_combine': nreserve_combine,
+        'ereserve_combine': ereserve_combine,
+        'nnone_combine': nnone_combine,
+        'enone_combine': enone_combine,
+        'muscleacts_nat': muscleacts_nat,
+        'muscleacts_exo': muscleacts_exo,
+        'moments_nat': moments_nat,
+        'moments_exo': moments_exo,
+        'IDmoments_nat': IDmoments_nat,
+        'IDmoments_exo': IDmoments_exo,
+        'activeforces_nat': activeforces_nat,
+        'activeforces_exo': activeforces_exo,
+        'passiveforces_nat': passiveforces_nat,
+        'passiveforces_exo': passiveforces_exo,
+        'totalforces_nat': totalforces_nat,
+        'totalforces_exo': totalforces_exo
+    }
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine
+    with pd.ExcelWriter(os.path.join(analyzedir, 'analysis_results.xlsx'), engine='xlsxwriter') as writer:
+        for key, value in data_dict.items():
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    df = pd.DataFrame(sub_value)
+                    df.to_excel(writer, sheet_name=f'{key}_{sub_key}')
+            else:
+                df = pd.DataFrame(value)
+                df.to_excel(writer, sheet_name=key)
+
+    print("Data has been saved to analysis_results.xlsx")
+
+    pdb.set_trace()
     sys.exit()
 
 
@@ -3668,18 +3714,18 @@ if __name__ == '__main__':
     std_nall_combine = np.std(nall_combine,0)
     mean_eall_combine = np.mean(eall_combine,0)
     std_eall_combine = np.std(eall_combine,0)
-    
+
     # get the peaks first and then do the stats on them...
     peaks_nall_combine = np.max(nall_combine,1)
     idx_peaks_nall_combine = nall_combine.argmax(1)
     peaks_eall_combine = np.max(eall_combine,1)
     idx_peaks_eall_combine = eall_combine.argmax(1)
-    
+
     mean_peaks_nall_combine = np.mean(peaks_nall_combine)
     mean_peaks_eall_combine = np.mean(peaks_eall_combine)
     std_peaks_nall_combine = np.std(peaks_nall_combine)
     std_peaks_eall_combine = np.std(peaks_eall_combine)
-    
+
     # differences in peaks
     diff_peaks_all_combine = peaks_nall_combine - peaks_eall_combine
     mean_diff_peaks_all_combine = np.mean(peaks_nall_combine - peaks_eall_combine)
