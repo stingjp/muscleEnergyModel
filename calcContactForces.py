@@ -2093,13 +2093,13 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk003']#,'welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01']#,'trial02','trial03','trial04']
     whichleg = 'left'
-
     oldnotredo = False
-    
+    runtool = False
+
     # get some results structures going
     welknaturalstruct_combine = {}
     welkexostruct_combine = {}
