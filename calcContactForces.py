@@ -119,7 +119,8 @@ def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag):
     return tiby
 # this is the same script ^ but for the prescribed mocoinverse solution
 def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool):
-    # '''
+    print('Joint reaction analysis for ' + tag)
+
     # intersegmental forces - method 2
     # try the analysis
     jr_tool = osim.AnalyzeTool()
@@ -700,7 +701,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'all' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -746,7 +747,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
         
             ###
-            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'reserve' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -812,7 +813,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)  
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)  
         elif 'none' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -876,7 +877,7 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         else:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -933,7 +934,6 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
                         controlsTableTrim.removeColumn(con)
             osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_' + tag + '.sto')
             
-            
             # get a version of the model with no muscles in it
             # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
             trimmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
@@ -983,14 +983,12 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
             pomostorage = osim.Storage('trimmingStates_redo_' + tag + '.sto')
             pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
             pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
-            
+            # pdb.set_trace()
             trimmodel.addComponent(pomo)
             trimmodel.initSystem()
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
-        
-            ###
-            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg)
-    
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+
     return jray
 # method for computing the individual muscle contributions to knee contact force
 def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
@@ -1719,6 +1717,7 @@ def getKneeContactributions0001(trialdir, musclesWanted_split, tag):
         jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
     
     return jray
+# same thing but for a different set of solutions from different weights
 def getKneeContactributions01_wt1(trialdir, musclesWanted_split, tag):
     # os.chdir(trialdir)
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
@@ -1900,6 +1899,7 @@ def getKneeContactributions01_wt1(trialdir, musclesWanted_split, tag):
         jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
     
     return jray
+# same thing but for a different set of solutions from different weights
 def getKneeContactributions01_wt2(trialdir, musclesWanted_split, tag):
     # os.chdir(trialdir)
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
@@ -2083,23 +2083,27 @@ def getKneeContactributions01_wt2(trialdir, musclesWanted_split, tag):
     return jray
 
 
-
 if __name__ == '__main__':
     # now to define all the setup that he has and is required
     basedir = os.getcwd()
     # repodir = 'G:\\Shared drives\\Exotendon\\muscleModel\\muscleEnergyModel';
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
-    resultsdir = os.path.join(repodir, '..\\results');
-    analyzedir = os.path.join(repodir, '..\\analysis');
+    
+    # current results directory
+    # resultsdir = os.path.join(repodir, '..\\results');
+    # analyzedir = os.path.join(repodir, '..\\analysis');
+    # previous results directory
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
     welksubjects = ['welk003','welk005','welk008','welk009','welk010','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'left'
+    whichleg = 'right'
     oldnotredo = False
-    runtool = False
+    runtool = True
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -3174,6 +3178,7 @@ if __name__ == '__main__':
                         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                 except:
                     print('Error with: ' + trialdir)
+                    pdb.set_trace()
                     continue
                 # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...                
 
@@ -3228,472 +3233,469 @@ if __name__ == '__main__':
                 spot += 1
 
 
-    # ###########################################################################
-    # # plotting for activations, moments, etc. muscle insights for natural and exotendon
-    
-    # # create a figure for the muscle activations for natural and exotendon
-    # fig1, ax1 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
-    # muscles = list(muscleacts_nat.keys())
-    # for i, muscle in enumerate(muscles):
-    #     row = i // 8
-    #     col = i % 8
-    #     xnat = np.linspace(0, 100, len(muscleacts_nat[muscle]))
-    #     xexo = np.linspace(0, 100, len(muscleacts_exo[muscle]))
+    ###########################################################################
+    # plotting for activations, moments, etc. muscle insights for natural and exotendon
+
+    # create a figure for the muscle activations for natural and exotendon
+    fig1, ax1 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(muscleacts_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(muscleacts_nat[muscle]))
+        xexo = np.linspace(0, 100, len(muscleacts_exo[muscle]))
         
-    #     ax1[row, col].plot(xnat, muscleacts_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
-    #     ax1[row, col].plot(xexo, muscleacts_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
-    #     # not plot the averages for all the natural and all the exo
-    #     ax1[row,col].plot(xnat, np.mean(muscleacts_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
-    #     ax1[row,col].plot(xexo, np.mean(muscleacts_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')    
-    #     # formatting
-    #     ax1[row, col].set_xlabel('% Gait cycle', fontsize=8)
-    #     ax1[row, col].set_ylabel('Activation', fontsize=8)
-    #     # split the string to get the name for the plot
-    #     musclename = muscle.split('_r')[0][10:]
-    #     ax1[row, col].set_title(musclename, fontsize=8)
+        ax1[row, col].plot(xnat, muscleacts_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax1[row, col].plot(xexo, muscleacts_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # not plot the averages for all the natural and all the exo
+        ax1[row,col].plot(xnat, np.mean(muscleacts_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax1[row,col].plot(xexo, np.mean(muscleacts_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')    
+        # formatting
+        ax1[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax1[row, col].set_ylabel('Activation', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax1[row, col].set_title(musclename, fontsize=8)
     
-    # handles, labels = ax1[0, 0].get_legend_handles_labels()
-    # # fig1.legend(handles, labels, loc='upper right')
-    # fig1.tight_layout()
-    # plt.savefig(os.path.join(analyzedir, 'muscleactivations_' + whichleg + '.png'))
-    
+    handles, labels = ax1[0, 0].get_legend_handles_labels()
+    # fig1.legend(handles, labels, loc='upper right')
+    fig1.tight_layout()
+    plt.savefig(os.path.join(analyzedir, 'muscleactivations_' + whichleg + '.png'))
 
 
-
-    # # create a figure for the joint moments for natural and exotendon
-    # fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
-    # joints = list(moments_nat.keys())
-    # for i, joint in enumerate(joints):
-    #     row = i // 8
-    #     col = i % 8
-    #     xnat = np.linspace(0, 100, len(moments_nat[joint]))
-    #     xexo = np.linspace(0, 100, len(moments_exo[joint]))
+    # create a figure for the joint moments for natural and exotendon
+    fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
+    joints = list(moments_nat.keys())
+    for i, joint in enumerate(joints):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(moments_nat[joint]))
+        xexo = np.linspace(0, 100, len(moments_exo[joint]))
         
-    #     ax2[row, col].plot(xnat, moments_nat[joint], label='natural', color=ncolor, linestyle='--', alpha=0.2)
-    #     ax2[row, col].plot(xexo, moments_exo[joint], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
-    #     # now the means of all the moments
-    #     ax2[row, col].plot(xnat, np.mean(moments_nat[joint],1), color=ncolor, linewidth=2, label='natural_avg')
-    #     ax2[row, col].plot(xexo, np.mean(moments_exo[joint],1), color=ecolor, linewidth=2, label='exotendon_avg')
-    #     # formatting
-    #     ax2[row, col].set_xlabel('% Gait cycle', fontsize=8)
-    #     ax2[row, col].set_ylabel('Moment (Nm/kg)', fontsize=8)
-    #     ax2[row, col].set_title(joint, fontsize=8)
+        ax2[row, col].plot(xnat, moments_nat[joint], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax2[row, col].plot(xexo, moments_exo[joint], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the means of all the moments
+        ax2[row, col].plot(xnat, np.mean(moments_nat[joint],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax2[row, col].plot(xexo, np.mean(moments_exo[joint],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax2[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax2[row, col].set_ylabel('Moment (Nm/kg)', fontsize=8)
+        ax2[row, col].set_title(joint, fontsize=8)
 
-    # handles, labels = ax2[0, 0].get_legend_handles_labels()
-    # # fig2.legend(handles, labels, loc='upper right')
-    # fig2.tight_layout()
-    # plt.savefig(analyzedir + '\\jointmoments_' + whichleg + '.png')
+    handles, labels = ax2[0, 0].get_legend_handles_labels()
+    # fig2.legend(handles, labels, loc='upper right')
+    fig2.tight_layout()
+    plt.savefig(analyzedir + '\\jointmoments_' + whichleg + '.png')
 
-    # # now create a figure for the muscle passive forces for natural and exotendon
-    # fig3, ax3 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
-    # muscles = list(passiveforces_nat.keys())
-    # for i, muscle in enumerate(muscles):
-    #     row = i // 8
-    #     col = i % 8
-    #     xnat = np.linspace(0, 100, len(passiveforces_nat[muscle]))
-    #     xexo = np.linspace(0, 100, len(passiveforces_exo[muscle]))
+
+    # now create a figure for the muscle passive forces for natural and exotendon
+    fig3, ax3 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(passiveforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(passiveforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(passiveforces_exo[muscle]))
         
-    #     ax3[row, col].plot(xnat, passiveforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
-    #     ax3[row, col].plot(xexo, passiveforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
-    #     # now the averages
-    #     ax3[row, col].plot(xnat, np.mean(passiveforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
-    #     ax3[row, col].plot(xexo, np.mean(passiveforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
-    #     # formatting
-    #     ax3[row, col].set_xlabel('% Gait cycle', fontsize=8)
-    #     ax3[row, col].set_ylabel('Passive Force (N)', fontsize=8)
-    #     # split the strings so that the names are readable
-    #     musclename = muscle.split('_r')[0][10:]
-    #     ax3[row, col].set_title(musclename, fontsize=8)
+        ax3[row, col].plot(xnat, passiveforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax3[row, col].plot(xexo, passiveforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax3[row, col].plot(xnat, np.mean(passiveforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax3[row, col].plot(xexo, np.mean(passiveforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax3[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax3[row, col].set_ylabel('Passive Force (N)', fontsize=8)
+        # split the strings so that the names are readable
+        musclename = muscle.split('_r')[0][10:]
+        ax3[row, col].set_title(musclename, fontsize=8)
 
-    # handles, labels = ax3[0, 0].get_legend_handles_labels()
-    # # fig3.legend(handles, labels, loc='upper right')
-    # fig3.tight_layout()
-    # plt.savefig(analyzedir + '\\passiveforces_' + whichleg + '.png')
+    handles, labels = ax3[0, 0].get_legend_handles_labels()
+    # fig3.legend(handles, labels, loc='upper right')
+    fig3.tight_layout()
+    plt.savefig(analyzedir + '\\passiveforces_' + whichleg + '.png')
 
 
-    # # now the figure but for the muscle active forces in activeforces_nat and activeforces_exo
-    # fig4, ax4 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
-    # muscles = list(activeforces_nat.keys())
-    # for i, muscle in enumerate(muscles):
-    #     row = i // 8
-    #     col = i % 8
-    #     xnat = np.linspace(0, 100, len(activeforces_nat[muscle]))
-    #     xexo = np.linspace(0, 100, len(activeforces_exo[muscle]))
+    # now the figure but for the muscle active forces in activeforces_nat and activeforces_exo
+    fig4, ax4 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(activeforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(activeforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(activeforces_exo[muscle]))
         
-    #     ax4[row, col].plot(xnat, activeforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
-    #     ax4[row, col].plot(xexo, activeforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
-    #     # now the averages
-    #     ax4[row, col].plot(xnat, np.mean(activeforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
-    #     ax4[row, col].plot(xexo, np.mean(activeforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
-    #     # formatting
-    #     ax4[row, col].set_xlabel('% Gait cycle', fontsize=8)
-    #     ax4[row, col].set_ylabel('Active Force (N)', fontsize=8)
-    #     # split the string to get the name for the plot
-    #     musclename = muscle.split('_r')[0][10:]
-    #     ax4[row, col].set_title(musclename, fontsize=8)
+        ax4[row, col].plot(xnat, activeforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax4[row, col].plot(xexo, activeforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax4[row, col].plot(xnat, np.mean(activeforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax4[row, col].plot(xexo, np.mean(activeforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax4[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax4[row, col].set_ylabel('Active Force (N)', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax4[row, col].set_title(musclename, fontsize=8)
 
-    # handles, labels = ax4[0, 0].get_legend_handles_labels()
-    # # fig4.legend(handles, labels, loc='upper right')
-    # fig4.tight_layout()
-    # plt.savefig(analyzedir + '\\activeforces_' + whichleg + '.png')
+    handles, labels = ax4[0, 0].get_legend_handles_labels()
+    # fig4.legend(handles, labels, loc='upper right')
+    fig4.tight_layout()
+    plt.savefig(analyzedir + '\\activeforces_' + whichleg + '.png')
 
-    # # now the total forces
-    # fig5, ax5 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
-    # muscles = list(totalforces_nat.keys())
-    # for i, muscle in enumerate(muscles):
-    #     row = i // 8
-    #     col = i % 8
-    #     xnat = np.linspace(0, 100, len(totalforces_nat[muscle]))
-    #     xexo = np.linspace(0, 100, len(totalforces_exo[muscle]))
+
+    # now the total forces
+    fig5, ax5 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(totalforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(totalforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(totalforces_exo[muscle]))
         
-    #     ax5[row, col].plot(xnat, totalforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
-    #     ax5[row, col].plot(xexo, totalforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
-    #     # now the averages
-    #     ax5[row, col].plot(xnat, np.mean(totalforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
-    #     ax5[row, col].plot(xexo, np.mean(totalforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
-    #     # formatting
-    #     ax5[row, col].set_xlabel('% Gait cycle', fontsize=8)
-    #     ax5[row, col].set_ylabel('Total Force (N)', fontsize=8)
-    #     # split the string to get the name for the plot
-    #     musclename = muscle.split('_r')[0][10:]
-    #     ax5[row, col].set_title(musclename, fontsize=8)
+        ax5[row, col].plot(xnat, totalforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax5[row, col].plot(xexo, totalforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax5[row, col].plot(xnat, np.mean(totalforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax5[row, col].plot(xexo, np.mean(totalforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax5[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax5[row, col].set_ylabel('Total Force (N)', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax5[row, col].set_title(musclename, fontsize=8)
 
-    # handles, labels = ax5[0, 0].get_legend_handles_labels()
-    # # fig5.legend(handles, labels, loc='upper right')
-    # fig5.tight_layout()
-    # plt.savefig(analyzedir + '\\totalforces_' + whichleg + '.png')
-
-    # # plt.show()
-
-
-
-
-    # ###########################################################################
-    # # plotting for the joint contacts - natural and exotendon
-
-
-    # if len(welksubjects) == 1:
-    #     ncolors = ['#fee0b6', '#fdae6b', '#fd8d3c', '#e66101']
-    #     ecolors = ['#c7eae5', '#80cdc1', '#35978f', '#01665e']
-    
-    # pdb.set_trace()
-
-    # ###########################################################################
-    # # figure: segmenting all the muscles between exo and nat 
-    # ## really nice figure for seeing what is going on, but likely not going to 
-    # ## be in the paper...
-    # fig9, ax9 = plt.subplots(2, 4, figsize=(14, 6))# , dpi=300)
-    # ax9 = ax9.flatten()
-    # # intersegmental forces average
-    # for i, curve in enumerate(ninterseg_combine):
-    #      ax9[0].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(einterseg_combine):
-    #     ax9[0].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # ax9[0].set_xlabel('% Gait cycle')
-    # ax9[0].set_ylabel('Force (BW)')
-    # ax9[0].set_title('intersegmental')
-    # # ax9[0].legend()
-    
-    # # tfl forces
-    # for i, curve in enumerate(ntfl_combine):
-    #     ax9[1].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(etfl_combine):
-    #     ax9[1].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # # ax9[1].plot(n_timespercent101, ntfl_combine, label='natural', color=ncolor)
-    # # ax9[1].plot(e_timespercent101, etfl_combine, label='exotendon', color=ecolor)
-    # ax9[1].set_xlabel('% Gait cycle')
-    # # ax9[1].set_ylabel('Force (BW)')
-    # # ax9[1].legend()
-    # ax9[1].set_title('tfl')
-
-    # # gastroc forces
-    # for i, curve in enumerate(ngas_combine):
-    #     ax9[2].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(egas_combine):
-    #     ax9[2].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # # ax9[2].plot(n_timespercent101, ngas_combine, label='natural', color=ncolor)
-    # # ax9[2].plot(e_timespercent101, egas_combine, label='exotendon', color=ecolor)
-    # ax9[2].set_xlabel('% Gait cycle')
-    # # ax9[2].set_ylabel('Force (BW)')
-    # # ax9[2].legend()
-    # ax9[2].set_title('gastroc')
-    
-    # # hamstring forces
-    # for i, curve in enumerate(nhams_combine):
-    #     ax9[3].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(ehams_combine):
-    #     ax9[3].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # # ax9[3].plot(n_timespercent101, nhams_combine, label='natural', color=ncolor)
-    # # ax9[3].plot(e_timespercent101, ehams_combine, label='exotendon', color=ecolor)
-    # ax9[3].set_xlabel('% Gait cycle')
-    # # ax9[3].set_ylabel('Force (BW)')
-    # # ax9[3].legend()
-    # ax9[3].set_title('hamstrings')
-
-    # # quads forces
-    # for i, curve in enumerate(nquads_combine):
-    #     ax9[4].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(equads_combine):
-    #     ax9[4].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # # ax9[4].plot(n_timespercent101, nquads_combine, label='natural', color=ncolor)
-    # # ax9[4].plot(e_timespercent101, equads_combine, label='exotendon', color=ecolor)
-    # ax9[4].set_xlabel('% Gait cycle')
-    # # ax9[4].set_ylabel('Force (BW)')
-    # # ax9[4].legend()
-    # ax9[4].set_title('quadriceps')
-
-    # # # reserve forces
-    # # ax9[5].plot(n_timespercent101, nreserve_combine, label='natural', color=ncolor)
-    # # ax9[5].plot(e_timespercent101, ereserve_combine, label='exotendon', color=ecolor)
-    # # ax9[5].set_xlabel('% Gait cycle')
-    # # # ax9[5].set_ylabel('Force (BW)')
-    # # # ax9[5].legend()
-    # # ax9[5].set_title('reserves')
-    
-    # # # added all forces
-    # # ax9[5].plot(n_timespercent101, nquads_combine+ nhams_combine+ ngas_combine+ ntfl_combine+ ninterseg_combine+ nreserve_combine, label='natural', color=ncolor)
-    # # ax9[5].plot(e_timespercent101, equads_combine+ ehams_combine+ egas_combine+ etfl_combine+ einterseg_combine+ ereserve_combine, label='exotendon', color=ecolor)
-    # # ax9[5].set_xlabel('% Gait cycle')
-    # # # ax9[6].set_ylabel('Force (BW)')
-    # # # ax9[6].legend()
-    # # ax9[5].set_title('Total vertical contact')
-
-    # # all forces from whole analysis
-    # for i, curve in enumerate(nall_combine):
-    #     ax9[5].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
-    # for i, curve in enumerate(eall_combine):
-    #     ax9[5].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
-    # # ax9[5].plot(n_timespercent101, nall_combine, label='natural', color=ncolor)
-    # # ax9[5].plot(e_timespercent101, eall_combine, label='exotendon', color=ecolor)
-    # ax9[5].set_xlabel('% Gait cycle')
-    # # ax9[5].set_ylabel('Force (BW)')
-    # ax9[5].set_title('Total vertical contact')
-    # # ax9[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    # # Hide the last subplot and use it to display the legend   
-    # ax9[6].axis('off')
-    # handles, labels = ax9[5].get_legend_handles_labels()
-    # if len(welksubjects) == 1:
-    #     ax9[6].legend(handles, labels, loc='center', fontsize=14)
-
-    # fig9.tight_layout()
-    # plt.savefig(analyzedir + '\\contact1_' + whichleg + '.png')
-
-
-    # ###########################################################################
-    # # figure: segmenting all the muscles between exo and nat 
-    # ## really nice figure for seeing what is going on, but likely not going to 
-    # ## be in the paper...
-    # fig10, ax10 = plt.subplots(1,7, figsize=(14,3))#, dpi=300)
-    # # intersegmental forces average
-    # ax10[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
-    # ax10[0].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
-    # ax10[0].set_xlabel('% Gait cycle')
-    # ax10[0].set_ylabel('Force (BW)')
-    # ax10[0].set_title('intersegmental')
-    # # ax10[0].legend()
-    # # tfl forces
-    # ax10[1].plot(n_timespercent101, np.mean(ntfl_combine, 0), label='natural', color=ncolor)
-    # ax10[1].plot(e_timespercent101, np.mean(etfl_combine, 0), label='exotendon', color=ecolor)
-    # ax10[1].set_xlabel('% Gait cycle')
-    # # ax10[1].set_ylabel('Force (BW)')
-    # # ax10[1].legend()
-    # ax10[1].set_title('tfl')
-
-    # # gastroc forces
-    # ax10[2].plot(n_timespercent101, np.mean(ngas_combine, 0), label='natural', color=ncolor)
-    # ax10[2].plot(e_timespercent101, np.mean(egas_combine, 0), label='exotendon', color=ecolor)
-    # ax10[2].set_xlabel('% Gait cycle')
-    # # ax10[2].set_ylabel('Force (BW)')
-    # # ax10[2].legend()
-    # ax10[2].set_title('gastroc')
-    
-    # # hamstring forces
-    # ax10[3].plot(n_timespercent101, np.mean(nhams_combine, 0), label='natural', color=ncolor)
-    # ax10[3].plot(e_timespercent101, np.mean(ehams_combine, 0), label='exotendon', color=ecolor)
-    # ax10[3].set_xlabel('% Gait cycle')
-    # # ax10[3].set_ylabel('Force (BW)')
-    # # ax10[3].legend()
-    # ax10[3].set_title('hamstrings')
-
-    # # quads forces
-    # ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='natural', color=ncolor)
-    # ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='exotendon', color=ecolor)
-    # ax10[4].set_xlabel('% Gait cycle')
-    # # ax10[4].set_ylabel('Force (BW)')
-    # # ax10[4].legend()
-    # ax10[4].set_title('quadriceps')
-
-    # # # reserve forces
-    # # ax10[5].plot(n_timespercent101, np.mean(nreserve_combine, 0), label='natural', color=ncolor)
-    # # ax10[5].plot(e_timespercent101, np.mean(ereserve_combine, 0), label='exotendon', color=ecolor)
-    # # ax10[5].set_xlabel('% Gait cycle')
-    # # # ax10[5].set_ylabel('Force (BW)')
-    # # # ax10[5].legend()
-    # # ax10[5].set_title('reserves')
-    
-    # # # added all forces
-    # # ax10[5].plot(n_timespercent101, np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0), label='natural', color=ncolor)
-    # # ax10[5].plot(e_timespercent101, np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0), label='exotendon', color=ecolor)
-    # # ax10[5].set_xlabel('% Gait cycle')
-    # # # ax10[6].set_ylabel('Force (BW)')
-    # # # ax10[6].legend()
-    # # ax10[5].set_title('Total vertical contact')
-
-    # # all forces from whole analysis
-    # ax10[5].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
-    # ax10[5].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
-    # ax10[5].set_xlabel('% Gait cycle')
-    # # ax10[5].set_ylabel('Force (BW)')
-    # # ax10[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    # ax10[5].set_title('Total vertical contact')
-
-    # # Hide the last subplot and use it to display the legend   
-    # ax10[6].axis('off')
-    # handles, labels = ax10[5].get_legend_handles_labels()
-    # ax10[6].legend(handles, labels, loc='center', fontsize=14)
-    # fig10.tight_layout()
-    # plt.savefig(analyzedir + '\\contact2_' + whichleg + '.png')
-    
-    # ###########################################################################
-    # ### figure: differences between conditions for each and all
-    # #### this is a simplified look at the same as above. We can see nice stuff, 
-    # #### but likely not going to be in the paper. 
-    # fig11, ax11 = plt.subplots(1,7, figsize=(14,3))#, dpi=300)
-    # # intersegmental forces average
-    # ax11[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0))
-    # ax11[0].set_xlabel('% Gait cycle')
-    # ax11[0].set_ylabel('Force (BW)')
-    # ax11[0].set_title('intersegmental')
-    # # ax11[0].legend()
-    # # tfl forces
-    # ax11[1].plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0))
-    # ax11[1].set_xlabel('% Gait cycle')
-    # # ax11[1].set_ylabel('Force (BW)')
-    # # ax11[1].legend()
-    # ax11[1].set_title('tfl')
-
-    # # gastroc forces
-    # ax11[2].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0))
-    # ax11[2].set_xlabel('% Gait cycle')
-    # # ax11[2].set_ylabel('Force (BW)')
-    # # ax11[2].legend()
-    # ax11[2].set_title('gastroc')
-    
-    # # hamstring forces
-    # ax11[3].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0))
-    # ax11[3].set_xlabel('% Gait cycle')
-    # # ax11[3].set_ylabel('Force (BW)')
-    # # ax11[3].legend()
-    # ax11[3].set_title('hamstrings')
-
-    # # quads forces
-    # ax11[4].plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0))
-    # ax11[4].set_xlabel('% Gait cycle')
-    # # ax11[4].set_ylabel('Force (BW)')
-    # # ax11[4].legend()
-    # ax11[4].set_title('quadriceps')
-
-    # # # added all forces
-    # # ax11[5].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0)))
-    # # ax11[5].set_xlabel('% Gait cycle')
-    # # # ax11[5].set_ylabel('Force (BW)')
-    # # # ax11[5].legend()
-    # # ax11[5].set_title('Total vertical contact')
-
-    # # all forces from whole analysis
-    # ax11[5].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Exotendon diff from Natural')
-    # ax11[5].set_xlabel('% Gait cycle')
-    # # ax11[5].set_ylabel('Force (BW)')
-    # # ax11[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    # ax11[5].set_title('Total vertical contact')
-
-    # # Hide the last subplot and use it to display the legend
-    # ax11[6].axis('off')
-    # handles, labels = ax11[5].get_legend_handles_labels()
-    # ax11[6].legend(handles, labels, loc='center', fontsize=10)
-    # fig11.tight_layout()
-    # plt.savefig(analyzedir + '\\contact3_' + whichleg + '.png')
-    
-    
-    # ###########################################################################
-    # ### figure: changes in force segmented together on plot
-    # #### Possible paper figure for R3. 
-    # fig12 = plt.figure(figsize=(11,6))#, dpi=300)
-    # # intersegmental forces average
-    # plt.plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='intersegmental')
-    # # tfl forces
-    # plt.plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0), label='tfl')
-    # # gastroc forces
-    # plt.plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='gastroc')
-    # # hamstring forces
-    # plt.plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='hamstrings')
-    # # quads forces
-    # plt.plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0), label='quadriceps')
-    # # reserve forces
-    # plt.plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves')
-    # # added all forces
-    # plt.plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
-    # # all forces from whole analysis
-    # plt.plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total vertical contact', linestyle='dashed')
-    # plt.xlabel('% Gait cycle')
-    # plt.ylabel('Force (BW)')
-    # plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    # plt.title('Exotendon change in contact force')
-    # plt.tight_layout()
-    # plt.savefig(analyzedir + '\\contact4_' + whichleg + '.png')
-
-    # # TODO: figure out why the difference in total and all added together. 
-    # # okay so not in how I am adding/averaging. has to be something in how the analysis is done between them.... am I missing something??
-    
-    # fig13, ax13 = plt.subplots(1,3, figsize=(14,5))#, dpi=300)
-    # # intersegmental forces average - natural
-    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural_interseg')
-    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine + ntfl_combine, 0), label='natural_interseg + tfl')
-    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine, 0), label='natural_interseg+tfl+hams')
-    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine, 0), label='natural_interseg+tfl+hams+gas')
-    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine+nquads_combine, 0), label='natural_interseg+tfl+hams+gas+quads')
-    # # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine+nquads_combine+nreserve_combine, 0), label='natural_interseg+tfl+hams+gas+quads+reserve')
-    # ax13[0].plot(n_timespercent101, np.mean(nall_combine, 0), label='nat_all', linestyle='dotted')
-    # ax13[0].set_xlabel('% Gait cycle')
-    # ax13[0].set_ylabel('Force (BW)')
-    # ax13[0].set_title('natural')
-    # # ax13[0].legend()
-    # # intersegmental forces average - exotendon
-    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exo_interseg')
-    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine, 0), label='exo_interseg + tfl')
-    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine, 0), label='exo_interseg+tfl+hams')
-    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine, 0), label='exo_interseg+tfl+hams+gas')
-    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine+equads_combine, 0), label='exo_interseg+tfl+hams+gas+quads')
-    # # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine+equads_combine+ereserve_combine, 0), label='exo_interseg+tfl+hams+gas+quads+reserve')
-    # ax13[1].plot(e_timespercent101, np.mean(eall_combine, 0), label='exo_all', linestyle='dotted')
-    # ax13[1].set_xlabel('% Gait cycle')
-    # ax13[1].set_ylabel('Force (BW)')
-    # ax13[1].set_title('exotendon')
-    # # ax13[1].legend()
-
-    # # Hide the last subplot and use it to display the legend   
-    # ax13[2].axis('off')
-    # handles, labels = ax13[1].get_legend_handles_labels()
-    # ax13[2].legend(handles, labels, loc='center', fontsize=14)
-    # fig13.tight_layout()
-    # plt.savefig(analyzedir + '\\contact5_' + whichleg + '.png')
-    
-    # ###########################################################################
-    # ### Figure: total pop average for right leg between nat and exo
-    # #### Figure in the paper R1... 
-    # plt.figure()#dpi=300)
-    # plt.fill_between(n_timespercent101, np.mean(nall_combine,0)-np.std(nall_combine,0), np.mean(nall_combine,0)+np.std(nall_combine,0), color=ncolorlight)
-    # plt.fill_between(e_timespercent101, np.mean(eall_combine,0)-np.std(eall_combine,0), np.mean(eall_combine,0)+np.std(eall_combine,0), color=ecolorlight)
-    # plt.plot(n_timespercent101, np.mean(nall_combine,0), color=ncolor, label='natural')
-    # plt.plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='exotendon')
-    # plt.xlabel('% Gait cycle')
-    # plt.ylabel('Force (BW)')
-    # plt.title('Total vertical contact force')
-    # plt.legend(loc='upper right')
-    # plt.tight_layout()
-    # plt.savefig(analyzedir + '\\contact6_' + whichleg + '.png')
+    handles, labels = ax5[0, 0].get_legend_handles_labels()
+    # fig5.legend(handles, labels, loc='upper right')
+    fig5.tight_layout()
+    plt.savefig(analyzedir + '\\totalforces_' + whichleg + '.png')
 
     # plt.show()
+
+
+    ###########################################################################
+    # plotting for the joint contacts - natural and exotendon
+
+
+    if len(welksubjects) == 1:
+        ncolors = ['#fee0b6', '#fdae6b', '#fd8d3c', '#e66101']
+        ecolors = ['#c7eae5', '#80cdc1', '#35978f', '#01665e']
+    
+    pdb.set_trace()
+
+    ###########################################################################
+    # figure: segmenting all the muscles between exo and nat 
+    ## really nice figure for seeing what is going on, but likely not going to 
+    ## be in the paper...
+    fig9, ax9 = plt.subplots(2, 4, figsize=(14, 6))# , dpi=300)
+    ax9 = ax9.flatten()
+    # intersegmental forces average
+    for i, curve in enumerate(ninterseg_combine):
+         ax9[0].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(einterseg_combine):
+        ax9[0].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    ax9[0].set_xlabel('% Gait cycle')
+    ax9[0].set_ylabel('Force (BW)')
+    ax9[0].set_title('intersegmental')
+    # ax9[0].legend()
+    
+    # tfl forces
+    for i, curve in enumerate(ntfl_combine):
+        ax9[1].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(etfl_combine):
+        ax9[1].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[1].plot(n_timespercent101, ntfl_combine, label='natural', color=ncolor)
+    # ax9[1].plot(e_timespercent101, etfl_combine, label='exotendon', color=ecolor)
+    ax9[1].set_xlabel('% Gait cycle')
+    # ax9[1].set_ylabel('Force (BW)')
+    # ax9[1].legend()
+    ax9[1].set_title('tfl')
+
+    # gastroc forces
+    for i, curve in enumerate(ngas_combine):
+        ax9[2].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(egas_combine):
+        ax9[2].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[2].plot(n_timespercent101, ngas_combine, label='natural', color=ncolor)
+    # ax9[2].plot(e_timespercent101, egas_combine, label='exotendon', color=ecolor)
+    ax9[2].set_xlabel('% Gait cycle')
+    # ax9[2].set_ylabel('Force (BW)')
+    # ax9[2].legend()
+    ax9[2].set_title('gastroc')
+    
+    # hamstring forces
+    for i, curve in enumerate(nhams_combine):
+        ax9[3].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(ehams_combine):
+        ax9[3].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[3].plot(n_timespercent101, nhams_combine, label='natural', color=ncolor)
+    # ax9[3].plot(e_timespercent101, ehams_combine, label='exotendon', color=ecolor)
+    ax9[3].set_xlabel('% Gait cycle')
+    # ax9[3].set_ylabel('Force (BW)')
+    # ax9[3].legend()
+    ax9[3].set_title('hamstrings')
+
+    # quads forces
+    for i, curve in enumerate(nquads_combine):
+        ax9[4].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(equads_combine):
+        ax9[4].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[4].plot(n_timespercent101, nquads_combine, label='natural', color=ncolor)
+    # ax9[4].plot(e_timespercent101, equads_combine, label='exotendon', color=ecolor)
+    ax9[4].set_xlabel('% Gait cycle')
+    # ax9[4].set_ylabel('Force (BW)')
+    # ax9[4].legend()
+    ax9[4].set_title('quadriceps')
+
+    # # reserve forces
+    # ax9[5].plot(n_timespercent101, nreserve_combine, label='natural', color=ncolor)
+    # ax9[5].plot(e_timespercent101, ereserve_combine, label='exotendon', color=ecolor)
+    # ax9[5].set_xlabel('% Gait cycle')
+    # # ax9[5].set_ylabel('Force (BW)')
+    # # ax9[5].legend()
+    # ax9[5].set_title('reserves')
+    
+    # # added all forces
+    # ax9[5].plot(n_timespercent101, nquads_combine+ nhams_combine+ ngas_combine+ ntfl_combine+ ninterseg_combine+ nreserve_combine, label='natural', color=ncolor)
+    # ax9[5].plot(e_timespercent101, equads_combine+ ehams_combine+ egas_combine+ etfl_combine+ einterseg_combine+ ereserve_combine, label='exotendon', color=ecolor)
+    # ax9[5].set_xlabel('% Gait cycle')
+    # # ax9[6].set_ylabel('Force (BW)')
+    # # ax9[6].legend()
+    # ax9[5].set_title('Total vertical contact')
+
+    # all forces from whole analysis
+    for i, curve in enumerate(nall_combine):
+        ax9[5].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(eall_combine):
+        ax9[5].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[5].plot(n_timespercent101, nall_combine, label='natural', color=ncolor)
+    # ax9[5].plot(e_timespercent101, eall_combine, label='exotendon', color=ecolor)
+    ax9[5].set_xlabel('% Gait cycle')
+    # ax9[5].set_ylabel('Force (BW)')
+    ax9[5].set_title('Total vertical contact')
+    # ax9[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    # Hide the last subplot and use it to display the legend   
+    ax9[6].axis('off')
+    handles, labels = ax9[5].get_legend_handles_labels()
+    if len(welksubjects) == 1:
+        ax9[6].legend(handles, labels, loc='center', fontsize=14)
+
+    fig9.tight_layout()
+    plt.savefig(analyzedir + '\\contact1_' + whichleg + '.png')
+
+
+    ###########################################################################
+    # figure: segmenting all the muscles between exo and nat 
+    ## really nice figure for seeing what is going on, but likely not going to 
+    ## be in the paper...
+    fig10, ax10 = plt.subplots(1,7, figsize=(14,3))#, dpi=300)
+    # intersegmental forces average
+    ax10[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
+    ax10[0].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
+    ax10[0].set_xlabel('% Gait cycle')
+    ax10[0].set_ylabel('Force (BW)')
+    ax10[0].set_title('intersegmental')
+    # ax10[0].legend()
+    # tfl forces
+    ax10[1].plot(n_timespercent101, np.mean(ntfl_combine, 0), label='natural', color=ncolor)
+    ax10[1].plot(e_timespercent101, np.mean(etfl_combine, 0), label='exotendon', color=ecolor)
+    ax10[1].set_xlabel('% Gait cycle')
+    # ax10[1].set_ylabel('Force (BW)')
+    # ax10[1].legend()
+    ax10[1].set_title('tfl')
+
+    # gastroc forces
+    ax10[2].plot(n_timespercent101, np.mean(ngas_combine, 0), label='natural', color=ncolor)
+    ax10[2].plot(e_timespercent101, np.mean(egas_combine, 0), label='exotendon', color=ecolor)
+    ax10[2].set_xlabel('% Gait cycle')
+    # ax10[2].set_ylabel('Force (BW)')
+    # ax10[2].legend()
+    ax10[2].set_title('gastroc')
+    
+    # hamstring forces
+    ax10[3].plot(n_timespercent101, np.mean(nhams_combine, 0), label='natural', color=ncolor)
+    ax10[3].plot(e_timespercent101, np.mean(ehams_combine, 0), label='exotendon', color=ecolor)
+    ax10[3].set_xlabel('% Gait cycle')
+    # ax10[3].set_ylabel('Force (BW)')
+    # ax10[3].legend()
+    ax10[3].set_title('hamstrings')
+
+    # quads forces
+    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='natural', color=ncolor)
+    ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='exotendon', color=ecolor)
+    ax10[4].set_xlabel('% Gait cycle')
+    # ax10[4].set_ylabel('Force (BW)')
+    # ax10[4].legend()
+    ax10[4].set_title('quadriceps')
+
+    # # reserve forces
+    # ax10[5].plot(n_timespercent101, np.mean(nreserve_combine, 0), label='natural', color=ncolor)
+    # ax10[5].plot(e_timespercent101, np.mean(ereserve_combine, 0), label='exotendon', color=ecolor)
+    # ax10[5].set_xlabel('% Gait cycle')
+    # # ax10[5].set_ylabel('Force (BW)')
+    # # ax10[5].legend()
+    # ax10[5].set_title('reserves')
+    
+    # # added all forces
+    # ax10[5].plot(n_timespercent101, np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0), label='natural', color=ncolor)
+    # ax10[5].plot(e_timespercent101, np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0), label='exotendon', color=ecolor)
+    # ax10[5].set_xlabel('% Gait cycle')
+    # # ax10[6].set_ylabel('Force (BW)')
+    # # ax10[6].legend()
+    # ax10[5].set_title('Total vertical contact')
+
+    # all forces from whole analysis
+    ax10[5].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
+    ax10[5].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
+    ax10[5].set_xlabel('% Gait cycle')
+    # ax10[5].set_ylabel('Force (BW)')
+    # ax10[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    ax10[5].set_title('Total vertical contact')
+
+    # Hide the last subplot and use it to display the legend   
+    ax10[6].axis('off')
+    handles, labels = ax10[5].get_legend_handles_labels()
+    ax10[6].legend(handles, labels, loc='center', fontsize=14)
+    fig10.tight_layout()
+    plt.savefig(analyzedir + '\\contact2_' + whichleg + '.png')
+    
+    ###########################################################################
+    ### figure: differences between conditions for each and all
+    #### this is a simplified look at the same as above. We can see nice stuff, 
+    #### but likely not going to be in the paper. 
+    fig11, ax11 = plt.subplots(1,7, figsize=(14,3))#, dpi=300)
+    # intersegmental forces average
+    ax11[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0))
+    ax11[0].set_xlabel('% Gait cycle')
+    ax11[0].set_ylabel('Force (BW)')
+    ax11[0].set_title('intersegmental')
+    # ax11[0].legend()
+    # tfl forces
+    ax11[1].plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0))
+    ax11[1].set_xlabel('% Gait cycle')
+    # ax11[1].set_ylabel('Force (BW)')
+    # ax11[1].legend()
+    ax11[1].set_title('tfl')
+
+    # gastroc forces
+    ax11[2].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0))
+    ax11[2].set_xlabel('% Gait cycle')
+    # ax11[2].set_ylabel('Force (BW)')
+    # ax11[2].legend()
+    ax11[2].set_title('gastroc')
+    
+    # hamstring forces
+    ax11[3].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0))
+    ax11[3].set_xlabel('% Gait cycle')
+    # ax11[3].set_ylabel('Force (BW)')
+    # ax11[3].legend()
+    ax11[3].set_title('hamstrings')
+
+    # quads forces
+    ax11[4].plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0))
+    ax11[4].set_xlabel('% Gait cycle')
+    # ax11[4].set_ylabel('Force (BW)')
+    # ax11[4].legend()
+    ax11[4].set_title('quadriceps')
+
+    # # added all forces
+    # ax11[5].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0)))
+    # ax11[5].set_xlabel('% Gait cycle')
+    # # ax11[5].set_ylabel('Force (BW)')
+    # # ax11[5].legend()
+    # ax11[5].set_title('Total vertical contact')
+
+    # all forces from whole analysis
+    ax11[5].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Exotendon diff from Natural')
+    ax11[5].set_xlabel('% Gait cycle')
+    # ax11[5].set_ylabel('Force (BW)')
+    # ax11[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    ax11[5].set_title('Total vertical contact')
+
+    # Hide the last subplot and use it to display the legend
+    ax11[6].axis('off')
+    handles, labels = ax11[5].get_legend_handles_labels()
+    ax11[6].legend(handles, labels, loc='center', fontsize=10)
+    fig11.tight_layout()
+    plt.savefig(analyzedir + '\\contact3_' + whichleg + '.png')
+    
+    
+    ###########################################################################
+    ### figure: changes in force segmented together on plot
+    #### Possible paper figure for R3. 
+    fig12 = plt.figure(figsize=(11,6))#, dpi=300)
+    # intersegmental forces average
+    plt.plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='intersegmental')
+    # tfl forces
+    plt.plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0), label='tfl')
+    # gastroc forces
+    plt.plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='gastroc')
+    # hamstring forces
+    plt.plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='hamstrings')
+    # quads forces
+    plt.plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0), label='quadriceps')
+    # reserve forces
+    plt.plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves')
+    # added all forces
+    plt.plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
+    # all forces from whole analysis
+    plt.plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total vertical contact', linestyle='dashed')
+    plt.xlabel('% Gait cycle')
+    plt.ylabel('Force (BW)')
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    plt.title('Exotendon change in contact force')
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact4_' + whichleg + '.png')
+
+    # TODO: figure out why the difference in total and all added together. 
+    # okay so not in how I am adding/averaging. has to be something in how the analysis is done between them.... am I missing something??
+    
+    fig13, ax13 = plt.subplots(1,3, figsize=(14,5))#, dpi=300)
+    # intersegmental forces average - natural
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural_interseg')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine + ntfl_combine, 0), label='natural_interseg + tfl')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine, 0), label='natural_interseg+tfl+hams')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine, 0), label='natural_interseg+tfl+hams+gas')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine+nquads_combine, 0), label='natural_interseg+tfl+hams+gas+quads')
+    # ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+ntfl_combine+nhams_combine+ngas_combine+nquads_combine+nreserve_combine, 0), label='natural_interseg+tfl+hams+gas+quads+reserve')
+    ax13[0].plot(n_timespercent101, np.mean(nall_combine, 0), label='nat_all', linestyle='dotted')
+    ax13[0].set_xlabel('% Gait cycle')
+    ax13[0].set_ylabel('Force (BW)')
+    ax13[0].set_title('natural')
+    # ax13[0].legend()
+    # intersegmental forces average - exotendon
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exo_interseg')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine, 0), label='exo_interseg + tfl')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine, 0), label='exo_interseg+tfl+hams')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine, 0), label='exo_interseg+tfl+hams+gas')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine+equads_combine, 0), label='exo_interseg+tfl+hams+gas+quads')
+    # ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+etfl_combine+ehams_combine+egas_combine+equads_combine+ereserve_combine, 0), label='exo_interseg+tfl+hams+gas+quads+reserve')
+    ax13[1].plot(e_timespercent101, np.mean(eall_combine, 0), label='exo_all', linestyle='dotted')
+    ax13[1].set_xlabel('% Gait cycle')
+    ax13[1].set_ylabel('Force (BW)')
+    ax13[1].set_title('exotendon')
+    # ax13[1].legend()
+
+    # Hide the last subplot and use it to display the legend   
+    ax13[2].axis('off')
+    handles, labels = ax13[1].get_legend_handles_labels()
+    ax13[2].legend(handles, labels, loc='center', fontsize=14)
+    fig13.tight_layout()
+    plt.savefig(analyzedir + '\\contact5_' + whichleg + '.png')
+    
+    ###########################################################################
+    ### Figure: total pop average for right leg between nat and exo
+    #### Figure in the paper R1... 
+    plt.figure()#dpi=300)
+    plt.fill_between(n_timespercent101, np.mean(nall_combine,0)-np.std(nall_combine,0), np.mean(nall_combine,0)+np.std(nall_combine,0), color=ncolorlight)
+    plt.fill_between(e_timespercent101, np.mean(eall_combine,0)-np.std(eall_combine,0), np.mean(eall_combine,0)+np.std(eall_combine,0), color=ecolorlight)
+    plt.plot(n_timespercent101, np.mean(nall_combine,0), color=ncolor, label='natural')
+    plt.plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='exotendon')
+    plt.xlabel('% Gait cycle')
+    plt.ylabel('Force (BW)')
+    plt.title('Total vertical contact force')
+    plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact6_' + whichleg + '.png')
+
 
     ###########################################################################
     # output the data in an excel sheet
@@ -3746,7 +3748,7 @@ if __name__ == '__main__':
                 df.to_excel(writer, sheet_name=key)
 
 
-
+    plt.show()
     pdb.set_trace()
     sys.exit()
 
