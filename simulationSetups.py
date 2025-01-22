@@ -365,7 +365,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setModel(modelProcessorDC)
     # construct a TableProcessor of the coordinate data and pass it to the tracking tool.
     tableProcessor = osim.TableProcessor('results_IK_redoarms.mot')
-    tableProcessor.append(osim.TabOpLowPassFilter(6))
+    tableProcessor.append(osim.TabOpLowPassFilter(15))
     tableProcessor.append(osim.TabOpUseAbsoluteStateNames())
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
@@ -392,7 +392,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_extension', 1e3))
     coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_bending', 1e3))
     coordinateweights.cloneAndAppend(osim.MocoWeight('lumber_rotation', 1e3))
-    track.set_states_weight_set(coordinateweights)
+    # track.set_states_weight_set(coordinateweights)
 
     # get the gait cycle timings
     cycles = ouf.subjectGaitTimings()
