@@ -2090,11 +2090,11 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    # resultsdir = os.path.join(repodir, '..\\results');
-    # analyzedir = os.path.join(repodir, '..\\analysis');
+    resultsdir = os.path.join(repodir, '..\\results');
+    analyzedir = os.path.join(repodir, '..\\analysis');
     # previous results directory
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
@@ -3775,7 +3775,7 @@ if __name__ == '__main__':
     diff_peaks_all_combine = peaks_nall_combine - peaks_eall_combine
     mean_diff_peaks_all_combine = np.mean(peaks_nall_combine - peaks_eall_combine)
     std_diff_peaks_all_combine = np.std(peaks_nall_combine - peaks_eall_combine)
-    
+
     # shapiro test for normal on the peaks differences
     res = scipy.stats.shapiro(diff_peaks_all_combine)
     
