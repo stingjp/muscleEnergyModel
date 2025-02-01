@@ -28,7 +28,7 @@ ncolor8 = '#a63603'
 ncolor9 = '#7f2704'
 
 
-
+plt.rcParams['font.family'] = 'Times New Roman'
 # exotendoncolor = '#f1a340'
 ecolor = '#5e3c99'
 ecolorlight = '#d8daeb'
@@ -69,7 +69,7 @@ def get_model_total_mass(wkdir, filename):
     return modelmass #*grav
 # function that actually runs the analysis to compute knee contact force, and
 # transforms it to the tibia frame
-def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag):
+def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool):
     # '''
     # intersegmental forces - method 2
     # try the analysis
@@ -105,9 +105,13 @@ def computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag):
     jr_tool.printToXML(os.path.join(trialdir, 'jr_setup.xml'))
     # time.sleep(0.5)
     # jr_tool = osim.AnalyzeTool(os.path.join(trialdir, 'jr_setup.xml'))
-    jr_tool.run()
-    time.sleep(0.5)
-    # '''
+    
+    if runtool:
+        jr_tool.run()
+        time.sleep(0.5)
+    else:
+        print('\n TOOL NOT RUNNING - JUST COLLECTING OLD RESULTS')
+
     # figure out how to do an intersegmental with proper value of forces showing up.
     trimjra = osim.TimeSeriesTable('jr_analysis_100con_jra_' + tag + '_ReactionLoads.sto')
     trimjralabels = trimjra.getColumnLabels()
@@ -165,7 +169,6 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichl
     else:
         print('\n TOOL NOT RUNNING - JUST COLLECTING OLD RESULTS')
     
-    
     # '''
     # figure out how to do an intersegmental with proper value of forces showing up.
     trimjra = osim.TimeSeriesTable('jr_analysis_redo_jra_redo_' + tag + '_ReactionLoads.sto')
@@ -174,6 +177,40 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichl
         tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
     elif whichleg == 'left':
         tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+    elif whichleg == 'both':
+        tibyr = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+        tibyl = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+        # tiby = np.array([tibyr, tibyl])
+
+        # do a little peak finding, then get the index, and orient the index to match the peak in the right
+        # then add the two together.
+        # Find the peak value and index for tibyl
+        peak_tibyl = np.min(tibyl)
+        peak_index_tibyl = np.argmin(tibyl)
+
+        # Find the peak value and index for tibyr
+        peak_tibyr = np.min(tibyr)
+        peak_index_tibyr = np.argmin(tibyr)
+
+        # Rotate tibyl to match the peak index of tibyr
+        tibyl_rotated = np.roll(tibyl, peak_index_tibyr - peak_index_tibyl)
+        
+        # print('Peak index tibyl: ' + str(peak_index_tibyl))
+        # print('Peak index tibyr: ' + str(peak_index_tibyr))
+        # print('Peak value tibyl: ' + str(peak_tibyl))
+        # print('Peak value tibyr: ' + str(peak_tibyr))
+        # pdb.set_trace()
+        # plt.plot(tibyr, label='tibyr')
+        # plt.plot(tibyl, label='tibyl')
+        # plt.plot(tibyl_rotated, label='tibyl_rotated')
+        # plt.legend()
+        # plt.show()
+        # pdb.set_trace()
+
+        # Combine the right and left data
+        tiby = (tibyr+tibyl_rotated)/2
+         
+
     # pdb.set_trace()
     # import matplotlib.pyplot as plt
     # plt.figure()
@@ -229,7 +266,7 @@ def computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag):
     # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
     return tiby
 # method for computing the individual muscle contributions to knee contact force
-def getKneeContactributions(trialdir, musclesWanted_split, tag):
+def getKneeContactributions(trialdir, musclesWanted_split, tag, whichleg, runtool):
     # os.chdir(trialdir)
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
     # model = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
@@ -295,7 +332,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
     
     
     elif 'all' in musclesWanted_split:
@@ -343,7 +380,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
     
         ###
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
     
     elif 'reserve' in musclesWanted_split:
         statesStorage = osim.Storage('muscletrack_states_100con.sto')
@@ -410,7 +447,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
     
     elif 'none' in musclesWanted_split:
         statesStorage = osim.Storage('muscletrack_states_100con.sto')
@@ -475,7 +512,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
         
         # call the analyze tool to actually do the analysis and get the values. 
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         
     
     else:
@@ -590,7 +627,7 @@ def getKneeContactributions(trialdir, musclesWanted_split, tag):
         trimmodel.printToXML('trimmingmodel2' + tag + '.osim')
     
         ###
-        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag)
+        jray = computeKneeContact(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
     
     return jray
 # method for computing the individual muscle contributions to knee contact force
@@ -2090,18 +2127,18 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    resultsdir = os.path.join(repodir, '..\\results');
-    analyzedir = os.path.join(repodir, '..\\analysis');
+    # resultsdir = os.path.join(repodir, '..\\results');
+    # analyzedir = os.path.join(repodir, '..\\analysis');
     # previous results directory
-    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
-    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk010','welk013'];
+    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'right'
+    whichleg = 'both'
     oldnotredo = False
     runtool = True
 
@@ -2905,6 +2942,15 @@ if __name__ == '__main__':
         musclesWanted['all'] = ['all']
         musclesWanted['reserve'] = ['reserve']
         musclesWanted['none'] = ['none']
+    elif whichleg == 'both':
+        musclesWanted['inter'] = []
+        musclesWanted['quads'] = ['vaslat_r', 'vasmed_r', 'vasint_r', 'recfem_r','vaslat_l', 'vasmed_l', 'vasint_l', 'recfem_l']
+        musclesWanted['hams']  = ['bflh_r', 'bfsh_r', 'grac_r', 'sart_r', 'semimem_r', 'semiten_r','bflh_l', 'bfsh_l', 'grac_l', 'sart_l', 'semimem_l', 'semiten_l']
+        musclesWanted['gas']   = ['gaslat_r', 'gasmed_r','gaslat_l', 'gasmed_l']
+        musclesWanted['tfl']   = ['tfl_r','tfl_l']
+        musclesWanted['all'] = ['all']
+        musclesWanted['reserve'] = ['reserve']
+        musclesWanted['none'] = ['none']
     # TODO
     
     # plot the stuff
@@ -2989,14 +3035,14 @@ if __name__ == '__main__':
                 try: 
                     if oldnotredo:
                         ## okay now going to focus on the figures that I actually wanted 
-                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
+                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams', whichleg, runtool)
+                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl', whichleg, runtool)
+                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
@@ -3009,6 +3055,7 @@ if __name__ == '__main__':
                         jrasrnone = getKneeContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                 except:
                     print('Error with: ' + trialdir)
+                    pdb.set_trace()
                     continue
                     
                 #### do some other data grabs here for the other data that we care about in each trial. 
@@ -3077,7 +3124,6 @@ if __name__ == '__main__':
     # now the natural conditions
     # now the natural 
     spot = 0
-    
     for subj in range(len(welksubjects)):
         subject = welksubjects[subj]
         subjdir = os.path.join(resultsdir, subject)
@@ -3158,14 +3204,14 @@ if __name__ == '__main__':
                 
                 try:    
                     if oldnotredo:
-                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads')
-                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams')
-                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas')
-                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl')
-                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter')
-                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all')
-                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve')
-                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none')
+                        jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
+                        jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams', whichleg, runtool)
+                        jrasrgas = getKneeContactributions(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrtfl = getKneeContactributions(trialdir, musclesWanted['tfl'], 'tfl', whichleg, runtool)
+                        jrasrinter = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
@@ -3192,7 +3238,7 @@ if __name__ == '__main__':
                 # and do the kinematics as well
 
                 # and make sure to look at the residuals too
-
+                pdb.set_trace()
 
                 # subtract out the inter segmental
                 jrasrinteronly = jrasrinterreserve
@@ -3481,82 +3527,107 @@ if __name__ == '__main__':
     fig9.tight_layout()
     plt.savefig(analyzedir + '\\contact1_' + whichleg + '.png')
 
-
+    pdb.set_trace()
     ###########################################################################
     # figure: segmenting all the muscles between exo and nat 
     ## really nice figure for seeing what is going on, but likely not going to 
     ## be in the paper...
-    fig10, ax10 = plt.subplots(1,7, figsize=(14,3))#, dpi=300)
+    fig10, ax10 = plt.subplots(1,7, figsize=(18,2.5), dpi=500)
+    fontz = 14
+    font_properties = {'fontsize': 14, 'fontfamily': 'serif', 'fontname': 'Times New Roman'}
+    # tick_font_properties = {'fontfamily': 'serif', 'fontname': 'Times New Roman'}
+
+
     # intersegmental forces average
+    ax10[0].fill_between(n_timespercent101, np.mean(ninterseg_combine, 0) - np.std(ninterseg_combine, 0), np.mean(ninterseg_combine, 0) + np.std(ninterseg_combine, 0), color=ncolor, alpha=0.2)
+    ax10[0].fill_between(e_timespercent101, np.mean(einterseg_combine, 0) - np.std(einterseg_combine, 0), np.mean(einterseg_combine, 0) + np.std(einterseg_combine, 0), color=ecolor, alpha=0.2)
     ax10[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
     ax10[0].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
-    ax10[0].set_xlabel('% Gait cycle')
-    ax10[0].set_ylabel('Force (BW)')
-    ax10[0].set_title('intersegmental')
+    ax10[0].set_xlabel('% Gait cycle', **font_properties)
+    ax10[0].set_ylabel('Force (BW)', **font_properties)
+    ax10[0].set_title('Intersegmental', **font_properties)
+    ax10[0].tick_params(axis='both', which='major', labelsize=fontz)
+
+
     # ax10[0].legend()
     # tfl forces
+    ax10[1].fill_between(n_timespercent101, np.mean(ntfl_combine, 0) - np.std(ntfl_combine, 0), np.mean(ntfl_combine, 0) + np.std(ntfl_combine, 0), color=ncolor, alpha=0.2)
+    ax10[1].fill_between(e_timespercent101, np.mean(etfl_combine, 0) - np.std(etfl_combine, 0), np.mean(etfl_combine, 0) + np.std(etfl_combine, 0), color=ecolor, alpha=0.2)
     ax10[1].plot(n_timespercent101, np.mean(ntfl_combine, 0), label='natural', color=ncolor)
     ax10[1].plot(e_timespercent101, np.mean(etfl_combine, 0), label='exotendon', color=ecolor)
-    ax10[1].set_xlabel('% Gait cycle')
+    ax10[1].set_xlabel('% Gait cycle', **font_properties)
+    ax10[1].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[1].set_ylabel('Force (BW)')
     # ax10[1].legend()
-    ax10[1].set_title('tfl')
+    ax10[1].set_title('Tensor Fascia Latae', **font_properties)
 
     # gastroc forces
+    ax10[2].fill_between(n_timespercent101, np.mean(ngas_combine, 0) - np.std(ngas_combine, 0), np.mean(ngas_combine, 0) + np.std(ngas_combine, 0), color=ncolor, alpha=0.2)
+    ax10[2].fill_between(e_timespercent101, np.mean(egas_combine, 0) - np.std(egas_combine, 0), np.mean(egas_combine, 0) + np.std(egas_combine, 0), color=ecolor, alpha=0.2)
     ax10[2].plot(n_timespercent101, np.mean(ngas_combine, 0), label='natural', color=ncolor)
     ax10[2].plot(e_timespercent101, np.mean(egas_combine, 0), label='exotendon', color=ecolor)
-    ax10[2].set_xlabel('% Gait cycle')
+    ax10[2].set_xlabel('% Gait cycle', **font_properties)
+    ax10[2].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[2].set_ylabel('Force (BW)')
     # ax10[2].legend()
-    ax10[2].set_title('gastroc')
-    
+    ax10[2].set_title('Gastrocnemius', **font_properties)
+
     # hamstring forces
+    ax10[3].fill_between(n_timespercent101, np.mean(nhams_combine, 0) - np.std(nhams_combine, 0), np.mean(nhams_combine, 0) + np.std(nhams_combine, 0), color=ncolor, alpha=0.2)
+    ax10[3].fill_between(e_timespercent101, np.mean(ehams_combine, 0) - np.std(ehams_combine, 0), np.mean(ehams_combine, 0) + np.std(ehams_combine, 0), color=ecolor, alpha=0.2)
     ax10[3].plot(n_timespercent101, np.mean(nhams_combine, 0), label='natural', color=ncolor)
     ax10[3].plot(e_timespercent101, np.mean(ehams_combine, 0), label='exotendon', color=ecolor)
-    ax10[3].set_xlabel('% Gait cycle')
+    ax10[3].set_xlabel('% Gait cycle', **font_properties)
+    ax10[3].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[3].set_ylabel('Force (BW)')
     # ax10[3].legend()
-    ax10[3].set_title('hamstrings')
+    ax10[3].set_title('Hamstrings', **font_properties)
 
     # quads forces
-    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='natural', color=ncolor)
-    ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='exotendon', color=ecolor)
-    ax10[4].set_xlabel('% Gait cycle')
+    ax10[4].fill_between(n_timespercent101, np.mean(nquads_combine, 0) - np.std(nquads_combine, 0), np.mean(nquads_combine, 0) + np.std(nquads_combine, 0), color=ncolor, alpha=0.2)#, label='Natural St. Dev.')
+    ax10[4].fill_between(e_timespercent101, np.mean(equads_combine, 0) - np.std(equads_combine, 0), np.mean(equads_combine, 0) + np.std(equads_combine, 0), color=ecolor, alpha=0.2)#, label='Exotendon St. Dev.')
+    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='Natural (Mean +/- Std.', color=ncolor)
+    ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='Exotendon (Mean +/- Std.)', color=ecolor)
+    ax10[4].set_xlabel('% Gait cycle', **font_properties)
+    ax10[4].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[4].set_ylabel('Force (BW)')
     # ax10[4].legend()
-    ax10[4].set_title('quadriceps')
+    ax10[4].set_title('Quadriceps', **font_properties)
 
     # # reserve forces
     # ax10[5].plot(n_timespercent101, np.mean(nreserve_combine, 0), label='natural', color=ncolor)
     # ax10[5].plot(e_timespercent101, np.mean(ereserve_combine, 0), label='exotendon', color=ecolor)
-    # ax10[5].set_xlabel('% Gait cycle')
+    # ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # # ax10[5].set_ylabel('Force (BW)')
     # # ax10[5].legend()
     # ax10[5].set_title('reserves')
-    
+
     # # added all forces
     # ax10[5].plot(n_timespercent101, np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0), label='natural', color=ncolor)
     # ax10[5].plot(e_timespercent101, np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0), label='exotendon', color=ecolor)
-    # ax10[5].set_xlabel('% Gait cycle')
+    # ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # # ax10[6].set_ylabel('Force (BW)')
     # # ax10[6].legend()
     # ax10[5].set_title('Total vertical contact')
 
     # all forces from whole analysis
+    ax10[5].fill_between(n_timespercent101, np.mean(nall_combine, 0) - np.std(nall_combine, 0), np.mean(nall_combine, 0) + np.std(nall_combine, 0), color=ncolor, alpha=0.2)
+    ax10[5].fill_between(e_timespercent101, np.mean(eall_combine, 0) - np.std(eall_combine, 0), np.mean(eall_combine, 0) + np.std(eall_combine, 0), color=ecolor, alpha=0.2)
     ax10[5].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
     ax10[5].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
-    ax10[5].set_xlabel('% Gait cycle')
+    ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # ax10[5].set_ylabel('Force (BW)')
     # ax10[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    ax10[5].set_title('Total vertical contact')
+    ax10[5].set_title('Total vertical contact', **font_properties)
+    ax10[5].tick_params(axis='both', which='major', labelsize=fontz)
 
     # Hide the last subplot and use it to display the legend   
     ax10[6].axis('off')
-    handles, labels = ax10[5].get_legend_handles_labels()
-    ax10[6].legend(handles, labels, loc='center', fontsize=14)
-    fig10.tight_layout()
+    handles, labels = ax10[4].get_legend_handles_labels()
+    # ax10[6].legend(handles, labels, loc='center', fontsize=fontz)
+    fig10.tight_layout(pad=2.0, w_pad=0.5, h_pad=1.0)
     plt.savefig(analyzedir + '\\contact2_' + whichleg + '.png')
-    
+
     ###########################################################################
     ### figure: differences between conditions for each and all
     #### this is a simplified look at the same as above. We can see nice stuff, 
@@ -3581,7 +3652,7 @@ if __name__ == '__main__':
     # ax11[2].set_ylabel('Force (BW)')
     # ax11[2].legend()
     ax11[2].set_title('gastroc')
-    
+
     # hamstring forces
     ax11[3].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0))
     ax11[3].set_xlabel('% Gait cycle')
