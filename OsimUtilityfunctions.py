@@ -243,6 +243,11 @@ def getIDMoments(trialdir, moments, modelmass):
         print('trial name not recognized')
         return
 
+    ## ISSUE: welk002 has ID for an early gait cycle, 
+    # and then we solve for much later in the trial
+    # need to adjust the gait start and end times for this trial, 
+    # or handle the timings separately. 
+
     # okay so we have the file, now we need to get the data from it
     trialtime = trialmomfile.getIndependentColumn()
     trialtime = np.array(trialtime)
@@ -259,11 +264,17 @@ def getIDMoments(trialdir, moments, modelmass):
             tempmom = trialmomfile.getDependentColumn(temp).to_numpy()
             # okay now we have to shorten to the right time frame and get it all situated. 
             # Create a mask for the time values that fall between gait_start and gait_end
-            mask = (trialtime >= gait_start) & (trialtime <= gait_end)
-            # Apply the mask to trialtime and tempmom
-            trialtime_shortened = trialtime[mask]
-            tempmom_shortened = tempmom[mask]
-            tempmom_interpolated = np.interp(np.linspace(gait_start, gait_end, 100), trialtime_shortened, tempmom_shortened).flatten()
+            try:
+                mask = (trialtime >= gait_start) & (trialtime <= gait_end)
+                # Apply the mask to trialtime and tempmom
+                trialtime_shortened = trialtime[mask]
+                tempmom_shortened = tempmom[mask]
+                tempmom_interpolated = np.interp(np.linspace(gait_start, gait_end, 100), trialtime_shortened, tempmom_shortened).flatten()
+            except:
+                trialtime_shortened = trialtime
+                tempmom_shortened = tempmom
+                tempmom_interpolated = np.interp(np.linspace(trialtime[0], trialtime[-1], 100), trialtime_shortened, tempmom_shortened).flatten()
+            
             tempmom_interpolated = tempmom_interpolated / modelmass
             # Check if the key exists in the dictionary
             if temp not in moments:
