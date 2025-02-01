@@ -3238,7 +3238,6 @@ if __name__ == '__main__':
                 # and do the kinematics as well
 
                 # and make sure to look at the residuals too
-                pdb.set_trace()
 
                 # subtract out the inter segmental
                 jrasrinteronly = jrasrinterreserve
