@@ -187,9 +187,9 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk008','welk009','welk010','welk013']# ['welk003','welk005','welk002']  # ['welk008','welk009','welk010','welk013'] #  'welk002','welk003','welk005'
-welkconditions = ['welknatural', 'welkexo'] 
-trials = ['trial01', 'trial02', 'trial03', 'trial04'] # nat 1,2 done
+subjects = ['welk005']#,'welk009','welk010','welk013']# ['welk003','welk005','welk002']  # ['welk008','welk009','welk010','welk013'] #  'welk002','welk003','welk005'
+welkconditions = ['welknatural']#, 'welknatural'] 
+trials = ['trial01']#, 'trial03', 'trial02', 'trial01'] # nat 1,2, 3(fail) done... 
 whatfailed = {}
 trackGRF = False
 

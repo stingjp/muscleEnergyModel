@@ -741,7 +741,9 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     if not trackGRF:
         print('not tracking GRF')
         modelProcessor = osim.ModelProcessor("simple_model_all_the_probes.osim")
-        modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
+        # modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
+        modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk - Copy.xml"))
+
         weldem.append('mtp_r')
         weldem.append('mtp_l')
     else: 
