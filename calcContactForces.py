@@ -2129,7 +2129,7 @@ if __name__ == '__main__':
     # current results directory
     # resultsdir = os.path.join(repodir, '..\\results');
     # analyzedir = os.path.join(repodir, '..\\analysis');
-    # previous results directory
+    # previous (combo) results directory
     resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
@@ -2140,7 +2140,8 @@ if __name__ == '__main__':
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
-    runtool = True
+    runtool = False
+    indresults = False
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -3281,6 +3282,13 @@ if __name__ == '__main__':
     ###########################################################################
     # plotting for activations, moments, etc. muscle insights for natural and exotendon
 
+    if indresults: 
+        # tweak the results directory to print out in an individual folder for subject. 
+        analyzedir = os.path.join(analyzedir, welksubjects[0])
+        print(analyzedir)
+    
+    pdb.set_trace()
+
     # create a figure for the muscle activations for natural and exotendon
     fig1, ax1 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
     muscles = list(muscleacts_nat.keys())
@@ -3424,7 +3432,6 @@ if __name__ == '__main__':
         ncolors = ['#fee0b6', '#fdae6b', '#fd8d3c', '#e66101']
         ecolors = ['#c7eae5', '#80cdc1', '#35978f', '#01665e']
     
-    pdb.set_trace()
 
     ###########################################################################
     # figure: segmenting all the muscles between exo and nat 
@@ -3526,14 +3533,13 @@ if __name__ == '__main__':
     fig9.tight_layout()
     plt.savefig(analyzedir + '\\contact1_' + whichleg + '.png')
 
-    pdb.set_trace()
     ###########################################################################
     # figure: segmenting all the muscles between exo and nat 
     ## really nice figure for seeing what is going on, but likely not going to 
     ## be in the paper...
     fig10, ax10 = plt.subplots(1,7, figsize=(18,2.5), dpi=500)
-    fontz = 14
-    font_properties = {'fontsize': 14, 'fontfamily': 'serif', 'fontname': 'Times New Roman'}
+    fontz = 16
+    font_properties = {'fontsize': 16, 'fontfamily': 'serif', 'fontname': 'Times New Roman'}
     # tick_font_properties = {'fontfamily': 'serif', 'fontname': 'Times New Roman'}
 
 
@@ -3585,7 +3591,7 @@ if __name__ == '__main__':
     # quads forces
     ax10[4].fill_between(n_timespercent101, np.mean(nquads_combine, 0) - np.std(nquads_combine, 0), np.mean(nquads_combine, 0) + np.std(nquads_combine, 0), color=ncolor, alpha=0.2)#, label='Natural St. Dev.')
     ax10[4].fill_between(e_timespercent101, np.mean(equads_combine, 0) - np.std(equads_combine, 0), np.mean(equads_combine, 0) + np.std(equads_combine, 0), color=ecolor, alpha=0.2)#, label='Exotendon St. Dev.')
-    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='Natural (Mean +/- Std.', color=ncolor)
+    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='Natural (Mean +/- Std.)', color=ncolor)
     ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='Exotendon (Mean +/- Std.)', color=ecolor)
     ax10[4].set_xlabel('% Gait cycle', **font_properties)
     ax10[4].tick_params(axis='both', which='major', labelsize=fontz)
@@ -3617,7 +3623,7 @@ if __name__ == '__main__':
     ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # ax10[5].set_ylabel('Force (BW)')
     # ax10[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    ax10[5].set_title('Total vertical contact', **font_properties)
+    ax10[5].set_title('Vertical knee contact', **font_properties)
     ax10[5].tick_params(axis='both', which='major', labelsize=fontz)
 
     # Hide the last subplot and use it to display the legend   
