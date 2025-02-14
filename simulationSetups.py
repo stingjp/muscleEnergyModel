@@ -312,6 +312,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 # muscle driven state tracking simulation = third pass (testing)
 def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF):
+    
     # create the tracking problem
     track = osim.MocoTrack()
     track.setName("muscle_statetrack_grfprescribe")
@@ -423,7 +424,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem = study.updProblem()
     # effort goal
     effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
-    effort.setWeight(0.05)
+    effort.setWeight(0.01)
     # initial activation goals
     initactivationgoal = osim.MocoInitialActivationGoal('init_activation')
     initactivationgoal.setWeight(10)
@@ -453,7 +454,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 40) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 20) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -482,7 +483,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*mtp.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*subtalar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 400)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 100)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 100)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
@@ -493,8 +494,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
     problem.addGoal(jointMomentTracking)
 
-    # set up a joint reaction goal to minimize knee joint contact... 
-    jointReaction = osim.MocoJointReactionGoal('joint_reaction', 1)
+    ### set up a joint reaction goal to minimize knee joint contact... 
+    jointReaction = osim.MocoJointReactionGoal('joint_reaction', 0.05)
     # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
     # loadframe = osim.StdVectorString(); loadframe.append('child')
     # framepaths = osim.StdVectorString(); framepaths.append('/bodyset/tibia_r')
@@ -503,9 +504,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction.setLoadsFrame('child')
     jointReaction.setExpressedInFramePath('/bodyset/tibia_r')
     jointReaction.setReactionMeasures(whichForces)
-    problem.addGoal(jointReaction)
+    # problem.addGoal(jointReaction)
 
-
+    ### grf tracking goal... if we specify that we want it... (not default for this project.)
     GRFTrackingWeight = 1
     # set up the GRF tracking goal
     # if GRFTrackingWeight != 0:
