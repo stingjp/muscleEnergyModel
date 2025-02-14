@@ -2135,13 +2135,13 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk003']#,'welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
     runtool = False
-    indresults = False
+    indresults = True
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -3287,8 +3287,6 @@ if __name__ == '__main__':
         analyzedir = os.path.join(analyzedir, welksubjects[0])
         print(analyzedir)
     
-    pdb.set_trace()
-
     # create a figure for the muscle activations for natural and exotendon
     fig1, ax1 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
     muscles = list(muscleacts_nat.keys())
@@ -3537,34 +3535,32 @@ if __name__ == '__main__':
     # figure: segmenting all the muscles between exo and nat 
     ## really nice figure for seeing what is going on, but likely not going to 
     ## be in the paper...
-    fig10, ax10 = plt.subplots(1,7, figsize=(18,2.5), dpi=500)
+    fig10, ax10 = plt.subplots(1,7, figsize=(18,3), dpi=500)
     fontz = 16
     font_properties = {'fontsize': 16, 'fontfamily': 'serif', 'fontname': 'Times New Roman'}
     # tick_font_properties = {'fontfamily': 'serif', 'fontname': 'Times New Roman'}
 
-
-    # intersegmental forces average
-    ax10[0].fill_between(n_timespercent101, np.mean(ninterseg_combine, 0) - np.std(ninterseg_combine, 0), np.mean(ninterseg_combine, 0) + np.std(ninterseg_combine, 0), color=ncolor, alpha=0.2)
-    ax10[0].fill_between(e_timespercent101, np.mean(einterseg_combine, 0) - np.std(einterseg_combine, 0), np.mean(einterseg_combine, 0) + np.std(einterseg_combine, 0), color=ecolor, alpha=0.2)
-    ax10[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
-    ax10[0].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
+    # all forces from whole analysis
+    ax10[0].fill_between(n_timespercent101, np.mean(nall_combine, 0) - np.std(nall_combine, 0), np.mean(nall_combine, 0) + np.std(nall_combine, 0), color=ncolor, alpha=0.2)
+    ax10[0].fill_between(e_timespercent101, np.mean(eall_combine, 0) - np.std(eall_combine, 0), np.mean(eall_combine, 0) + np.std(eall_combine, 0), color=ecolor, alpha=0.2)
+    ax10[0].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
+    ax10[0].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
     ax10[0].set_xlabel('% Gait cycle', **font_properties)
     ax10[0].set_ylabel('Force (BW)', **font_properties)
-    ax10[0].set_title('Intersegmental', **font_properties)
+    # ax10[0].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    ax10[0].set_title('Total\nVertical Knee Contact', **font_properties)
     ax10[0].tick_params(axis='both', which='major', labelsize=fontz)
 
-
-    # ax10[0].legend()
-    # tfl forces
-    ax10[1].fill_between(n_timespercent101, np.mean(ntfl_combine, 0) - np.std(ntfl_combine, 0), np.mean(ntfl_combine, 0) + np.std(ntfl_combine, 0), color=ncolor, alpha=0.2)
-    ax10[1].fill_between(e_timespercent101, np.mean(etfl_combine, 0) - np.std(etfl_combine, 0), np.mean(etfl_combine, 0) + np.std(etfl_combine, 0), color=ecolor, alpha=0.2)
-    ax10[1].plot(n_timespercent101, np.mean(ntfl_combine, 0), label='natural', color=ncolor)
-    ax10[1].plot(e_timespercent101, np.mean(etfl_combine, 0), label='exotendon', color=ecolor)
+    # quads forces
+    ax10[1].fill_between(n_timespercent101, np.mean(nquads_combine, 0) - np.std(nquads_combine, 0), np.mean(nquads_combine, 0) + np.std(nquads_combine, 0), color=ncolor, alpha=0.2)#, label='Natural St. Dev.')
+    ax10[1].fill_between(e_timespercent101, np.mean(equads_combine, 0) - np.std(equads_combine, 0), np.mean(equads_combine, 0) + np.std(equads_combine, 0), color=ecolor, alpha=0.2)#, label='Exotendon St. Dev.')
+    ax10[1].plot(n_timespercent101, np.mean(nquads_combine, 0), label='Natural (Mean \u00B1 Std.)', color=ncolor)
+    ax10[1].plot(e_timespercent101, np.mean(equads_combine, 0), label='Exotendon (Mean \u00B1 Std.)', color=ecolor)
     ax10[1].set_xlabel('% Gait cycle', **font_properties)
     ax10[1].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[1].set_ylabel('Force (BW)')
     # ax10[1].legend()
-    ax10[1].set_title('Tensor Fascia Latae', **font_properties)
+    ax10[1].set_title('Contribution of\nQuadriceps', **font_properties)
 
     # gastroc forces
     ax10[2].fill_between(n_timespercent101, np.mean(ngas_combine, 0) - np.std(ngas_combine, 0), np.mean(ngas_combine, 0) + np.std(ngas_combine, 0), color=ncolor, alpha=0.2)
@@ -3575,7 +3571,7 @@ if __name__ == '__main__':
     ax10[2].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[2].set_ylabel('Force (BW)')
     # ax10[2].legend()
-    ax10[2].set_title('Gastrocnemius', **font_properties)
+    ax10[2].set_title('Contribution of\nGastrocnemius', **font_properties)
 
     # hamstring forces
     ax10[3].fill_between(n_timespercent101, np.mean(nhams_combine, 0) - np.std(nhams_combine, 0), np.mean(nhams_combine, 0) + np.std(nhams_combine, 0), color=ncolor, alpha=0.2)
@@ -3586,18 +3582,28 @@ if __name__ == '__main__':
     ax10[3].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[3].set_ylabel('Force (BW)')
     # ax10[3].legend()
-    ax10[3].set_title('Hamstrings', **font_properties)
+    ax10[3].set_title('Contribution of\nHamstrings', **font_properties)
 
-    # quads forces
-    ax10[4].fill_between(n_timespercent101, np.mean(nquads_combine, 0) - np.std(nquads_combine, 0), np.mean(nquads_combine, 0) + np.std(nquads_combine, 0), color=ncolor, alpha=0.2)#, label='Natural St. Dev.')
-    ax10[4].fill_between(e_timespercent101, np.mean(equads_combine, 0) - np.std(equads_combine, 0), np.mean(equads_combine, 0) + np.std(equads_combine, 0), color=ecolor, alpha=0.2)#, label='Exotendon St. Dev.')
-    ax10[4].plot(n_timespercent101, np.mean(nquads_combine, 0), label='Natural (Mean +/- Std.)', color=ncolor)
-    ax10[4].plot(e_timespercent101, np.mean(equads_combine, 0), label='Exotendon (Mean +/- Std.)', color=ecolor)
+    # tfl forces
+    ax10[4].fill_between(n_timespercent101, np.mean(ntfl_combine, 0) - np.std(ntfl_combine, 0), np.mean(ntfl_combine, 0) + np.std(ntfl_combine, 0), color=ncolor, alpha=0.2)
+    ax10[4].fill_between(e_timespercent101, np.mean(etfl_combine, 0) - np.std(etfl_combine, 0), np.mean(etfl_combine, 0) + np.std(etfl_combine, 0), color=ecolor, alpha=0.2)
+    ax10[4].plot(n_timespercent101, np.mean(ntfl_combine, 0), label='natural', color=ncolor)
+    ax10[4].plot(e_timespercent101, np.mean(etfl_combine, 0), label='exotendon', color=ecolor)
     ax10[4].set_xlabel('% Gait cycle', **font_properties)
     ax10[4].tick_params(axis='both', which='major', labelsize=fontz)
     # ax10[4].set_ylabel('Force (BW)')
     # ax10[4].legend()
-    ax10[4].set_title('Quadriceps', **font_properties)
+    ax10[4].set_title('Contribution of\nTensor Fascia Latae', **font_properties)
+
+    # intersegmental forces average
+    ax10[5].fill_between(n_timespercent101, np.mean(ninterseg_combine, 0) - np.std(ninterseg_combine, 0), np.mean(ninterseg_combine, 0) + np.std(ninterseg_combine, 0), color=ncolor, alpha=0.2)
+    ax10[5].fill_between(e_timespercent101, np.mean(einterseg_combine, 0) - np.std(einterseg_combine, 0), np.mean(einterseg_combine, 0) + np.std(einterseg_combine, 0), color=ecolor, alpha=0.2)
+    ax10[5].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
+    ax10[5].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
+    ax10[5].set_xlabel('% Gait cycle', **font_properties)
+    # ax10[5].set_ylabel('Force (BW)', **font_properties)
+    ax10[5].set_title('Contribution of\nIntersegmental Forces', **font_properties)
+    ax10[5].tick_params(axis='both', which='major', labelsize=fontz)    
 
     # # reserve forces
     # ax10[5].plot(n_timespercent101, np.mean(nreserve_combine, 0), label='natural', color=ncolor)
@@ -3615,20 +3621,9 @@ if __name__ == '__main__':
     # # ax10[6].legend()
     # ax10[5].set_title('Total vertical contact')
 
-    # all forces from whole analysis
-    ax10[5].fill_between(n_timespercent101, np.mean(nall_combine, 0) - np.std(nall_combine, 0), np.mean(nall_combine, 0) + np.std(nall_combine, 0), color=ncolor, alpha=0.2)
-    ax10[5].fill_between(e_timespercent101, np.mean(eall_combine, 0) - np.std(eall_combine, 0), np.mean(eall_combine, 0) + np.std(eall_combine, 0), color=ecolor, alpha=0.2)
-    ax10[5].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
-    ax10[5].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
-    ax10[5].set_xlabel('% Gait cycle', **font_properties)
-    # ax10[5].set_ylabel('Force (BW)')
-    # ax10[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    ax10[5].set_title('Vertical knee contact', **font_properties)
-    ax10[5].tick_params(axis='both', which='major', labelsize=fontz)
-
     # Hide the last subplot and use it to display the legend   
     ax10[6].axis('off')
-    handles, labels = ax10[4].get_legend_handles_labels()
+    handles, labels = ax10[1].get_legend_handles_labels()
     # ax10[6].legend(handles, labels, loc='center', fontsize=fontz)
     fig10.tight_layout(pad=2.0, w_pad=0.5, h_pad=1.0)
     plt.savefig(analyzedir + '\\contact2_' + whichleg + '.png')
@@ -3826,112 +3821,99 @@ if __name__ == '__main__':
 
     plt.show()
     pdb.set_trace()
-    sys.exit()
+    print('\n\nbeyond this is the breakdown paper figures.')
+    # sys.exit()
 
-    ###########################################################################
-    # stats for the data
-    # here is the stats for R1 - differences in the peak vertical JCF
-    mean_nall_combine = np.mean(nall_combine,0)
-    std_nall_combine = np.std(nall_combine,0)
-    mean_eall_combine = np.mean(eall_combine,0)
-    std_eall_combine = np.std(eall_combine,0)
+    # ###########################################################################
+    # # stats for the data
+    # # here is the stats for R1 - differences in the peak vertical JCF
+    # mean_nall_combine = np.mean(nall_combine,0)
+    # std_nall_combine = np.std(nall_combine,0)
+    # mean_eall_combine = np.mean(eall_combine,0)
+    # std_eall_combine = np.std(eall_combine,0)
 
-    # get the peaks first and then do the stats on them...
-    peaks_nall_combine = np.max(nall_combine,1)
-    idx_peaks_nall_combine = nall_combine.argmax(1)
-    peaks_eall_combine = np.max(eall_combine,1)
-    idx_peaks_eall_combine = eall_combine.argmax(1)
+    # # get the peaks first and then do the stats on them...
+    # peaks_nall_combine = np.max(nall_combine,1)
+    # idx_peaks_nall_combine = nall_combine.argmax(1)
+    # peaks_eall_combine = np.max(eall_combine,1)
+    # idx_peaks_eall_combine = eall_combine.argmax(1)
 
-    mean_peaks_nall_combine = np.mean(peaks_nall_combine)
-    mean_peaks_eall_combine = np.mean(peaks_eall_combine)
-    std_peaks_nall_combine = np.std(peaks_nall_combine)
-    std_peaks_eall_combine = np.std(peaks_eall_combine)
+    # mean_peaks_nall_combine = np.mean(peaks_nall_combine)
+    # mean_peaks_eall_combine = np.mean(peaks_eall_combine)
+    # std_peaks_nall_combine = np.std(peaks_nall_combine)
+    # std_peaks_eall_combine = np.std(peaks_eall_combine)
 
-    # differences in peaks
-    diff_peaks_all_combine = peaks_nall_combine - peaks_eall_combine
-    mean_diff_peaks_all_combine = np.mean(peaks_nall_combine - peaks_eall_combine)
-    std_diff_peaks_all_combine = np.std(peaks_nall_combine - peaks_eall_combine)
+    # # differences in peaks
+    # diff_peaks_all_combine = peaks_nall_combine - peaks_eall_combine
+    # mean_diff_peaks_all_combine = np.mean(peaks_nall_combine - peaks_eall_combine)
+    # std_diff_peaks_all_combine = np.std(peaks_nall_combine - peaks_eall_combine)
 
-    # shapiro test for normal on the peaks differences
-    res = scipy.stats.shapiro(diff_peaks_all_combine)
+    # # shapiro test for normal on the peaks differences
+    # res = scipy.stats.shapiro(diff_peaks_all_combine)
     
-    # t - test for peaks differences is in the excel sheet...
+    # # t - test for peaks differences is in the excel sheet...
     
-    # percent change in peak
-    perc_diff_peaks_all_combine = (peaks_eall_combine - peaks_nall_combine) / peaks_nall_combine * 100
-    mean_perc_diff_peaks_all_combine = np.mean(perc_diff_peaks_all_combine)
-    std_perc_diff_peaks_all_combine = np.std(perc_diff_peaks_all_combine)
+    # # percent change in peak
+    # perc_diff_peaks_all_combine = (peaks_eall_combine - peaks_nall_combine) / peaks_nall_combine * 100
+    # mean_perc_diff_peaks_all_combine = np.mean(perc_diff_peaks_all_combine)
+    # std_perc_diff_peaks_all_combine = np.std(perc_diff_peaks_all_combine)
     
-    ###########################################################################
+
+    # ###########################################################################
     # more polished figures
 
     ### Figure: total pop average for right leg for nat - segmented shaded
     plt.figure(dpi=300)
     plt.plot(n_timespercent101, np.mean(ninterseg_combine,0), label='intersegmental', color=ecolor)
-    plt.fill_between(n_timespercent101, 
-                     np.mean(ninterseg_combine,0), color=ecolorlight)
-    
-    plt.plot(n_timespercent101, np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-             label='inter + tfl', color=ncolor3)
-    plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), 
-                     np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor2)
-    
-    plt.plot(n_timespercent101, np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-             label='inter + tfl + gas', color=ncolor5)
-    plt.fill_between(n_timespercent101, np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-                     np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor4)
-    
-    plt.plot(n_timespercent101, np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-             label='inter + tfl + gas + hams', color=ncolor7)
-    plt.fill_between(n_timespercent101, np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-                     np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0),
-                     color=ncolor6)
-    
-    plt.plot(n_timespercent101, np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-             label='inter + tfl + gas + hams + quads', color=ncolor9)
-    plt.fill_between(n_timespercent101, np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-                     np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), 
-                     color=ncolor8)
-    
+    plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), color=ecolorlight)
+
+    plt.plot(n_timespercent101, np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), label='inter + tfl', color=ncolor3)
+    plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor2)
+
+    plt.plot(n_timespercent101, np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), label='inter + tfl + gas', color=ncolor5)
+    plt.fill_between(n_timespercent101, np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor4)
+
+    plt.plot(n_timespercent101, np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), label='inter + tfl + gas + hams', color=ncolor7)
+    plt.fill_between(n_timespercent101, np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor6)
+
+    plt.plot(n_timespercent101, np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), label='inter + tfl + gas + hams + quads', color=ncolor9)
+    plt.fill_between(n_timespercent101, np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor8)
+
     plt.legend()
     plt.ylabel('Force (BW)')
     plt.xlabel('% Gait cycle')
-    plt.title('Vertical knee contact force - Natural')    
+    plt.title('Vertical knee contact force - Natural')
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact7_' + whichleg + '.png')
+    plt.show()
     
     
     ###########################################################################
     ### Figure: total pop average for right leg for exo - segmented shaded
     plt.figure(dpi=300)
     plt.plot(e_timespercent101, np.mean(einterseg_combine,0), label='intersegmental', color=ecolor)
-    plt.fill_between(e_timespercent101, 
-                     np.mean(einterseg_combine,0), color=ecolorlight)
-    
-    plt.plot(e_timespercent101, np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-             label='inter + tfl', color=ncolor3)
-    plt.fill_between(e_timespercent101, np.mean(einterseg_combine,0), 
-                     np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor2)
-    
-    plt.plot(e_timespercent101, np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-             label='inter + tfl + gas', color=ncolor5)
-    plt.fill_between(e_timespercent101, np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-                     np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor4)
-    
-    plt.plot(e_timespercent101, np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-             label='inter + tfl + gas + hams', color=ncolor7)
-    plt.fill_between(e_timespercent101, np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-                     np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0),
-                     color=ncolor6)
-    
-    plt.plot(e_timespercent101, np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-             label='inter + tfl + gas + hams + quads', color=ncolor9)
-    plt.fill_between(e_timespercent101, np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-                     np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), 
-                     color=ncolor8)
-    
+    plt.fill_between(e_timespercent101, np.mean(einterseg_combine,0), color=ecolorlight)
+
+    plt.plot(e_timespercent101, np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), label='inter + tfl', color=ncolor3)
+    plt.fill_between(e_timespercent101, np.mean(einterseg_combine,0), np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor2)
+
+    plt.plot(e_timespercent101, np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), label='inter + tfl + gas', color=ncolor5)
+    plt.fill_between(e_timespercent101, np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor4)
+
+    plt.plot(e_timespercent101, np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), label='inter + tfl + gas + hams', color=ncolor7)
+    plt.fill_between(e_timespercent101, np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0),color=ncolor6)
+
+    plt.plot(e_timespercent101, np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), label='inter + tfl + gas + hams + quads', color=ncolor9)
+    plt.fill_between(e_timespercent101, np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor8)
+
     plt.legend()
     plt.ylabel('Force (BW)')
     plt.xlabel('% Gait cycle')
-    plt.title('Vertical knee contact force - Exotendon')    
+    plt.title('Vertical knee contact force - Exotendon')
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\contact8_' + whichleg + '.png')
+    plt.show()
+
     
     ###########################################################################
     # stats for the individual muscle segmented contributions.... check out the excel sheet
@@ -3952,43 +3934,47 @@ if __name__ == '__main__':
     
     
     ###########################################################################
+    # I don't think this is needed anymore, but keeping for now...
+    # pdb.set_trace()
+    # ### fig: subplots of nat and exo for each breakdown
+    # fig3, ax3 = plt.subplots(1,6)
+    # # full forces
+    # # ax3[0].plot(n_timespercent101, n_avg_r.mean(0), label='n_full', color='orange')
+    # # ax3[0].plot(e_timespercent101, e_avg_r.mean(0), label='e_full', color='purple')
+    # # intersegmental forces
+    # ax3[1].plot(n_timespercent101, ninterseg_combine.mean(0), label='n_interseg', color='orange')
+    # # ax3[1].plot(e_timespercent101, einterseg_combine.mean(0), label='e_interseg', color='purple')
+    # ax3[1].set_xlabel('% gait cycle')
+    # ax3[1].set_ylabel('BW - intersegmental')
+    # # # quads forces
+    # # ax3[2].plot(n_timespercent101, nquads_combine.mean(0), label='n_quads', color='orange')
+    # # ax3[2].plot(e_timespercent101, equads_combine.mean(0), label='e_quads', color='purple')
+    # # ax3[2].set_xlabel('% gait cycle')
+    # # ax3[2].set_ylabel('BW - quads')
+    # # # hams forces
+    # # ax3[3].plot(n_timespercent101, nhams_combine.mean(0), label='n_hams', color='orange')
+    # # ax3[3].plot(e_timespercent101, ehams_combine.mean(0), label='e_hams', color='purple')
+    # # ax3[3].set_xlabel('% gait cycle')
+    # # ax3[3].set_ylabel('BW - hams')
+    # # # gastroc forces
+    # # ax3[4].plot(n_timespercent101, ngas_combine.mean(0), label='n_gas', color='orange')
+    # # ax3[4].plot(e_timespercent101, egas_combine.mean(0), label='e_gas', color='purple')
+    # # ax3[4].set_xlabel('% gait cycle')
+    # # ax3[4].set_ylabel('BW - gastroc')
+    # # # tfl forces
+    # # ax3[5].plot(n_timespercent101, ntfl_combine.mean(0), label='n_tfl', color='orange')
+    # # ax3[5].plot(e_timespercent101, etfl_combine.mean(0), label='e_tfl', color='purple')
+    # # ax3[5].set_xlabel('% gait cycle')
+    # # ax3[5].set_ylabel('BW - tfl')
+
+    # plt.legend()
+    # plt.show()
     
     pdb.set_trace()
-    ### fig: subplots of nat and exo for each breakdown
-    fig3, ax3 = plt.subplots(1,6)
-    # full forces
-    # ax3[0].plot(n_timespercent101, n_avg_r.mean(0), label='n_full', color='orange')
-    # ax3[0].plot(e_timespercent101, e_avg_r.mean(0), label='e_full', color='purple')
-    # intersegmental forces
-    ax3[1].plot(n_timespercent101, ninterseg_combine.mean(0), label='n_interseg', color='orange')
-    # ax3[1].plot(e_timespercent101, einterseg_combine.mean(0), label='e_interseg', color='purple')
-    ax3[1].set_xlabel('% gait cycle')
-    ax3[1].set_ylabel('BW - intersegmental')
-    # # quads forces
-    # ax3[2].plot(n_timespercent101, nquads_combine.mean(0), label='n_quads', color='orange')
-    # ax3[2].plot(e_timespercent101, equads_combine.mean(0), label='e_quads', color='purple')
-    # ax3[2].set_xlabel('% gait cycle')
-    # ax3[2].set_ylabel('BW - quads')
-    # # hams forces
-    # ax3[3].plot(n_timespercent101, nhams_combine.mean(0), label='n_hams', color='orange')
-    # ax3[3].plot(e_timespercent101, ehams_combine.mean(0), label='e_hams', color='purple')
-    # ax3[3].set_xlabel('% gait cycle')
-    # ax3[3].set_ylabel('BW - hams')
-    # # gastroc forces
-    # ax3[4].plot(n_timespercent101, ngas_combine.mean(0), label='n_gas', color='orange')
-    # ax3[4].plot(e_timespercent101, egas_combine.mean(0), label='e_gas', color='purple')
-    # ax3[4].set_xlabel('% gait cycle')
-    # ax3[4].set_ylabel('BW - gastroc')
-    # # tfl forces
-    # ax3[5].plot(n_timespercent101, ntfl_combine.mean(0), label='n_tfl', color='orange')
-    # ax3[5].plot(e_timespercent101, etfl_combine.mean(0), label='e_tfl', color='purple')
-    # ax3[5].set_xlabel('% gait cycle')
-    # ax3[5].set_ylabel('BW - tfl')
-    
-    plt.legend()
-    plt.show()
-    
-    pdb.set_trace()
+    sys.exit()
+
+
+    # everything below here is probably old and not needed anymore... keeping for now. 
     '''
     ### fig: straight unedited exo (should include interseg for each) all
     plt.figure()
@@ -4158,23 +4144,23 @@ if __name__ == '__main__':
     # plt.plot(n_timespercent101, np.mean(e_avg_r, 0), label='e_full')
     # quads
     plt.plot(e_timespercent101, 
-             nquadsub.mean(0) + ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
-             label='n_quads', color='#5e3c99')
+                nquadsub.mean(0) + ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
+                label='n_quads', color='#5e3c99')
     plt.plot(n_timespercent101, 
-              equadsub.mean(0) + egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
-              label='e_quads', linestyle='dashed', color='#5e3c99')
+                equadsub.mean(0) + egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
+                label='e_quads', linestyle='dashed', color='#5e3c99')
     # gastroc
     plt.plot(e_timespercent101, 
-             ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
-             label='n_gas', color='#b2abd2')
+                ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
+                label='n_gas', color='#b2abd2')
     plt.plot(n_timespercent101, 
-              egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
-              label='e_gas', linestyle='dashed', color='#b2abd2')
+                egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
+                label='e_gas', linestyle='dashed', color='#b2abd2')
     # hams
     plt.plot(e_timespercent101, nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0),
-             label='n_hams', color='grey')
+                label='n_hams', color='grey')
     plt.plot(n_timespercent101, ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0),
-              label='e_hams', linestyle='dashed', color='grey')
+                label='e_hams', linestyle='dashed', color='grey')
     # tFL
     plt.plot(e_timespercent101, ntflsub.mean(0) + ninterseg_combine.mean(0), label='n_tfl', color='#fdb863')
     plt.plot(n_timespercent101, etflsub.mean(0) + einterseg_combine.mean(0), label='e_tfl', linestyle='dashed', color='#fdb863')
@@ -4186,7 +4172,7 @@ if __name__ == '__main__':
     plt.xlabel('% gait cycle', fontsize=24)
     plt.xticks(fontsize=24)
     plt.yticks(fontsize=24)
-    
+
     plt.show()
     
     # think about cumulative loading or some metric- literature # ross miller? Scott U will be good resource
@@ -4270,22 +4256,17 @@ if __name__ == '__main__':
     # plt.plot(e_timespercent101, np.mean(n_avg_r, 0), label='n_full')
     # plt.plot(n_timespercent101, np.mean(e_avg_r, 0), label='e_full')
     # quads
-    plt.plot(e_timespercent101, 
-             nquadsub.mean(0) + ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
-             label='n_quads', color='#d94701')
+    plt.plot(e_timespercent101, nquadsub.mean(0) + ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), label='n_quads', color='#d94701')
     # plt.plot(n_timespercent101, 
     #           equadsub.mean(0) + egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
     #           label='e_quads', linestyle='dashed', color='#a63603')
     # gastroc
-    plt.plot(e_timespercent101, 
-             ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), 
-             label='n_gas', color='#e6550d')
+    plt.plot(e_timespercent101, ngassub.mean(0) + nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0), label='n_gas', color='#e6550d')
     # plt.plot(n_timespercent101, 
     #           egassub.mean(0) + ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0), 
     #           label='e_gas', linestyle='dashed', color='#b2abd2')
     # hams
-    plt.plot(e_timespercent101, nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0),
-             label='n_hams', color='#fd8d3c')
+    plt.plot(e_timespercent101, nhamssub.mean(0) + ntflsub.mean(0) + ninterseg_combine.mean(0),label='n_hams', color='#fd8d3c')
     # plt.plot(n_timespercent101, ehamssub.mean(0) + etflsub.mean(0) + einterseg_combine.mean(0),
     #           label='e_hams', linestyle='dashed', color='grey')
     # tFL
@@ -4294,13 +4275,13 @@ if __name__ == '__main__':
     # intersegmental 
     plt.plot(n_timespercent101, ninterseg_combine.mean(0), label='n_intersegmental', color='#5e3c99')
     # plt.plot(e_timespercent101, einterseg_combine.mean(0), label='n_intersegmental', linestyle='dashed', color='#e66101')
-    
+
     plt.legend(fontsize=20)
     plt.ylabel('BW', fontsize=24)
     plt.xlabel('% gait cycle', fontsize=24)
     plt.xticks(fontsize=24)
     plt.yticks(fontsize=24)
-    
+
     plt.show()
     
     
@@ -4339,7 +4320,7 @@ if __name__ == '__main__':
     ax500[5].plot(e_timespercent101, etflsub.mean(0), label='e_tfl', color='purple')
     ax500[5].set_xlabel('% gait cycle')
     ax500[5].set_ylabel('BW - tfl')
-    
+
     # plt.legend('natural', 'exotendon')
     # plt.legend()
     plt.tight_layout()
@@ -4381,8 +4362,8 @@ if __name__ == '__main__':
     # ax501[5].plot(e_timespercent101, etflsub.mean(0), label='e_tfl', color='purple')
     ax501[5].set_xlabel('% gait cycle')
     ax501[5].set_ylabel('BW - tfl')
-    
-    
+
+
     # plt.legend('natural', 'exotendon')
     # plt.legend()
     plt.tight_layout()
@@ -4411,7 +4392,7 @@ if __name__ == '__main__':
     plt.ylabel('BW', fontsize=24)
     plt.yticks(fontsize=24)
     plt.title('Change in Vertical KCF', fontsize=24)
-    
+
     # plt.legend('natural', 'exotendon')
     plt.legend(fontsize=20)
     plt.tight_layout()
