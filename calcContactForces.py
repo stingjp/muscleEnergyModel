@@ -28,7 +28,7 @@ ncolor8 = '#a63603'
 ncolor9 = '#7f2704'
 
 
-plt.rcParams['font.family'] = 'Times New Roman'
+# plt.rcParams['font.family'] = 'Times New Roman'
 # exotendoncolor = '#f1a340'
 ecolor = '#5e3c99'
 ecolorlight = '#d8daeb'
@@ -2135,13 +2135,13 @@ if __name__ == '__main__':
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003']#,'welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
     runtool = False
-    indresults = True
+    indresults = False
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -3033,7 +3033,7 @@ if __name__ == '__main__':
 
 
 
-                try: 
+                try:
                     if oldnotredo:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
@@ -3058,13 +3058,16 @@ if __name__ == '__main__':
                     print('Error with: ' + trialdir)
                     pdb.set_trace()
                     continue
-                    
+
                 #### do some other data grabs here for the other data that we care about in each trial. 
 
                 # start with muscle activations
                 muscleacts_exo = ouf.getMuscleActivations(trialdir, muscleacts_exo)
+                # and the joint moments
                 moments_exo = ouf.getJointMoments(trialdir, moments_exo, modelmass)
+                # compare to ID moments
                 IDmoments_exo = ouf.getIDMoments(trialdir, IDmoments_exo, modelmass)
+                # and the muscle forces
                 activeforces_exo, passiveforces_exo, totalforces_exo = ouf.getMuscleForces(trialdir, activeforces_exo, passiveforces_exo, totalforces_exo, modelmass)
 
                 # plt.figure(figsize=(11,8), dpi=300); 
@@ -3203,7 +3206,7 @@ if __name__ == '__main__':
 
 
                 
-                try:    
+                try:
                     if oldnotredo:
                         jrasrquads = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
                         jrasrhams = getKneeContactributions(trialdir, musclesWanted['hams'], 'hams', whichleg, runtool)
@@ -3231,8 +3234,11 @@ if __name__ == '__main__':
 
                 # start with muscle activations
                 muscleacts_nat = ouf.getMuscleActivations(trialdir, muscleacts_nat)
+                # and the joint moments
                 moments_nat = ouf.getJointMoments(trialdir, moments_nat, modelmass)
+                # compare to ID moments
                 IDmoments_nat = ouf.getIDMoments(trialdir, IDmoments_nat, modelmass)
+                # and the muscle forces
                 activeforces_nat, passiveforces_nat, totalforces_nat = ouf.getMuscleForces(trialdir, activeforces_nat, passiveforces_nat, totalforces_nat, modelmass)
                 # now metabolics would be good as well
 
@@ -3621,7 +3627,7 @@ if __name__ == '__main__':
     # # ax10[6].legend()
     # ax10[5].set_title('Total vertical contact')
 
-    # Hide the last subplot and use it to display the legend   
+    # Hide the last subplot and use it to display the legend
     ax10[6].axis('off')
     handles, labels = ax10[1].get_legend_handles_labels()
     # ax10[6].legend(handles, labels, loc='center', fontsize=fontz)
@@ -3745,13 +3751,15 @@ if __name__ == '__main__':
     ax13[1].set_title('exotendon')
     # ax13[1].legend()
 
-    # Hide the last subplot and use it to display the legend   
+    # Hide the last subplot and use it to display the legend
     ax13[2].axis('off')
     handles, labels = ax13[1].get_legend_handles_labels()
     ax13[2].legend(handles, labels, loc='center', fontsize=14)
     fig13.tight_layout()
     plt.savefig(analyzedir + '\\contact5_' + whichleg + '.png')
     
+
+
     ###########################################################################
     ### Figure: total pop average for right leg between nat and exo
     #### Figure in the paper R1... 
@@ -3819,8 +3827,8 @@ if __name__ == '__main__':
                 df.to_excel(writer, sheet_name=key)
 
 
-    plt.show()
     pdb.set_trace()
+    plt.show()
     print('\n\nbeyond this is the breakdown paper figures.')
     # sys.exit()
 
@@ -3866,7 +3874,6 @@ if __name__ == '__main__':
     plt.figure(dpi=300)
     plt.plot(n_timespercent101, np.mean(ninterseg_combine,0), label='intersegmental', color=ecolor)
     plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), color=ecolorlight)
-
     plt.plot(n_timespercent101, np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), label='inter + tfl', color=ncolor3)
     plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor2)
 
@@ -3880,11 +3887,12 @@ if __name__ == '__main__':
     plt.fill_between(n_timespercent101, np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0), color=ncolor8)
 
     plt.legend()
-    plt.ylabel('Force (BW)')
-    plt.xlabel('% Gait cycle')
-    plt.title('Vertical knee contact force - Natural')
+    plt.ylabel('Vertical knee contact force (BW)', fontsize=16)
+    plt.xlabel('% Gait cycle', fontsize=16)
+    plt.title('Vertical knee contact force - Natural', fontsize=16)    
+    plt.tick_params(axis='both', which='major', labelsize=16)
     plt.tight_layout()
-    plt.savefig(analyzedir + '\\contact7_' + whichleg + '.png')
+    plt.savefig(analyzedir + '\\contact7_Natural_' + whichleg + '.png')
     plt.show()
     
     
@@ -3907,11 +3915,12 @@ if __name__ == '__main__':
     plt.fill_between(e_timespercent101, np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0), color=ncolor8)
 
     plt.legend()
-    plt.ylabel('Force (BW)')
-    plt.xlabel('% Gait cycle')
-    plt.title('Vertical knee contact force - Exotendon')
+    plt.ylabel('Vertical knee contact force (BW)', fontsize=16)
+    plt.xlabel('% Gait cycle', fontsize=16)
+    plt.title('Vertical knee contact force - Exotendon', fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=16)
     plt.tight_layout()
-    plt.savefig(analyzedir + '\\contact8_' + whichleg + '.png')
+    plt.savefig(analyzedir + '\\contact8_exo_' + whichleg + '.png')
     plt.show()
 
     
