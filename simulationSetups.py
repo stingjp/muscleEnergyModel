@@ -15,10 +15,11 @@ import time
 import pdb
 import re
 import argparse
+from examplePolynomialPathFitter_plotting import (plot_coordinate_samples, plot_path_lengths, plot_moment_arms)
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -46,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle):
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -79,15 +80,18 @@ def analyzeSubject_post(subject, condition, trial):
     os.chdir(workingdir)
     # create a list of issues
     Issues = []
-    # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    # muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname)
-    # solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_py.sto')
-    solution2 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+    # # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
+    # # muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname)
+    # # solution1 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con_py.sto')
+    # solution2 = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
 
-    # ID plotter
-    # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
-    ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True, [subject, condition, trial])
+    # # ID plotter
+    # # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_moments_py.sto'), 'muscletrack', True)
+    # ouf.IDplotter(osim.TimeSeriesTable('muscletrack_redo_moments_py.sto'), 'muscletrack_redo', True, [subject, condition, trial])
 
+    ## lets see if we can get the polynomial paths fit and a model outputs
+    modelProcessor = osim.ModelProcessor('simple_model_all_the_probes.osim')
+    newmodel = replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=True)
 
 # muscle driven state tracking simulation - second pass 
 def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname, trialname):
@@ -311,7 +315,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths):
     
     # create the tracking problem
     track = osim.MocoTrack()
@@ -324,6 +328,13 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         print('not tracking GRF')
         time.sleep(1)
         modelProcessor = osim.ModelProcessor("simple_model_all_the_probes.osim")
+        weldem.append('subtalar_r')
+        weldem.append('subtalar_l')
+        weldem.append('radius_hand_r')
+        weldem.append('radius_hand_l')
+        modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
+        if wantpaths:
+            modelProcessor = osim.ModelProcessor(replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=fitpaths))
         modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
         weldem.append('mtp_r')
         weldem.append('mtp_l')
@@ -332,11 +343,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         time.sleep(1)
         modelProcessor = osim.ModelProcessor("simple_model_all_the_probes_spheres.osim")
 
-    weldem.append('subtalar_r')
-    weldem.append('subtalar_l')
-    weldem.append('radius_hand_r')
-    weldem.append('radius_hand_l')
-    modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
+    
     modelProcessor.append(osim.ModOpReplaceMusclesWithDeGrooteFregly2016())
     modelProcessor.append(osim.ModOpScaleActiveFiberForceCurveWidthDGF(1.5))
     modelProcessor.append(osim.ModOpAddReserves(1.0))
@@ -364,6 +371,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # modelProcessorDC.append(osim.ModOpAddReserves(1, 2.5, True))
     modelProcessorDC.append(osim.ModOpTendonComplianceDynamicsModeDGF('implicit'))
     track.setModel(modelProcessorDC)
+
     # construct a TableProcessor of the coordinate data and pass it to the tracking tool.
     tableProcessor = osim.TableProcessor('results_IK_redoarms.mot')
     tableProcessor.append(osim.TabOpLowPassFilter(15))
@@ -424,7 +432,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem = study.updProblem()
     # effort goal
     effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
-    effort.setWeight(0.01)
+    effort.setWeight(0.001)
     # initial activation goals
     initactivationgoal = osim.MocoInitialActivationGoal('init_activation')
     initactivationgoal.setWeight(10)
@@ -454,7 +462,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 20) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 2) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -483,7 +491,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*mtp.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*subtalar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 100)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 100)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
@@ -495,7 +503,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
-    jointReaction = osim.MocoJointReactionGoal('joint_reaction', 0.05)
+    jointReaction = osim.MocoJointReactionGoal('joint_reaction', 0.0075) # 0.05 before
     # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
     # loadframe = osim.StdVectorString(); loadframe.append('child')
     # framepaths = osim.StdVectorString(); framepaths.append('/bodyset/tibia_r')
@@ -504,7 +512,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction.setLoadsFrame('child')
     jointReaction.setExpressedInFramePath('/bodyset/tibia_r')
     jointReaction.setReactionMeasures(whichForces)
-    # problem.addGoal(jointReaction)
+    problem.addGoal(jointReaction)
 
     ### grf tracking goal... if we specify that we want it... (not default for this project.)
     GRFTrackingWeight = 1
@@ -578,6 +586,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         solver.resetProblem(problem)
         solver.set_optim_convergence_tolerance(1e-2)
         solver.set_optim_constraint_tolerance(1e-4)
+        solver.set_parallel(16)
+        # set the number of intervals potentially 
+        # solver.set_num_mesh_intervals(24)
+
         # solver.set_optim_max_iterations(3)
         # solver.set_optim_finite_difference_scheme('forward')
         # solver.set_optim_finite_difference_scheme('central')
@@ -1228,15 +1240,10 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
     # otherwise have to update everything to python - not worth the time likely for post analysis. s
     return whatfailed
 
-
 ###################################################################################################
 # sets up moco track problem with a torque driven model, and prescribed GRF.
 def torqueStateTrackGRFPrescribe(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
     # establish a few weights for the problem
-
-
-
-
 
     return whatfailed
 
@@ -1245,6 +1252,158 @@ def torqueStateTrackGRFPrescribe(repodir, subjectname, conditionname, trialname,
 def muscleInverse(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, halfcycle):
     # establish a few weights for the problem
 
-
     return whatfailed
 
+def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
+    print('here we are, trying to get some new paths... ')    
+    if newfit:
+        # create and fit the paths in the osim model with the polynomial path fitting tool
+        fitter = osim.PolynomialPathFitter()
+        # Set the model.
+        # The model should contain path-based force objects (e.g., Muscles) that use
+        # geometry-based paths (e.g., GeometryPath) to model path lengths and moment
+        # arms. The fitter will create a set of FunctionBasedPaths that use
+        # MultivariatePolynomialFunctions to model the path lengths and moment arms
+        # # of the original model.
+        model = modelProcessor.process()
+        fitter.setModel(modelProcessor)
+        model.initSystem()
+        # set the coordinate values table
+        # The fitter will randomly sample around the coordinate values provided in the
+        # table to generate model configurations for which to compute path lengths and
+        # moment arms. This table has many more rows than are needed for the fitter to
+        # generate a good fit, so we will remove some of the rows to speed up the
+        # fitting process.
+        # values = osim.TimeSeriesTable('coordinates_updated.mot')
+        values = osim.TimeSeriesTable(kinematicsFile)
+        times = values.getIndependentColumn()
+        for i in range(len(times)):
+            # if i % 2 != 0:
+            #     values.removeRow(times[i])
+            # test way to cut anything after certain index
+            if i > 300: 
+                values.removeRow(times[i])
+        fitter.setCoordinateValues(osim.TableProcessor(values))
+
+        # Configure optional settings
+        # ---------------------------
+        # Use these settings to modify the default settings to tailor the fitting
+        # process to your model and motion. See the documentation for
+        # PolynomialPathFitter for more options.
+
+        # Set a (relative) directory to where the fitting results will be saved.
+        # Files printed to this directory include the set of FunctionBasedPaths
+        # created by the fitter, the path lengths and moment arms computed for each
+        # model configuration, and the path lengths and moment arms fitted to the
+        # polynomial functions. File names will be prepended with the name of the
+        # model.
+        results_dir = 'pathresults'
+        fitter.setOutputDirectory(results_dir)
+        
+        # Set the maximum order of the polynomials used to fit the path lengths
+        # and moment arms. Higher order polynomials might lead to a better fit,
+        # but could increase the computational time required to evaluate the
+        # path length functions.
+        fitter.setMaximumPolynomialOrder(5)
+
+        # Set the number of random samples taken at each frame around the nominal 
+        # coordinate values.
+        fitter.setNumSamplesPerFrame(30)
+
+        # By default, coordinate values are sample around the nominal coordinate
+        # values using bounds of [-10, 10] degrees. You can set custom bounds for
+        # individual coordinates using the appendCoordinateSamplingBounds() method.
+        # fitter.appendCoordinateSamplingBounds('/jointset/hip_r/hip_flexion_r', osim.Vec2(-50, 50))
+        # fitter.appendCoordinateSamplingBounds('/jointset/hip_l/hip_flexion_l', osim.Vec2(-50, 50))
+        # fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_r/knee_angle_r', osim.Vec2(-50, 50))
+        # fitter.appendCoordinateSamplingBounds('/jointset/walker_knee_l/knee_angle_l', osim.Vec2(-50, 50))
+        # fitter.appendCoordinateSamplingBounds('/jointset/ankle_r/ankle_angle_r', osim.Vec2(-50, 50))
+        # fitter.appendCoordinateSamplingBounds('/jointset/ankle_l/ankle_angle_l', osim.Vec2(-50, 50))
+
+        # Set the global coordinate sampling bounds. This will be used for any
+        # coordinates that do not have custom bounds set. We use reasonably
+        # large bounds here to sample a wide range of the model's coordinate space
+        # around the reference trajectory.
+        fitter.setGlobalCoordinateSamplingBounds(osim.Vec2(-30, 30))
+
+        # Use stepwise regression to fit the path lengths and moment arms. This
+        # setting evaluates the fit after adding polynomial terms one at a time
+        # to determine the minimum number of coefficients needed to achieve the
+        # path length and moment arm tolerances. Stepwise regression includes 
+        # polynomial terms up to the maximum order set by 
+        # setMaximumPolynomialOrder().
+        fitter.setUseStepwiseRegression(True)
+
+        # Set the path length and moment arm tolerances. When the RMS errors 
+        # between the original path lengths and moment arms and the fitted 
+        # polynomial paths are below these tolerances, the fitting process will
+        # stop for a given path. Tighter tolerances may result in a better fit,
+        # but at the expense of higher polynomial orders (or more polynomial 
+        # terms, if using stepwise regression).
+        fitter.setPathLengthTolerance(1e-3)
+        fitter.setMomentArmTolerance(1e-3)
+
+        # Run the fitter
+        # --------------
+        # Information about each step fitting process will be printed to the
+        # console including the path length and moment arm RMS error for
+        # each force object and averaged across all force objects.        
+        fitter.run()
+
+        # Plot the results
+        # ----------------
+        # Use the plotting helper functions to visualize the results of the
+        # fitting process and determine if the fits are good enough for your needs,
+        # or if the model or fitting settings need to be modified.
+
+        # Plot the sampled coordinate values used to generate the path lengths
+        # and moment arms.
+        plot_coordinate_samples(results_dir, model.getName())
+
+        # Plot the path lengths and moment arms computed from the original model
+        # paths (blue) and the fitted polynomial paths (orange).
+        #
+        # For most muscles the fit is very good, but there are noticeable fitting
+        # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
+        # Errors like these usually arise from the fitting process struggling with
+        # discontinuities due to wrapping geometry issues in the original model.
+        # Depending on size of the errors, you may want to adjust the wrapping
+        # geometry in the original model and re-run the fitter.
+        plot_path_lengths(results_dir, model.getName())
+        plot_moment_arms(results_dir, model.getName())
+
+        # Evaluate the fitted functions on a 'new' trajectory
+        # ---------------------------------------------------
+        # You can use PolynomialPathFitter to evaluate a set of previously fitted
+        # FunctionBasedPaths on a new trajectory. This can be useful if you want to
+        # evaluate the path lengths and moment arms of a model on a trajectory that
+        # was not used to fit the functions. This example uses the same trajectory
+        # used to fit the functions, but you can replace it with any trajectory
+        # that has a set of coordinate values that are consistent with the model.
+        # Note that we do not need to use the 'fitter' object to call this function
+        # (i.e., it is a static function).
+        functionBasedPathsFile = os.path.join(
+            results_dir, f'{model.getName()}_FunctionBasedPathSet.xml')
+        osim.PolynomialPathFitter.evaluateFunctionBasedPaths(
+            model, osim.TableProcessor(values), functionBasedPathsFile)
+
+    ####################################################    
+    # Replacing the original paths with the fitted paths
+    # --------------------------------------------------
+    # You can use a ModelProcessor to replace the original paths in the model
+    # with the fitted paths. This can be useful if you want to use the fitted
+    # paths in a simulation or analysis tool but keep the original paths in the
+    # model file.
+    if not newfit:
+        print('just replacing the paths with last fit...')
+        results_dir = 'pathresults'
+        model = modelProcessor.process()
+        functionBasedPathsFile = os.path.join(
+            results_dir, f'{model.getName()}_FunctionBasedPathSet.xml')
+    pdb.set_trace()
+    modelProcessor.append(osim.ModOpReplacePathsWithFunctionBasedPaths(
+        functionBasedPathsFile))
+    model = modelProcessor.process()
+    model.initSystem()
+    model.printToXML('model_polyfit_redo.osim')
+    return model

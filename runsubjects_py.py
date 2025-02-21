@@ -188,7 +188,7 @@ os.chdir(resultsbasedir)
 # subjects = ['welk005','welk007','welk008']
 
 subjects = ['welk008']#,'welk009','welk010','welk013']# ['welk003','welk005','welk002']  # ['welk008','welk009','welk010','welk013'] #  'welk002','welk003','welk005'
-welkconditions = ['welkexo']#, 'welknatural'] 
+welkconditions = ['welknatural']#, 'welknatural'] 
 trials = ['trial02']#, 'trial03', 'trial02', 'trial01'] # nat 1,2, 3(fail) done... 
 whatfailed = {}
 trackGRF = False
@@ -216,7 +216,7 @@ for subj in subjects:
                 os.chdir(trialdir)
                 print('\n')
                 print(trialdir)
-                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF, halfcycle)
+                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF, halfcycle, fitpaths=False, wantpaths=True)
                 # simset.analyzeSubject_post(subj, cond, keys)
                 print(trialdir)
 
