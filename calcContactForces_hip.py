@@ -1413,7 +1413,7 @@ if __name__ == '__main__':
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
-    runtool = True
+    runtool = False
     indresults = False
 
     # get some results structures going
@@ -2932,32 +2932,37 @@ if __name__ == '__main__':
     ###########################################################################
     ### figure: changes in force segmented together on plot
     #### Possible paper figure for R3. 
-        
-    fig12 = plt.figure(figsize=(7,4), dpi=300)
+    colors4 = ['#648FFF','#785EF0','#DC267F','#FE6100', '#FFB000']
+    fig12, ax12 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
+    ax12[0].axhline(0, color='black', linewidth=1)
     # intersegmental forces average
-    plt.plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='intersegmental')
+    ax12[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='Intersegmental', color='black', linewidth=3)
     # extensor forces
-    plt.plot(n_timespercent101, np.mean(eextensors_combine, 0) - np.mean(nextensors_combine, 0), label='hip extensors')
+    ax12[0].plot(n_timespercent101, np.mean(eextensors_combine, 0) - np.mean(nextensors_combine, 0), label='Hip extensors', color=colors4[0], linewidth=3)
     # adductor forces
-    plt.plot(n_timespercent101, np.mean(eadductors_combine, 0) - np.mean(nadductors_combine, 0), label='hip adductors')
+    ax12[0].plot(n_timespercent101, np.mean(eadductors_combine, 0) - np.mean(nadductors_combine, 0), label='Hip adductors', color=colors4[1], linewidth=3)
     # abductor forces
-    plt.plot(n_timespercent101, np.mean(eabductors_combine, 0) - np.mean(nabductors_combine, 0), label='hip abductors')
+    ax12[0].plot(n_timespercent101, np.mean(eabductors_combine, 0) - np.mean(nabductors_combine, 0), label='Hip abductors', color=colors4[2], linewidth=3)
     # hamstring forces
-    plt.plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='hamstrings')
+    ax12[0].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='Hamstrings', color=colors4[3], linewidth=3)
     # flexor forces
-    plt.plot(n_timespercent101, np.mean(eflexors_combine, 0) - np.mean(nflexors_combine, 0), label='hip flexors')
+    ax12[0].plot(n_timespercent101, np.mean(eflexors_combine, 0) - np.mean(nflexors_combine, 0), label='Hip flexors', color=colors4[4], linewidth=3)
     # reserve forces
-    plt.plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves')
+    # ax12[0].plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves')
     # added all forces
-    plt.plot(n_timespercent101, (np.mean(eextensors_combine,0) + np.mean(ehams_combine,0) + np.mean(eadductors_combine,0) + np.mean(eabductors_combine,0) + np.mean(eflexors_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nextensors_combine,0) + np.mean(nhams_combine,0) + np.mean(nadductors_combine,0) + np.mean(nabductors_combine,0) + np.mean(nflexors_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
+    # ax12[0].plot(n_timespercent101, (np.mean(eextensors_combine,0) + np.mean(ehams_combine,0) + np.mean(eadductors_combine,0) + np.mean(eabductors_combine,0) + np.mean(eflexors_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nextensors_combine,0) + np.mean(nhams_combine,0) + np.mean(nadductors_combine,0) + np.mean(nabductors_combine,0) + np.mean(nflexors_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
     # all forces from whole analysis
-    plt.plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total vertical contact', linestyle='dashed')
-    plt.xlabel('% Gait cycle')
-    plt.ylabel('Force (BW)')
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    plt.title('Exotendon change in contact force')
-    plt.tight_layout()
-    plt.savefig(analyzedir + '\\contact4_hip_' + whichleg + '.png')
+    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total vertical contact', linestyle='dashed', color='black', linewidth=3)
+    ax12[0].set_xlabel('% Gait cycle', fontsize=16)
+    ax12[0].set_ylabel('Vertical hip contact difference (BW)', fontsize=16)
+    ax12[0].set_title('Exotendon change in contact force', fontsize=16)
+    ax12[0].tick_params(axis='both', which='major', labelsize=16)
+    # hide the other subplot and use it for the legend
+    ax12[1].axis('off')
+    handles, labels = ax12[0].get_legend_handles_labels()
+    ax12[1].legend(handles, labels, loc='center', fontsize=16)
+    fig12.tight_layout()
+    fig12.savefig(analyzedir + '\\contact4_hip_' + whichleg + '.png')
 
     ###########################################################################
     # TODO: figure out why the difference in total and all added together. 
@@ -3216,17 +3221,21 @@ if __name__ == '__main__':
     ###########################################################################
     ### Figure: total pop average for right leg between nat and exo
     #### Figure in the paper R1... 
-    plt.figure()#dpi=300)
-    plt.fill_between(n_timespercent101, np.mean(nall_combine,0)-np.std(nall_combine,0), np.mean(nall_combine,0)+np.std(nall_combine,0), color=ncolorlight)
-    plt.fill_between(e_timespercent101, np.mean(eall_combine,0)-np.std(eall_combine,0), np.mean(eall_combine,0)+np.std(eall_combine,0), color=ecolorlight)
-    plt.plot(n_timespercent101, np.mean(nall_combine,0), color=ncolor, label='natural')
-    plt.plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='exotendon')
-    plt.xlabel('% Gait cycle')
-    plt.ylabel('Force (BW)')
-    plt.title('Total vertical contact force')
-    plt.legend(loc='upper right')
-    plt.tight_layout()
-    plt.savefig(analyzedir + '\\contact6_hip_' + whichleg + '.png')
+    figcon6, axcon6 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
+    axcon6[0].fill_between(n_timespercent101, np.mean(nall_combine,0)-np.std(nall_combine,0), np.mean(nall_combine,0)+np.std(nall_combine,0), color=ncolorlight, alpha=0.75)
+    axcon6[0].fill_between(e_timespercent101, np.mean(eall_combine,0)-np.std(eall_combine,0), np.mean(eall_combine,0)+np.std(eall_combine,0), color=ecolorlight, alpha=0.75)
+    axcon6[0].plot(n_timespercent101, np.mean(nall_combine,0), color=ncolor, label='Natural (Mean \u00B1 Std.)', linewidth=3)
+    axcon6[0].plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='Exotendon (Mean \u00B1 Std.)', linewidth=3)
+    axcon6[0].set_xlabel('% Gait cycle', fontsize=16)
+    axcon6[0].set_ylabel('Vertical hip contact force (BW)', fontsize=16)
+    axcon6[0].set_title('Total vertical contact force', fontsize=16)
+    axcon6[0].tick_params(axis='both', which='major', labelsize=16)
+    # hide the second subplot axis and use it for legend
+    axcon6[1].axis('off')
+    handles, labels = axcon6[0].get_legend_handles_labels()
+    axcon6[1].legend(handles, labels, loc='center', fontsize=16)
+    figcon6.tight_layout()
+    figcon6.savefig(analyzedir + '\\contact6_hip_' + whichleg + '.png')
 
 
     ###########################################################################
