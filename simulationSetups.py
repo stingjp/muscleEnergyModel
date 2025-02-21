@@ -332,12 +332,13 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         weldem.append('subtalar_l')
         weldem.append('radius_hand_r')
         weldem.append('radius_hand_l')
+        weldem.append('mtp_r')
+        weldem.append('mtp_l')
         modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
         if wantpaths:
             modelProcessor = osim.ModelProcessor(replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=fitpaths))
         modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
-        weldem.append('mtp_r')
-        weldem.append('mtp_l')
+        
     else: 
         print('tracking GRF')
         time.sleep(1)
@@ -727,10 +728,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
 
 
 
-    analyzeStrings_all = osim.StdVectorString()
-    analyzeStrings_all.append('.*')
-    table_all = study.analyze(solution, analyzeStrings_all)
-    osim.STOFileAdapter.write(table_all, 'muscletrack_redo_all_py.sto')
+    # analyzeStrings_all = osim.StdVectorString()
+    # analyzeStrings_all.append('.*')
+    # table_all = study.analyze(solution, analyzeStrings_all)
+    # osim.STOFileAdapter.write(table_all, 'muscletrack_redo_all_py.sto')
 
     # pdb.set_trace()
 
@@ -1255,7 +1256,7 @@ def muscleInverse(repodir, subjectname, conditionname, trialname, whatfailed, tr
     return whatfailed
 
 def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
-    print('here we are, trying to get some new paths... ')    
+    print('here we are, trying to get some new paths... ')
     if newfit:
         # create and fit the paths in the osim model with the polynomial path fitting tool
         fitter = osim.PolynomialPathFitter()
@@ -1266,6 +1267,7 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
         # MultivariatePolynomialFunctions to model the path lengths and moment arms
         # # of the original model.
         model = modelProcessor.process()
+        model.printToXML('pre_polyfit.osim')
         fitter.setModel(modelProcessor)
         model.initSystem()
         # set the coordinate values table
@@ -1400,7 +1402,6 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
         model = modelProcessor.process()
         functionBasedPathsFile = os.path.join(
             results_dir, f'{model.getName()}_FunctionBasedPathSet.xml')
-    pdb.set_trace()
     modelProcessor.append(osim.ModOpReplacePathsWithFunctionBasedPaths(
         functionBasedPathsFile))
     model = modelProcessor.process()
