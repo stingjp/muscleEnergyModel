@@ -323,6 +323,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # construct a ModelProcessor and add it to the tool.
 
     weldem = osim.StdVectorString()
+    subjdir = os.path.join(repodir, '..\\results\\' + subjectname)
 
     if not trackGRF:
         print('not tracking GRF')
@@ -336,7 +337,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         weldem.append('mtp_l')
         modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
         if wantpaths:
-            modelProcessor = osim.ModelProcessor(replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=fitpaths))
+            modelProcessor = osim.ModelProcessor(replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=fitpaths, subjdir=subjdir))
         modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
         
     else: 
@@ -670,7 +671,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # solve and visualize
     try:
         solution = study.solve()
-        solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+        if wantpaths: 
+            solution.write('muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto')
+        else:
+            solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
         print('ran the base')
     except:
         print(os.getcwd())
@@ -1255,7 +1259,7 @@ def muscleInverse(repodir, subjectname, conditionname, trialname, whatfailed, tr
 
     return whatfailed
 
-def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
+def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
     print('here we are, trying to get some new paths... ')
     if newfit:
         # create and fit the paths in the osim model with the polynomial path fitting tool
@@ -1299,7 +1303,7 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
         # model configuration, and the path lengths and moment arms fitted to the
         # polynomial functions. File names will be prepended with the name of the
         # model.
-        results_dir = 'pathresults'
+        results_dir = subjdir + '/welknatural/trial01/' + 'pathresults'
         fitter.setOutputDirectory(results_dir)
         
         # Set the maximum order of the polynomials used to fit the path lengths
@@ -1352,27 +1356,27 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
         # each force object and averaged across all force objects.        
         fitter.run()
 
-        # Plot the results
-        # ----------------
-        # Use the plotting helper functions to visualize the results of the
-        # fitting process and determine if the fits are good enough for your needs,
-        # or if the model or fitting settings need to be modified.
+        # # Plot the results
+        # # ----------------
+        # # Use the plotting helper functions to visualize the results of the
+        # # fitting process and determine if the fits are good enough for your needs,
+        # # or if the model or fitting settings need to be modified.
 
-        # Plot the sampled coordinate values used to generate the path lengths
-        # and moment arms.
-        plot_coordinate_samples(results_dir, model.getName())
+        # # Plot the sampled coordinate values used to generate the path lengths
+        # # and moment arms.
+        # plot_coordinate_samples(results_dir, model.getName())
 
-        # Plot the path lengths and moment arms computed from the original model
-        # paths (blue) and the fitted polynomial paths (orange).
-        #
-        # For most muscles the fit is very good, but there are noticeable fitting
-        # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
-        # Errors like these usually arise from the fitting process struggling with
-        # discontinuities due to wrapping geometry issues in the original model.
-        # Depending on size of the errors, you may want to adjust the wrapping
-        # geometry in the original model and re-run the fitter.
-        plot_path_lengths(results_dir, model.getName())
-        plot_moment_arms(results_dir, model.getName())
+        # # Plot the path lengths and moment arms computed from the original model
+        # # paths (blue) and the fitted polynomial paths (orange).
+        # #
+        # # For most muscles the fit is very good, but there are noticeable fitting
+        # # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
+        # # Errors like these usually arise from the fitting process struggling with
+        # # discontinuities due to wrapping geometry issues in the original model.
+        # # Depending on size of the errors, you may want to adjust the wrapping
+        # # geometry in the original model and re-run the fitter.
+        # plot_path_lengths(results_dir, model.getName())
+        # plot_moment_arms(results_dir, model.getName())
 
         # Evaluate the fitted functions on a 'new' trajectory
         # ---------------------------------------------------
@@ -1398,13 +1402,18 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit):
     # model file.
     if not newfit:
         print('just replacing the paths with last fit...')
-        results_dir = 'pathresults'
+        results_dir = os.path.join(subjdir, 'welknatural\\trial01\\pathresults')
         model = modelProcessor.process()
         functionBasedPathsFile = os.path.join(
             results_dir, f'{model.getName()}_FunctionBasedPathSet.xml')
-    modelProcessor.append(osim.ModOpReplacePathsWithFunctionBasedPaths(
-        functionBasedPathsFile))
-    model = modelProcessor.process()
-    model.initSystem()
-    model.printToXML('model_polyfit_redo.osim')
+    try: 
+        modelProcessor.append(osim.ModOpReplacePathsWithFunctionBasedPaths(
+            functionBasedPathsFile))
+        model = modelProcessor.process()
+        model.initSystem()
+        model.printToXML('model_polyfit_redo.osim')
+    except: 
+        print('could not replace the paths, likely the file does not exist')
+        pdb.set_trace()
+        return 
     return model
