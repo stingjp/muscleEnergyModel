@@ -63,6 +63,7 @@ def analyzeSubject_post(subject, condition, trial):
     workingdir = os.getcwd()
     sctdir = os.path.join(resultsbasedir,subject,condition,trial)
     
+    subjdir = os.path.join(repodir, '..\\results\\' + subject)
     
     # get the trial name
     trialname = os.path.basename(workingdir)
@@ -91,7 +92,8 @@ def analyzeSubject_post(subject, condition, trial):
 
     ## lets see if we can get the polynomial paths fit and a model outputs
     modelProcessor = osim.ModelProcessor('simple_model_all_the_probes.osim')
-    newmodel = replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=True)
+    # modelProcessor = osim.ModelProcessor('13pre_polyfit.osim')
+    newmodel = replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=True, subjdir=subjdir)
 
 # muscle driven state tracking simulation - second pass 
 def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname, trialname):
@@ -1356,27 +1358,27 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
         # each force object and averaged across all force objects.        
         fitter.run()
 
-        # # Plot the results
-        # # ----------------
-        # # Use the plotting helper functions to visualize the results of the
-        # # fitting process and determine if the fits are good enough for your needs,
-        # # or if the model or fitting settings need to be modified.
+        # Plot the results
+        # ----------------
+        # Use the plotting helper functions to visualize the results of the
+        # fitting process and determine if the fits are good enough for your needs,
+        # or if the model or fitting settings need to be modified.
 
-        # # Plot the sampled coordinate values used to generate the path lengths
-        # # and moment arms.
-        # plot_coordinate_samples(results_dir, model.getName())
+        # Plot the sampled coordinate values used to generate the path lengths
+        # and moment arms.
+        plot_coordinate_samples(results_dir, model.getName())
 
-        # # Plot the path lengths and moment arms computed from the original model
-        # # paths (blue) and the fitted polynomial paths (orange).
-        # #
-        # # For most muscles the fit is very good, but there are noticeable fitting
-        # # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
-        # # Errors like these usually arise from the fitting process struggling with
-        # # discontinuities due to wrapping geometry issues in the original model.
-        # # Depending on size of the errors, you may want to adjust the wrapping
-        # # geometry in the original model and re-run the fitter.
-        # plot_path_lengths(results_dir, model.getName())
-        # plot_moment_arms(results_dir, model.getName())
+        # Plot the path lengths and moment arms computed from the original model
+        # paths (blue) and the fitted polynomial paths (orange).
+        #
+        # For most muscles the fit is very good, but there are noticeable fitting
+        # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
+        # Errors like these usually arise from the fitting process struggling with
+        # discontinuities due to wrapping geometry issues in the original model.
+        # Depending on size of the errors, you may want to adjust the wrapping
+        # geometry in the original model and re-run the fitter.
+        plot_path_lengths(results_dir, model.getName())
+        plot_moment_arms(results_dir, model.getName())
 
         # Evaluate the fitted functions on a 'new' trajectory
         # ---------------------------------------------------
