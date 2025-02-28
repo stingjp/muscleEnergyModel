@@ -444,7 +444,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # put large weight on the pelvis CoordinateActuators, which act as the
     # residual, or 'hand-of-god' forces which we would like to keep small
     model = modelProcessorDC.process()
-    model.printToXML('post_simple_model_all_the_probes_muscletrack_redo.osim')
+    if wantpaths:
+        model.printToXML('post_simple_model_all_the_probes_muscletrack_redoarms_poly.osim')
+    else: 
+        model.printToXML('post_simple_model_all_the_probes_muscletrack_redo.osim')
     model.initSystem()
     forceSet = model.getForceSet()
     for i in range(forceSet.getSize()):

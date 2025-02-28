@@ -2127,21 +2127,21 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    # resultsdir = os.path.join(repodir, '..\\results');
-    # analyzedir = os.path.join(repodir, '..\\analysis');
+    resultsdir = os.path.join(repodir, '..\\results');
+    analyzedir = os.path.join(repodir, '..\\analysis');
     # previous (combo) results directory
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk008']#,'welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
     runtool = False
-    indresults = False
+    indresults = True
 
     # get some results structures going
     welknaturalstruct_combine = {}
