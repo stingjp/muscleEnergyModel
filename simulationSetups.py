@@ -1262,6 +1262,9 @@ def muscleInverse(repodir, subjectname, conditionname, trialname, whatfailed, tr
     return whatfailed
 
 def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
+    import time
+    start_time = time.time()
+    
     print('here we are, trying to get some new paths... ')
     if newfit:
         # create and fit the paths in the osim model with the polynomial path fitting tool
@@ -1289,7 +1292,7 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
             # if i % 2 != 0:
             #     values.removeRow(times[i])
             # test way to cut anything after certain index
-            if i > 300: 
+            if i > 150: 
                 values.removeRow(times[i])
         fitter.setCoordinateValues(osim.TableProcessor(values))
 
@@ -1358,27 +1361,31 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
         # each force object and averaged across all force objects.        
         fitter.run()
 
-        # Plot the results
-        # ----------------
-        # Use the plotting helper functions to visualize the results of the
-        # fitting process and determine if the fits are good enough for your needs,
-        # or if the model or fitting settings need to be modified.
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Execution time: {elapsed_time:.4f} seconds")
 
-        # Plot the sampled coordinate values used to generate the path lengths
-        # and moment arms.
-        plot_coordinate_samples(results_dir, model.getName())
+        # # Plot the results
+        # # ----------------
+        # # Use the plotting helper functions to visualize the results of the
+        # # fitting process and determine if the fits are good enough for your needs,
+        # # or if the model or fitting settings need to be modified.
 
-        # Plot the path lengths and moment arms computed from the original model
-        # paths (blue) and the fitted polynomial paths (orange).
-        #
-        # For most muscles the fit is very good, but there are noticeable fitting
-        # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
-        # Errors like these usually arise from the fitting process struggling with
-        # discontinuities due to wrapping geometry issues in the original model.
-        # Depending on size of the errors, you may want to adjust the wrapping
-        # geometry in the original model and re-run the fitter.
-        plot_path_lengths(results_dir, model.getName())
-        plot_moment_arms(results_dir, model.getName())
+        # # Plot the sampled coordinate values used to generate the path lengths
+        # # and moment arms.
+        # plot_coordinate_samples(results_dir, model.getName())
+
+        # # Plot the path lengths and moment arms computed from the original model
+        # # paths (blue) and the fitted polynomial paths (orange).
+        # #
+        # # For most muscles the fit is very good, but there are noticeable fitting
+        # # errors in a few muscles (e.g., /forceset/gaslat_r and /forceset/glmax1_r).
+        # # Errors like these usually arise from the fitting process struggling with
+        # # discontinuities due to wrapping geometry issues in the original model.
+        # # Depending on size of the errors, you may want to adjust the wrapping
+        # # geometry in the original model and re-run the fitter.
+        # plot_path_lengths(results_dir, model.getName())
+        # plot_moment_arms(results_dir, model.getName())
 
         # Evaluate the fitted functions on a 'new' trajectory
         # ---------------------------------------------------
@@ -1418,4 +1425,5 @@ def replaceMusclePaths(modelProcessor, kinematicsFile, newfit, subjdir):
         print('could not replace the paths, likely the file does not exist')
         pdb.set_trace()
         return 
+
     return model
