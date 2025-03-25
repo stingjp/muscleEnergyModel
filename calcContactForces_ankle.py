@@ -1402,17 +1402,21 @@ if __name__ == '__main__':
     # resultsdir = os.path.join(repodir, '..\\results');
     # analyzedir = os.path.join(repodir, '..\\analysis');
     # previous (combo) results directory
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
+
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
+
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
     welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
-    thingstoplot = ['contactForces'];
+    thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'both'
+    whichleg = 'left'
     oldnotredo = False
-    runtool = False
+    runtool = True
     indresults = False
 
     # get some results structures going

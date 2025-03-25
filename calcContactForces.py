@@ -2130,17 +2130,21 @@ if __name__ == '__main__':
     resultsdir = os.path.join(repodir, '..\\results');
     analyzedir = os.path.join(repodir, '..\\analysis');
     # previous (combo) results directory
+
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
+
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk008']#,'welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk009']#,'welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
-    runtool = False
+    runtool = True
     indresults = True
 
     # get some results structures going
@@ -2163,7 +2167,6 @@ if __name__ == '__main__':
     passiveforces_exo = {}
     totalforces_nat = {}
     totalforces_exo = {}
-
 
     # all of this was commented out... need to remember what all I was doing...
     # I think a lot of this got moved into functions above...
@@ -2200,7 +2203,6 @@ if __name__ == '__main__':
         #         model = modelProcessor.process()
         #         model.initSystem()
                 
-                
         #         # need the solution
         #         solution = osim.MocoTrajectory(os.path.join(trialdir, 'muscle_statetrack_GRFprescribe_solution_100con.sto'))
         #         statesTable = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_states_100con.sto'))
@@ -2219,7 +2221,6 @@ if __name__ == '__main__':
         #         times = statesTable.getIndependentColumn()
         #         initTime = times[0]
         #         finalTime = times[-1]
-                
                     
         #         # get a table with the combined states and tendon lengths?
         #         combStates = statesTable
@@ -2231,7 +2232,6 @@ if __name__ == '__main__':
         #                 combStates.removeColumn(columnname)
                         
         #         comblabels2 = combStates.getColumnLabels()
-                
                 
         #         # get the names of all the fiberlengths
         #         fiberlabels = fiberLengths.getColumnLabels()
@@ -2245,14 +2245,11 @@ if __name__ == '__main__':
         #         # store the model masses
         #         modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes_adjusted.osim')
         #         exostruct_combine[subject] = modelmass                
-                
-                
+
         #         ######################################################
         #         ## trying the state step approach from HPLers
         #         os.chdir(trialdir)
         #         pdb.set_trace()
-
-
                 
         #         # load in the base model
         #         jramodelProcessor = osim.ModelProcessor('simple_model_all_the_probes_adjusted.osim')
@@ -2306,8 +2303,6 @@ if __name__ == '__main__':
                 
         #         # ID prescribed coordinate values??
                 
-                
-                
         #         # Joint reaction setup
         #         jointRxn = osim.JointReaction()
         #         jointRxn.setName('jrxnAnalysis100')
@@ -2323,9 +2318,6 @@ if __name__ == '__main__':
         #         jointRxn.setResultsDir(trialdir)
         #         jointRxn.printToXML('JrxnSetup.xml') ;
         #         time.sleep(0.5)
-                
-                
-
 
         #         pdb.set_trace()                
         #         ############################
@@ -2339,8 +2331,6 @@ if __name__ == '__main__':
         #         # jr = osim.analyzeSpatialVec(model, combStates, controlsTable, ['.*walker_knee.*reaction_on_parent.*'])
         #         time.sleep(0.5)
                 
-                
-                
         #         ## now to actually load in the data and do something with it. 
         #         jrastab = jras.flatten(['_mx', '_my', '_mz', '_fx', '_fy', '_fz'])
         #         jrasrx = jrastab.getDependentColumn('/jointset/walker_knee_r|reaction_on_child_fx').to_numpy()
@@ -2353,8 +2343,6 @@ if __name__ == '__main__':
         #         import matplotlib.pyplot as plt
         #         plt.figure()
         #         plt.plot(jrasry)
-                
-                
                 
         #         ## now transform to the tibia frame from ground
         #         # get the joints
@@ -2440,9 +2428,7 @@ if __name__ == '__main__':
         #         # welkexostruct[trial] = (times, np.abs(fyr), np.abs(fyl))
         #         welkexostruct[trial] = (times, np.abs(newjrasr[:,1]), np.abs(newjrasl[:,1]))
         #         print(trialdir)
-                
-                
-                
+
         # now have to loop through the natural side
         # loop through conditions natural
         for cond in range(len(welknaturalconditions)):
@@ -2456,7 +2442,6 @@ if __name__ == '__main__':
                 
                 os.chdir(trialdir)
                 pdb.set_trace()
-                
                 
                 ### now what do we want to do at each of the trials
 
