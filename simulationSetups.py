@@ -436,7 +436,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem = study.updProblem()
     # effort goal
     effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
-    effort.setWeight(0.001)
+    effort.setWeight(0.5)
     # initial activation goals
     initactivationgoal = osim.MocoInitialActivationGoal('init_activation')
     initactivationgoal.setWeight(10)
@@ -469,7 +469,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 2) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 7.0) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -500,7 +500,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 100)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
@@ -510,16 +510,29 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
-    jointReaction = osim.MocoJointReactionGoal('joint_reaction', 0.0075) # 0.05 before
+    jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.0075*0.5) # 0.05 before
     # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
     # loadframe = osim.StdVectorString(); loadframe.append('child')
     # framepaths = osim.StdVectorString(); framepaths.append('/bodyset/tibia_r')
-    whichForces = osim.StdVectorString(); whichForces.append('force-y')
-    jointReaction.setJointPath('/jointset/walker_knee_r')
-    jointReaction.setLoadsFrame('child')
-    jointReaction.setExpressedInFramePath('/bodyset/tibia_r')
-    jointReaction.setReactionMeasures(whichForces)
-    problem.addGoal(jointReaction)
+    whichForces_r = osim.StdVectorString(); whichForces_r.append('force-y')
+    jointReaction_r.setJointPath('/jointset/walker_knee_r')
+    jointReaction_r.setLoadsFrame('child')
+    jointReaction_r.setExpressedInFramePath('/bodyset/tibia_r')
+    jointReaction_r.setReactionMeasures(whichForces_r)
+    problem.addGoal(jointReaction_r)
+
+    ### set up a joint reaction goal to minimize knee joint contact... 
+    jointReaction_l = osim.MocoJointReactionGoal('joint_reaction_l', 0.0075*0.5) # 0.05 before
+    # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
+    # loadframe = osim.StdVectorString(); loadframe.append('child')
+    # framepaths = osim.StdVectorString(); framepaths.append('/bodyset/tibia_r')
+    whichForces_l = osim.StdVectorString(); whichForces_l.append('force-y')
+    jointReaction_l.setJointPath('/jointset/walker_knee_l')
+    jointReaction_l.setLoadsFrame('child')
+    jointReaction_l.setExpressedInFramePath('/bodyset/tibia_l')
+    jointReaction_l.setReactionMeasures(whichForces_l)
+    problem.addGoal(jointReaction_l)
+
 
     ### grf tracking goal... if we specify that we want it... (not default for this project.)
     GRFTrackingWeight = 1
@@ -580,7 +593,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     if wantguess:
         ## the try does the most recent solution, the except does the 100con solution from previous study.
         
-        # twosteptraj = osim.MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto')
+        # twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
         try:
             twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
         except:
