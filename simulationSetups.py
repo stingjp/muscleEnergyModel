@@ -19,7 +19,7 @@ from examplePolynomialPathFitter_plotting import (plot_coordinate_samples, plot_
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -47,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -317,7 +317,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin):
     
     # create the tracking problem
     track = osim.MocoTrack()
@@ -519,8 +519,6 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction_r.setLoadsFrame('child')
     jointReaction_r.setExpressedInFramePath('/bodyset/tibia_r')
     jointReaction_r.setReactionMeasures(whichForces_r)
-    problem.addGoal(jointReaction_r)
-
     ### set up a joint reaction goal to minimize knee joint contact... 
     jointReaction_l = osim.MocoJointReactionGoal('joint_reaction_l', 0.0075*0.5) # 0.05 before
     # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
@@ -531,7 +529,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction_l.setLoadsFrame('child')
     jointReaction_l.setExpressedInFramePath('/bodyset/tibia_l')
     jointReaction_l.setReactionMeasures(whichForces_l)
-    problem.addGoal(jointReaction_l)
+    if jointreact:
+        problem.addGoal(jointReaction_r)
+        problem.addGoal(jointReaction_l)
 
 
     ### grf tracking goal... if we specify that we want it... (not default for this project.)
@@ -595,7 +595,10 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         
         # twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
         try:
-            twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+            if guessmin:
+                twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
+            else:
+                twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
         except:
             twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
         
@@ -605,7 +608,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         solver = osim.MocoCasADiSolver.safeDownCast(study.updSolver())
         solver.resetProblem(problem)
         solver.set_optim_convergence_tolerance(1e-2)
-        solver.set_optim_constraint_tolerance(1e-4)
+        solver.set_optim_constraint_tolerance(1e-3)
         solver.set_parallel(16)
         # set the number of intervals potentially 
         # solver.set_num_mesh_intervals(24)
@@ -691,6 +694,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         solution = study.solve()
         if wantpaths: 
             solution.write('muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto')
+        elif jointreact:
+            solution.write('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
         else:
             solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
         print('ran the base')
