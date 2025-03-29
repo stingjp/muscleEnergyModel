@@ -19,7 +19,7 @@ from examplePolynomialPathFitter_plotting import (plot_coordinate_samples, plot_
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin, guess100):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -47,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -317,7 +317,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
 
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100):
     
     # create the tracking problem
     track = osim.MocoTrack()
@@ -594,12 +594,15 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         ## the try does the most recent solution, the except does the 100con solution from previous study.
         
         # twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
-        try:
+        if not guess100:
             if guessmin:
-                twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
+                try: 
+                    twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
+                except:
+                    twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
             else:
                 twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
-        except:
+        else:
             twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
         
         # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
@@ -608,7 +611,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         solver = osim.MocoCasADiSolver.safeDownCast(study.updSolver())
         solver.resetProblem(problem)
         solver.set_optim_convergence_tolerance(1e-2)
-        solver.set_optim_constraint_tolerance(1e-3)
+        solver.set_optim_constraint_tolerance(1e-4)
         solver.set_parallel(16)
         # set the number of intervals potentially 
         # solver.set_num_mesh_intervals(24)
