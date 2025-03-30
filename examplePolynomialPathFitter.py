@@ -57,9 +57,8 @@ weldem.append('mtp_l');
 weldem.append('radius_hand_r');
 weldem.append('radius_hand_l');
 modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem));
-# fitter.setModel(osim.ModelProcessor(model))
-model = modelProcessor.process()
 fitter.setModel(modelProcessor)
+model = modelProcessor.process()
 # Set the coordinate values table.
 
 # The fitter will randomly sample around the coordinate values provided in the
