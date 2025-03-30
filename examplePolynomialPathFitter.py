@@ -138,8 +138,6 @@ fitter.setMomentArmTolerance(1e-3)
 # Information about each step fitting process will be printed to the
 # console including the path length and moment arm RMS error for
 # each force object and averaged across all force objects.
-import pdb
-pdb.set_trace()
 fitter.run()
 
 # Plot the results
