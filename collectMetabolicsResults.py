@@ -22,7 +22,8 @@ targetmuscleresults = os.path.join(metabolicsbasedir,'muscleInverse\\')
 # targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverseWithEMG\\')
 targetmuscleEMGresults = os.path.join(metabolicsbasedir,'muscleInverse_100con\\')
 targetmuscleresultsprescribe = os.path.join(metabolicsbasedir,'muscleInverse_prescribe\\')
-
+targetmusclestanceresults = os.path.join(metabolicsbasedir,'muscleStance\\')
+targetmuscleswingresults = os.path.join(metabolicsbasedir,'muscleSwing\\')
 
 
 
@@ -219,17 +220,27 @@ for subj in subjects:
                 # directory for each metabolic result file
                 metfile1 = os.path.join(trialdir, 'metabolicsTable.csv')
                 metfile2 = os.path.join(trialdir, 'metabolicsTable_100con.csv')
+                metfile3 = os.path.join(trialdir, 'muscleMetabolicsStance.csv')
+                metfile4 = os.path.join(trialdir, 'muscleMetabolicsSwing.csv')
                 # new names for when they are copied
                 newname1 = subj+'_'+cond+'_'+keys+'_metabolicsTable.csv'
                 newname2 = subj+'_'+cond+'_'+keys+'_metabolicsTable_100con.csv'
+                newname3 = subj+'_'+cond+'_'+keys+'_muscleMetabolicsStance.csv'
+                newname4 = subj+'_'+cond+'_'+keys+'_muscleMetabolicsSwing.csv'
                 # target location paths
                 target1 = os.path.join(targetmuscleresults,newname1)
                 target2 = os.path.join(targetmuscleEMGresults,newname2)
+                target3 = os.path.join(targetmusclestanceresults, newname3)
+                target4 = os.path.join(targetmuscleswingresults, newname4)
                 # copy the files
                 try:
                     copy(metfile1,target1)
                     copy(metfile2,target2)
+                    copy(metfile3,target3)
+                    copy(metfile4,target4)
                 except:
+                    print('issue in copying files... check directories.')
+                    print(trialdir)
                     pass
 
     elif subj[0:4] == 'jack':

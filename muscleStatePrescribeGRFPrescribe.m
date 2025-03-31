@@ -9,7 +9,8 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
-    modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
+    % modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
+    modelProcessor = ModelProcessor('simple_model_all_the_probes.osim');
 
 %     modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
@@ -17,13 +18,12 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % modelProcessor = ModelProcessor(model);
     % need to adjust some of the joints - weld them
     weldem = StdVectorString();
-    % weldem.add('subtalar_r');
+    weldem.add('subtalar_r');
     weldem.add('mtp_r');
-    % weldem.add('subtalar_l');
+    weldem.add('subtalar_l');
     weldem.add('mtp_l');
-    % weldem.add('radius_hand_r');
-    % weldem.add('radius_hand_l');
-    
+    weldem.add('radius_hand_r');
+    weldem.add('radius_hand_l');
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     % model = modelProcessor.process();
 
@@ -34,11 +34,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % modelProcessor.append(ModOpIgnorePassiveFiberForcesDGF());
     % only valid for degroote
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
-%     modelProcessor.append(ModOpAddReserves(1.0));
-    modelProcessor.append(ModOpAddReserves(1.0));
-    
-
-
+    modelProcessor.append(ModOpAddReserves(250.0));
 
     % now do tweaks to get tendon compliance
     basemodel = modelProcessor.process();
@@ -93,16 +89,15 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     inverse.setModel(modelProcessorDC);
 
-
     tempkintable = TableProcessor('torque_statetrack_grfprescribe_solution.sto').process();
-%     tempkintable = TableProcessor('./ResultsRRA_1/subject01_walk1_RRA_states.sto').process();
-%     tempkintable = TableProcessor('./coordinates_updated.mot').process();
+    % tempkintable = TableProcessor('./ResultsRRA_1/subject01_walk1_RRA_states.sto').process();
+    % tempkintable = TableProcessor('./coordinates_updated.mot').process();
     templabels_os = tempkintable.getColumnLabels();
     % templabels = []
     for i=0:templabels_os.size()-1
         % templabels = [templabels, templabels_os.get(i)];
         temp = templabels_os.get(i);
-        if ~startsWith(temp, '/jointset') %~temp.startsWith('/jointset')
+        if ~startsWith(temp, '/jointset')
             tempkintable.removeColumn(temp);
         end
     end
@@ -113,7 +108,6 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     % construct TableProcessor of the coordinate data and pass it to the inverse tool
     % if no operators, it returns the base table
     % inverse.setKinematics(TableProcessor('torque_statetrack_grfprescribe_solution.sto'));    
-
 
     % get the subject name and gait timings
     load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
@@ -138,8 +132,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
 
     % set inverse goals
     inverse.set_minimize_sum_squared_activations(true);
-    inverse.set_reserves_weight(30);% 3e-2 30
-
+    inverse.set_reserves_weight(1); % 30  3e-2 30
     study = inverse.initialize();
     problem = study.updProblem();
 
@@ -171,26 +164,26 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % for post problem processing
     model = modelProcessorDC.process();
-    model.print('post_simple_model_all_the_probes_muscletrack.osim');
-
+    model.print('post_simple_model_all_the_probes_muscleprescribe.osim');
+    
     %%% moving on to solve
     % set up the solver and solve the problem
     solver = MocoCasADiSolver.safeDownCast(study.updSolver());
     solver.resetProblem(problem);
-    solver.set_optim_convergence_tolerance(.001); % 1e-2
-    solver.set_optim_constraint_tolerance(1e-4); % 1e-2
+    solver.set_optim_convergence_tolerance(.01); % 1e-3
+    solver.set_optim_constraint_tolerance(1e-2); % 1e-4
     
-    % solution = study.solve();
-    % solution.insertStatesTrajectory(tempkintable);
+    solution = study.solve();
+    solution.insertStatesTrajectory(tempkintable);
     
-    solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
+%     solution = MocoTrajectory('muscle_stateprescribe_grfprescribe_solution.sto');
     
     % solution.write('muscleguess.sto');
     % study.visualize(solution);
 
 
     % post processing
-    % solution.write('muscle_statetrack_grfprescribe_solution.sto');
+%     solution.write('muscle_statetrack_grfprescribe_solution.sto');
     solution.write('muscle_stateprescribe_grfprescribe_solution.sto')
     STOFileAdapter.write(solution.exportToControlsTable(), 'muscleprescribe_controls.sto');
     STOFileAdapter.write(solution.exportToStatesTable(), 'muscleprescribe_states.sto');
@@ -225,7 +218,7 @@ function [Issues] = muscleStatePrescribeGRFPrescribe(Issues)
     
     % post analysis and validation
 %     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('inverseproblem')]];
-    analyzeMetabolicCost(solution, 'muscleprescribe');
+%     analyzeMetabolicCost(solution, 'muscleprescribe');
     % Issues = computeIDFromResult(Issues, solution, tag);
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'prescribe';

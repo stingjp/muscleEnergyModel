@@ -1,7 +1,8 @@
 clear all
 clc
 
-repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
+% repodir = 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel';
+repodir = 'C:\Users\jonstingel\code\musclemodel\muscleEnergyModel';
 resultsdir = strcat(repodir, '/../results');
 cd(resultsdir)
 
@@ -20,9 +21,10 @@ cd(resultsdir)
 % dembsubjects = {'demb010','demb011','demb012','demb014', 'demb005','demb007','demb009'}; %
 welkconditions = {'welknatural','welkexo'}; % ,'welknaturalslow','welknaturalnatural', ...
                   % 'welknaturalexo','welkexonatural','welkexoexo','welkexofast'};
+% welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
 welksubjects = {'welk002','welk003','welk005','welk008','welk009','welk010','welk013'};
-load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
-
+% load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectGaitCycles.mat';
+load 'C:\Users\jonstingel\code\musclemodel\muscleEnergyModel\subjectGaitCycles.mat';
 % an issues holder for this script
 % global Issues
 Issues = [[java.lang.String('running multiple subjects'); java.lang.String('here we go')]];
@@ -73,7 +75,7 @@ for subj=1:length(welksubjects)
             % run the analysis
             try
                 analyzeSubject()
-%                 analyzeSubject_setup()
+                % analyzeSubject_setup()
                 disp('ran');
             catch
                 disp('issue');

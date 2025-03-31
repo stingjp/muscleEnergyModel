@@ -8,7 +8,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % construct ModelProcessor and sit it on the tool. 
     % replace default muscles with degrootefregly 2016 muscles, and adjust params
     modelProcessor = ModelProcessor('simple_model_all_the_probes_adjusted.osim');
-
     % modelProcessor = ModelProcessor("simple_model_all_the_probes.osim");
     modelProcessor.append(ModOpAddExternalLoads('grf_walk.xml'));
     % now to do stuff with the model
@@ -21,7 +20,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     weldem.add('mtp_l');
     % weldem.add('radius_hand_r');
     % weldem.add('radius_hand_l');
-    
     modelProcessor.append(ModOpReplaceJointsWithWelds(weldem));
     % model = modelProcessor.process();
 
@@ -33,11 +31,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % only valid for degroote
     modelProcessor.append(ModOpScaleActiveFiberForceCurveWidthDGF(1.5));
     modelProcessor.append(ModOpAddReserves(1.0));
-    
-
-
-
-    % now do tweaks to get tendon compliance
     basemodel = modelProcessor.process();
     basemodel.print('basemodel_simple_model_all_the_probes.osim');
     
@@ -78,15 +71,18 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % 1
     % track.setStatesReference(TableProcessor('torque_markertrack_grfprescribe_solution.sto'));
     tableProcessor = TableProcessor('coordinates_updated.mot');
-%     tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto'));
-%     tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
+    % tableProcessor = TableProcessor(tabletrimming('torque_statetrack_grfprescribe_solution.sto'));
+    % tableProcessor = TableProcessor(tabletrimming('muscle_statetrack_grfprescribe_solution.sto'));
     tableProcessor.append(TabOpLowPassFilter(6));
-   
-
-    
     tableProcessor.append(TabOpUseAbsoluteStateNames());
     track.setStatesReference(tableProcessor);
     
+    % prescribeTable = TableProcessor('muscleprescribe_states.sto');
+    % tableProcessor is the coordinates_updated
+    tempkintable = TimeSeriesTable('coordinates_updated.mot');
+    %now need to go through and try to get them better
+
+
 %     track.set_kinematics_allow_extra_columns(true);
     track.set_states_global_tracking_weight(100); % was trying 5 but previous was 10  |50 % need to weigh benefit of higher global vs specific coordinate
     % avoid exceptions if markers in file are no longer in the model (arms removed)
@@ -106,8 +102,8 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % coordinateweights.cloneAndAppend(MocoWeight("pelvis_tilt", 1000000));
     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_r", 1e-6));
     coordinateweights.cloneAndAppend(MocoWeight("hip_rotation_l", 1e-6));
-%     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
-%     coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
+    % coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_r", 100000));
+    % coordinateweights.cloneAndAppend(MocoWeight("hip_adduction_l", 100000));
     % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_r", 1e2));
     % coordinateweights.cloneAndAppend(MocoWeight("ankle_angle_l", 1e2));
     coordinateweights.cloneAndAppend(MocoWeight("subtalar_angle_r", 1e-6));
@@ -115,11 +111,11 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     coordinateweights.cloneAndAppend(MocoWeight('lumber_extension', 1000));
     coordinateweights.cloneAndAppend(MocoWeight('lumber_bending', 1000));
     coordinateweights.cloneAndAppend(MocoWeight('lumber_rotation', 1000));
-    
     track.set_states_weight_set(coordinateweights);
 
     % get the subject name and gait timings
-    load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    % load 'G:\Shared drives\Exotendon\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
+    load 'C:\Users\jonstingel\code\muscleModel\muscleEnergyModel\subjectgaitcycles.mat';
     workdir = pwd;
     [~,trialname,~] = fileparts(pwd);
     cd ../
@@ -150,16 +146,6 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % distance.addFramePair(java.lang.String('/bodyset/calcn_l'), java.lang.String('/bodyset/toes_r'), 0.15, Inf); %0.20
     % distance.addFramePair(java.lang.String('/bodyset/toes_l'), java.lang.String('/bodyset/calcn_r'), 0.15, Inf); %0.20
     % problem.addPathConstraint(distance);
-    
-
-    % prescribeTable = TableProcessor('muscleprescribe_states.sto');
-
-    % tableProcessor is the coordinates_updated
-
-    tempkintable = TimeSeriesTable('coordinates_updated.mot');
-    %now need to go through and try to get them better
-
-
 
 
     % experiment with orientation tracking
@@ -342,7 +328,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
     % save('torque_statetrack_grfprescribe.mat');
     disp('end state muscle track')
 
-
+    
     % post analysis and validation
     solution1 = MocoTrajectory('muscle_statetrack_grfprescribe_solution.sto');
     solution2 = MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto');
@@ -350,7 +336,7 @@ function [Issues] = muscleStateTrackGRFPrescribe(Issues)
 
     Issues = [Issues; [java.lang.String('muscledrivensim'); java.lang.String('trackingproblem')]];
     analyzeMetabolicCost(solution1, 'muscletrack');
-    % Issues = computeIDFromResult(Issues, solution);
+    % Issues = computeIDFromResult(Issues, solution2, 'muscletrack');
     % analyzeMetabolicCost(solution);
     % trackorprescribe = 'track';
     % computeKinematicDifferences(solution, trackorprescribe);

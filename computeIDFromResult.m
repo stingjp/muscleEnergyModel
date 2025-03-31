@@ -8,7 +8,7 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+    keyboard
     %% compute ID moments 
     % solution = MocoTrajectory(solution);
     Time = solution.getTimeMat();
@@ -17,9 +17,22 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     workingdir = pwd;
 
     idtool = InverseDynamicsTool(java.lang.String('idguitesting.xml'));
-    modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
+    if strcmp(tag, 'muscletrack')
+        modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
+        modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
+    elseif strcmp(tag, 'muscleprescribe')
+        modelid1 = Model('post_simple_model_all_the_probes_muscleprescribe.osim');
+        modelid2 = Model('simple_model_all_the_probes.osim');
+    elseif strcmp(tag, 'muscletrack_redo')
+        modelid1 = Model('post_simple_model_all_the_probes_muscletrack_redo.osim');
+        modelid2 = Model('simple_model_all_the_probes.osim');
+    elseif strcmp(tag, 'muscletrack_paths_redo')
+        modelid1 = Model('post_simple_model_all_the_probes_muscletrack_paths_redo.osim');
+        modelid2 = Model('simple_model_all_the_probes.osim');
+    end
+    % modelid1 = Model('post_simple_model_all_the_probes_muscletrack.osim');
     modelid1.initSystem();
-    modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
+    % modelid2 = Model('simple_model_all_the_probes_adjusted.osim');
     idtool.setModel(modelid2);
 
     if strcmp(tag, 'grftrack')
@@ -41,7 +54,6 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     % end
 
     % try storage instead
-
     sto = Storage();
     solutionstatestable = solution.exportToStatesTable();
     labels = solutionstatestable.getColumnLabels();
@@ -52,11 +64,11 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
         templabel = labels.get(i);
         if contains(char(templabel),'jointset') && contains(char(templabel),'value')
             % we want this one
-            templabel2 = char(templabel);
-            tempsplit = split(templabel2,'/');
-            templabel3 = tempsplit(4);
+            templabel2 = char(templabel)
+            tempsplit = split(templabel2,'/')
+            templabel3 = tempsplit(4)
             
-            properlabels.set(i+1, templabel3);
+            properlabels.set(i+1, templabel3)
         else
             % get rid of this column
             solutionstatestable.removeColumn(templabel);
@@ -84,15 +96,31 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
             sto.append(statetime.get(i), temprow2);
         end
     end
+    keyboard
+    % save some files. 
+    if strcmp(tag, 'muscletrack')
+        sto.print('muscletrack_coordinates_short.sto');
+        idtool.setCoordinatesFileName('muscletrack_coordinates_short.sto');
+    elseif strcmp(tag, 'muscleprescribe')
+        sto.print('muscleprescribe_coordinates_short.sto');
+        idtool.setCoordinatesFileName('muscleprescribe_coordinates_short.sto');
+    elseif strcmp(tag, 'muscletrack_redo')
+        sto.print('muscletrack_redo_coordinates_short.sto');
+        idtool.setCoordinatesFileName('muscletrack_redo_coordinates_short.sto');
+    elseif strcmp(tag, 'muscletrack_paths_redo')
+        sto.print('muscletrack_paths_redo_coordinates_short.sto');
+        idtool.setCoordinatesFileName('muscletrack_paths_redo_coordinates_short.sto');
+    end
     
-    % idstorage = solution.exportToStatesStorage();
-    % set the tool up
-    % idtool.setCoordinateValues(idstorage);
-    sto.print('muscle_coordinates_short.sto');
     
-    % idtool.setCoordinateValues(sto);
-    idtool.setCoordinatesFileName('muscle_coordinates_short.sto');
-    idresult = 'muscle_joint_moment_breakdown.sto';
+    % % idstorage = solution.exportToStatesStorage();
+    % % set the tool up
+    % % idtool.setCoordinateValues(idstorage);
+    % sto.print('muscle_coordinates_short.sto');
+    keyboard
+    % % idtool.setCoordinateValues(sto);
+    % idtool.setCoordinatesFileName('muscle_coordinates_short.sto');
+    idresult = strcat(tag, '_muscle_joint_moment_breakdown.sto');
     idtool.setResultsDir(workingdir);
     idtool.setOutputGenForceFileName(idresult);
     idtool.setEndTime(endtime);
@@ -100,7 +128,7 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     idtool.set_results_directory(java.lang.String(workingdir));
     
     % run the tool
-    idtool.print('idtesting.xml');
+    idtool.print(strcat(tag,'idtesting.xml'));
     idtool.run();
 
     % load the net joint moments
@@ -111,7 +139,6 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     
     % get the states
     statestraj = solution.exportToStatesTrajectory(modelid1);
-
 
     %% get some details from the model
     % muscles
@@ -179,7 +206,7 @@ function [Issues, maxreservepercvalus, avgreservepercvalus, maxreservevalus, avg
     end
     coordactmomentstable = osimTableFromStruct(coordactmoments);
 
-    
+    keyboard
     % get moment arms, and plot stuff
     % aim for 5% of net joint moment or less for reserves
     % lots for residuals
