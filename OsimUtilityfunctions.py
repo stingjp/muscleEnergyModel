@@ -48,7 +48,8 @@ def IDplotter(solution, tag, showornot, trialinfo):
         if temp not in IDmoments and 'force' not in temp:
             print('moment not found in IDmoments')
             print(temp)
-            pdb.set_trace()
+            raise Exception('Expected moment was missing')
+            break
         if 'knee_angle' in temp and 'beta' not in temp:
             if '_l_' in temp:
                 axs[0].plot(time, solution.getDependentColumn(temp).to_numpy(), label=temp, linestyle=':', color='red')
