@@ -465,6 +465,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             effort.setWeightForControl(forcePath, 10)
         # if 'hip_rotation' in forcePath:
         #    effort.setWeightForControl(forcePath, 10)
+        elif 'vas' in forcePath:
+            print(forcePath)
+            effort.setWeightForControl(forcePath, 100)
 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
@@ -498,7 +501,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*mtp.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*subtalar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 400)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
@@ -1022,6 +1025,8 @@ def torqueStateTrackGRFTrack(repodir, subjectname, conditionname, trialname, wha
                 # print('\naaaa')
                 # print(currentStateName)
                 # activations squared for this actuator
+                ## testing out a higher weight for the activations on the quads to get lower joint reaction forces. 
+
 
                 if currentStateName.endswith('_r/activation'):
                     pair = osim.MocoPeriodicityGoalPair(currentStateName, re.sub('_r','_l', currentStateName));
