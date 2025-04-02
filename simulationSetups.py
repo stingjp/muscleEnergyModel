@@ -383,7 +383,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(100)
+    track.set_states_global_tracking_weight(500)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -467,7 +467,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         #    effort.setWeightForControl(forcePath, 10)
         elif 'vas' in forcePath:
             print(forcePath)
-            effort.setWeightForControl(forcePath, 100)
+            effort.setWeightForControl(forcePath, 10)
 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
