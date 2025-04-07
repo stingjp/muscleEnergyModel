@@ -383,7 +383,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(500)
+    track.set_states_global_tracking_weight(1000)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -465,9 +465,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             effort.setWeightForControl(forcePath, 10)
         # if 'hip_rotation' in forcePath:
         #    effort.setWeightForControl(forcePath, 10)
-        elif 'vas' in forcePath:
-            print(forcePath)
-            effort.setWeightForControl(forcePath, 10)
+        # elif 'vas' in forcePath:
+        #     print(forcePath)
+        #     effort.setWeightForControl(forcePath, 100)
 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
@@ -510,7 +510,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*elbow.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*pro.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
-    problem.addGoal(jointMomentTracking)
+    # problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
     jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.0075*0.5) # 0.05 before
@@ -532,9 +532,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction_l.setLoadsFrame('child')
     jointReaction_l.setExpressedInFramePath('/bodyset/tibia_l')
     jointReaction_l.setReactionMeasures(whichForces_l)
-    if jointreact:
-        problem.addGoal(jointReaction_r)
-        problem.addGoal(jointReaction_l)
+    # if jointreact:
+    #     problem.addGoal(jointReaction_r)
+    #     problem.addGoal(jointReaction_l)
 
 
     ### grf tracking goal... if we specify that we want it... (not default for this project.)
