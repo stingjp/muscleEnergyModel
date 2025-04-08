@@ -46,8 +46,8 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     os.chdir(workingdir)
     # create a list of issues
     Issues = []
-    # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
+    muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
+    # whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -383,7 +383,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(1000)
+    track.set_states_global_tracking_weight(100)
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -510,7 +510,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*elbow.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*pro.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
-    # problem.addGoal(jointMomentTracking)
+    problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
     jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.0075*0.5) # 0.05 before
