@@ -46,8 +46,8 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     os.chdir(workingdir)
     # create a list of issues
     Issues = []
-    muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    # whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
+    # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -383,7 +383,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(100)
+    track.set_states_global_tracking_weight(200) # 100
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -396,8 +396,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     coordinateweights.cloneAndAppend(osim.MocoWeight("pelvis_tilt", 1e6))
     coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_r", 1e-6))
     coordinateweights.cloneAndAppend(osim.MocoWeight("hip_rotation_l", 1e-6))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_r", 1e5))
-    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_l", 1e5))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_r", 1e8))
+    coordinateweights.cloneAndAppend(osim.MocoWeight("hip_adduction_l", 1e8))
     coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_r", 1e2))
     coordinateweights.cloneAndAppend(osim.MocoWeight("ankle_angle_l", 1e2))
     coordinateweights.cloneAndAppend(osim.MocoWeight("subtalar_angle_r", 1e-6))
@@ -436,7 +436,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem = study.updProblem()
     # effort goal
     effort = osim.MocoControlGoal.safeDownCast(problem.updGoal('control_effort'))
-    effort.setWeight(0.5)
+    effort.setWeight(0.005) # 0.5
     # initial activation goals
     initactivationgoal = osim.MocoInitialActivationGoal('init_activation')
     initactivationgoal.setWeight(10)
@@ -510,7 +510,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*elbow.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*pro.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*wrist.*', 0)
-    problem.addGoal(jointMomentTracking)
+    # problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
     jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.0075*0.5) # 0.05 before
@@ -532,9 +532,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointReaction_l.setLoadsFrame('child')
     jointReaction_l.setExpressedInFramePath('/bodyset/tibia_l')
     jointReaction_l.setReactionMeasures(whichForces_l)
-    # if jointreact:
-    #     problem.addGoal(jointReaction_r)
-    #     problem.addGoal(jointReaction_l)
+    if jointreact:
+        problem.addGoal(jointReaction_r)
+        problem.addGoal(jointReaction_l)
 
 
     ### grf tracking goal... if we specify that we want it... (not default for this project.)
