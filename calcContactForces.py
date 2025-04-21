@@ -217,6 +217,101 @@ def computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichl
     # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
     return tiby
 # this is the same script ^ but for the prescribed mocoinverse solution
+def computeKneeContactRedoPoly(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool):
+    print('Joint reaction analysis for ' + tag)
+
+    # intersegmental forces - method 2
+    # try the analysis
+    jr_tool = osim.AnalyzeTool()
+    jr_tool.setName('jr_analysis_redo_poly')
+    # jr_tool.setModelFilename(os.path.join(trialdir, 'post_simple_model_all_the_probes_muscletrack.osim'))
+    
+    # I don't think this is going to work. 
+    # jr_tool.setStatesStorage(statesStorage)
+    # jr_tool.setStatesFileName('testfibsolution.sto')
+    trimmingstates = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+    jr_tool.setStatesStorage(trimmingstates)    
+    
+    # jr_tool.setExternalLoadsFileName('grf_walk.xml')
+    # jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'muscletrack_controls_100con.sto')))
+    jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'trimmingControls_redo_poly_' + tag + '.sto')))
+    
+    jra = osim.JointReaction()
+    jra.setName('jra_redo_poly' + tag)
+    wherestr = osim.ArrayStr(); wherestr.append('child')
+    jra.setInFrame(wherestr)
+    
+    jr_tool.updAnalysisSet().cloneAndAppend(jra)
+    jr_tool.setInitialTime(initTime)
+    jr_tool.setFinalTime(finalTime)
+    jr_tool.setResultsDir(trialdir)
+    
+    # jr_tool.setModelFilename('jratestingmodel.osim')
+    trimmodel.addAnalysis(jra)
+    jr_tool.setModel(trimmodel)
+
+    ## uncomment to rerun the analysis
+    jr_tool.printToXML(os.path.join(trialdir, 'jr_setup_redo_poly.xml'))
+    # time.sleep(0.5)
+    # jr_tool = osim.AnalyzeTool(os.path.join(trialdir, 'jr_setup.xml'))
+    
+    # commented out since I have all the results currently processed
+    # unmcomment in order to actually reproduce the files with new results. 
+    
+    if runtool:
+        jr_tool.run()
+        time.sleep(0.5)
+    else:
+        print('\n TOOL NOT RUNNING - JUST COLLECTING OLD RESULTS')
+    
+    # '''
+    # figure out how to do an intersegmental with proper value of forces showing up.
+    trimjra = osim.TimeSeriesTable('jr_analysis_redo_poly_jra_redo_' + tag + '_ReactionLoads.sto')
+    trimjralabels = trimjra.getColumnLabels()
+    if whichleg == 'right':
+        tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+    elif whichleg == 'left':
+        tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+    elif whichleg == 'both':
+        tibyr = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+        tibyl = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+        # tiby = np.array([tibyr, tibyl])
+
+        # do a little peak finding, then get the index, and orient the index to match the peak in the right
+        # then add the two together.
+        # Find the peak value and index for tibyl
+        peak_tibyl = np.min(tibyl)
+        peak_index_tibyl = np.argmin(tibyl)
+
+        # Find the peak value and index for tibyr
+        peak_tibyr = np.min(tibyr)
+        peak_index_tibyr = np.argmin(tibyr)
+
+        # Rotate tibyl to match the peak index of tibyr
+        tibyl_rotated = np.roll(tibyl, peak_index_tibyr - peak_index_tibyl)
+        
+        # print('Peak index tibyl: ' + str(peak_index_tibyl))
+        # print('Peak index tibyr: ' + str(peak_index_tibyr))
+        # print('Peak value tibyl: ' + str(peak_tibyl))
+        # print('Peak value tibyr: ' + str(peak_tibyr))
+        # pdb.set_trace()
+        # plt.plot(tibyr, label='tibyr')
+        # plt.plot(tibyl, label='tibyl')
+        # plt.plot(tibyl_rotated, label='tibyl_rotated')
+        # plt.legend()
+        # plt.show()
+        # pdb.set_trace()
+
+        # Combine the right and left data
+        tiby = (tibyr+tibyl_rotated)/2
+         
+
+    # pdb.set_trace()
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
+    return tiby
+# this is the same script ^ but for the prescribed mocoinverse solution
 def computeKneeContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag):
     # '''
     # intersegmental forces - method 2
@@ -1028,6 +1123,403 @@ def getKneeContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, ru
 
     return jray
 # method for computing the individual muscle contributions to knee contact force
+def getKneeContactributionsRedoPoly(trialdir, musclesWanted_split, tag, whichleg, runtool):
+    if not runtool:
+        print('\n NOT RUNNING TOOL - JUST COLLECTING OLD RESULTS')
+        if musclesWanted_split == []:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'all' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'reserve' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'none' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        else:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+
+    else:
+        print('\n RUNNING TOOL')
+
+        # os.chdir(trialdir)
+        # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+        # model = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        # # attempting with just setting muscles to not apply force
+        # muscles = model.getMuscles()
+        # for m in range(muscles.getSize()):
+        #     musc = muscles.get(m)
+        #     muscname = musc.getName()
+        #     if muscname not in musclesWanted_split:
+        #         musc.setMaxIsometricForce(0.0)
+        #     # else:
+        #     #     print(muscname)
+        
+        # model.initSystem()
+        if musclesWanted_split == []: # this is the inter or intersegmental condition
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                if 'reserve' not in con and 'lumbar' not in con:
+                    controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'all' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            # in this case, we want all the muscles in the model
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+            
+            for stat in stateslabels:
+                if 'speed' in stat:
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # in this case we want all the controls, not getting rid of any muscles
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            
+            # model keeping all the muscles again for this one
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+        
+            ###
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'reserve' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                if 'lumbar' not in con:
+                    controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it (or reserves?)
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()  
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                # print(fo.getName())
+                if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName():
+                    getrid = True
+                    trimforces.remove(f-count)
+                    count += 1
+            
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)  
+        elif 'none' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it (or reserves?)
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                if 'HOBL' not in fo.getName():
+                    getrid = True
+                    trimforces.remove(f-count)
+                    count += 1
+            
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        else:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # musclesWanted_split = ['1'2'3'4']
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels:
+                if 'forceset' in stat:
+                    # print(stat)
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in stat:
+                            # want this one
+                            # print('want this one')
+                            # print(stat)
+                            getrid = False
+                    if getrid:
+                        statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat:
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in stat:
+                            # want to keep this one
+                            # print(stat)
+                            getrid = False
+                    if getrid:
+                        statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                # print(con)
+                if'lumbar' not in con:
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in con:
+                            # want this
+                            # print('want this one')
+                            # print(con)
+                            getrid = False
+                    if getrid:
+                        controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            # get rid of muscles that we don't want
+            trimmuscles = trimmodel.getMuscles()
+            numMuscles = trimmuscles.getSize()
+            count = 0
+            for m in range(numMuscles):
+                musc = trimmuscles.get(m-count)
+                # print(musc.getName())
+                getrid = True
+                for mu in musclesWanted_split:
+                    # print(mu)
+                    if mu == musc.getName():
+                        # print(musc.getName())
+                        # print(mu)
+                        getrid = False
+                if getrid:
+                    trimmuscles.remove(musc)
+                    count +=1
+                    
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()  
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                # print(fo.getName())
+                if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName():
+                    getrid = True
+                    for mu in musclesWanted_split:
+                        if mu == fo.getName():
+                            getrid = False
+                    if getrid:
+                        trimforces.remove(f-count)
+                        count += 1
+            
+            # model should only have muscles that we want now. 
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            # pdb.set_trace()
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+
+    return jray
+# method for computing the individual muscle contributions to knee contact force
 def getKneeContactributionsPrescribe(trialdir, musclesWanted_split, tag):
     # os.chdir(trialdir)
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
@@ -1399,25 +1891,25 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    # resultsdir = os.path.join(repodir, '..\\results');
-    # analyzedir = os.path.join(repodir, '..\\analysis');
+    resultsdir = os.path.join(repodir, '..\\results');
+    analyzedir = os.path.join(repodir, '..\\analysis');
     # previous (combo) results directory
 
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk013']#,'welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
     runtool = True
-    indresults = False
+    indresults = True
 
     # get some results structures going
     welknaturalstruct_combine = {}
