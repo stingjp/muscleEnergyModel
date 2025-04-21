@@ -700,10 +700,16 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         solution = study.solve()
         if wantpaths: 
             solution.write('muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto')
+            osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_poly_py.sto')
+            osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_poly_py.sto')
         elif jointreact:
             solution.write('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
+            osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_jointreact_py.sto')
+            osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_jointreact_py.sto')
         else:
             solution.write('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+            osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
+            osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
         print('ran the base')
     except:
         print(os.getcwd())
@@ -716,8 +722,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
 
 
-    osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
-    osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
+    # osim.STOFileAdapter.write(solution.exportToControlsTable(), 'muscletrack_redo_controls_py.sto')
+    # osim.STOFileAdapter.write(solution.exportToStatesTable(), 'muscletrack_redo_states_py.sto')
 
     # try:
     #     solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
