@@ -1910,6 +1910,7 @@ if __name__ == '__main__':
     oldnotredo = False
     runtool = True
     indresults = True
+    polycalc = False
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -2793,6 +2794,16 @@ if __name__ == '__main__':
                         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
                         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
                         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
+                    elif polycalc:
+                        ## okay now going to focus on the figures that I actually wanted 
+                        jrasrquads = getKneeContactributionsRedoPoly(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
+                        jrasrhams = getKneeContactributionsRedoPoly(trialdir, musclesWanted['hams'], 'hams', whichleg, runtool)
+                        jrasrgas = getKneeContactributionsRedoPoly(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrtfl = getKneeContactributionsRedoPoly(trialdir, musclesWanted['tfl'], 'tfl', whichleg, runtool)
+                        jrasrinter = getKneeContactributionsRedoPoly(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrall = getKneeContactributionsRedoPoly(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreserve = getKneeContactributionsRedoPoly(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnone = getKneeContactributionsRedoPoly(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
@@ -2965,6 +2976,15 @@ if __name__ == '__main__':
                         jrasrall = getKneeContactributions(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
                         jrasrinterreserve = getKneeContactributions(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
                         jrasrnone = getKneeContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
+                    elif polycalc:
+                        jrasrquads = getKneeContactributionsRedoPoly(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
+                        jrasrhams = getKneeContactributionsRedoPoly(trialdir, musclesWanted['hams'], 'hams', whichleg, runtool)
+                        jrasrgas = getKneeContactributionsRedoPoly(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrtfl = getKneeContactributionsRedoPoly(trialdir, musclesWanted['tfl'], 'tfl', whichleg, runtool)
+                        jrasrinter = getKneeContactributionsRedoPoly(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrall = getKneeContactributionsRedoPoly(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreserve = getKneeContactributionsRedoPoly(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnone = getKneeContactributionsRedoPoly(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrquads = getKneeContactributionsRedo(trialdir, musclesWanted['quads'], 'quads', whichleg, runtool)
