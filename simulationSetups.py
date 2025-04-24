@@ -383,7 +383,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     track.setStatesReference(tableProcessor)
     # prescribeTable = osim.TableProcessor('muscleprescribe_states.sto')
     tempkintable = osim.TimeSeriesTable('results_IK_redoarms.mot')
-    track.set_states_global_tracking_weight(100) 
+    track.set_states_global_tracking_weight(100 * 8) 
     track.set_allow_unused_references(True)
     track.set_track_reference_position_derivatives(True)
     # set specific weights for the individual weight set
@@ -604,7 +604,8 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
                 except:
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
             else:
-                twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+                # twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+                twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_poly_py.sto')
         else:
             twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
         
