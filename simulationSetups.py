@@ -464,13 +464,13 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         forcePath = forceSet.get(i).getAbsolutePathString()
         if 'pelvis' in forcePath:
             print('need to dial in the pelvis actuators...')
-            # effort.setWeightForControl(forcePath, 1e-3)
+            effort.setWeightForControl(forcePath, 1e-6)
             # if 'pelvis_ty' in forcePath:
             #     effort.setWeightForControl(forcePath, 1e8)
             # if 'hip_rotation' in forcePath:
             #     effort.setWeightForControl(forcePath, 1e4)
-        elif 'reserve' in forcePath and 'pelvis' in forcePath:
-            effort.setWeightForControl(forcePath, 1e-4)
+        # elif 'reserve' in forcePath and 'pelvis' in forcePath:
+        #     effort.setWeightForControl(forcePath, 1e-4)
         elif 'reserve' in forcePath and 'subtalar' in forcePath:
             effort.setWeightForControl(forcePath, 100)
         elif 'reserve' in forcePath and 'hip_rotation' in forcePath:
