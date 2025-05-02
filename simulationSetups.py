@@ -347,6 +347,16 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         time.sleep(1)
         modelProcessor = osim.ModelProcessor("simple_model_all_the_probes_spheres.osim")
 
+        weldem.append('subtalar_r')
+        weldem.append('subtalar_l')
+        weldem.append('radius_hand_r')
+        weldem.append('radius_hand_l')
+        weldem.append('mtp_r')
+        weldem.append('mtp_l')
+        modelProcessor.append(osim.ModOpReplaceJointsWithWelds(weldem))
+        if wantpaths:
+            modelProcessor = osim.ModelProcessor(replaceMusclePaths(modelProcessor, 'results_IK_redoarms.mot', newfit=fitpaths, subjdir=subjdir))
+        modelProcessor.append(osim.ModOpAddExternalLoads("grf_walk.xml"))
     
     modelProcessor.append(osim.ModOpReplaceMusclesWithDeGrooteFregly2016())
     modelProcessor.append(osim.ModOpScaleActiveFiberForceCurveWidthDGF(1.5))
