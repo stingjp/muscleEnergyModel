@@ -525,7 +525,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     problem.addGoal(jointMomentTracking)
 
     ### set up a joint reaction goal to minimize knee joint contact... 
-    jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.0075) #0.5 0.05 before
+    jointReaction_r = osim.MocoJointReactionGoal('joint_reaction_r', 0.05)#0.0075) #0.5 0.05 before
     # jointpath = osim.StdVectorString(); jointpath.append('/jointset/walker_knee_r')
     # loadframe = osim.StdVectorString(); loadframe.append('child')
     # framepaths = osim.StdVectorString(); framepaths.append('/bodyset/tibia_r')

@@ -216,7 +216,7 @@ for subj in subjects:
                 os.chdir(trialdir)
                 print('\n')
                 print(trialdir)
-                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF=True, halfcycle=halfcycle, fitpaths=False, wantpaths=True, jointreact=False, guessmin=False, guess100=False)
+                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF=False, halfcycle=halfcycle, fitpaths=False, wantpaths=False, jointreact=True, guessmin=False, guess100=False)
                 # simset.analyzeSubject_post(subj, cond, keys)
                 print(trialdir)
 
