@@ -51,7 +51,6 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
-
 # analyze mimic to just do some post processing
 def analyzeSubject_post(subject, condition, trial):
     # set up the paths
@@ -315,7 +314,6 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
     # otherwise have to update everything to python - not worth the time likely for post analysis. s
     return
 
-
 # muscle driven state tracking simulation = third pass (testing)
 def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100):
     
@@ -477,9 +475,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             effort.setWeightForControl(forcePath, 10)
         # if 'hip_rotation' in forcePath:
         #    effort.setWeightForControl(forcePath, 10)
-        # elif 'vas' in forcePath:
-        #     print(forcePath)
-        #     effort.setWeightForControl(forcePath, 100)
+        elif 'vas' in forcePath:
+            print(forcePath)
+            effort.setWeightForControl(forcePath, 5)
 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
