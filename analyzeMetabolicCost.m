@@ -34,14 +34,13 @@ function analyzeMetabolicCost(solution, tag)
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_redoarms.sto")));
     elseif strcmp(tag, 'muscletrack_redo')
         analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack_redo.osim");
-        analyze.setStatesFileName(strcat(tag, "_states.sto"));
-        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
+        analyze.setStatesFileName(strcat(tag, "_states_py.sto"));
+        analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls_py.sto")));
     elseif strcmp(tag, 'muscletrack_paths_redo')
         analyze.setModelFilename("post_simple_model_all_the_probes_muscletrack_paths_redo.osim");
         analyze.setStatesFileName(strcat(tag, "_states.sto"));
         analyze.updControllerSet().cloneAndAppend(PrescribedController(strcat(tag,"_controls.sto")));
-    
-        % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
+    % if strcmp(subjectname,'welk002') || strcmp(subjectname,'welk003')
     %     analyze.setStatesFileName("muscleprescribe_states.sto");
     %     analyze.updControllerSet().cloneAndAppend(PrescribedController("muscleprescribe_controls.sto"));
     % else

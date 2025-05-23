@@ -475,9 +475,9 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             effort.setWeightForControl(forcePath, 10)
         # if 'hip_rotation' in forcePath:
         #    effort.setWeightForControl(forcePath, 10)
-        elif 'vas' in forcePath:
-            print(forcePath)
-            effort.setWeightForControl(forcePath, 2.5)
+        # elif 'vas' in forcePath:
+        #     print(forcePath)
+        #     effort.setWeightForControl(forcePath, 2.5)
 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
