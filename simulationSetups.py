@@ -637,7 +637,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         # solver.set_optim_finite_difference_scheme('forward')
         # solver.set_optim_finite_difference_scheme('central')
         if not trackGRF: 
-            solver.set_optim_max_iterations(3000)
+            solver.set_optim_max_iterations(6000)
         else: 
             solver.set_optim_max_iterations(6000)
             
