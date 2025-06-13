@@ -2139,6 +2139,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     ax11[0].set_ylabel('Force (BW)')
     ax11[0].set_title('intersegmental')
     # ax11[0].legend()
+    
     # tfl forces
     ax11[1].plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0))
     ax11[1].set_xlabel('% Gait cycle')
@@ -2457,8 +2458,8 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    resultsdir = os.path.join(repodir, '..\\results');
-    analyzedir = os.path.join(repodir, '..\\analysis');
+    # resultsdir = os.path.join(repodir, '..\\results');
+    # analyzedir = os.path.join(repodir, '..\\analysis');
     # previous (combo) results directory
 
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
@@ -2467,16 +2468,19 @@ if __name__ == '__main__':
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
+
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk009']#,'welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
-    runtool = False
-    indresults = True
-    polycalc = True
+    runtool = True
+    indresults = False
+    polycalc = False
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -3802,7 +3806,7 @@ if __name__ == '__main__':
                 nall_combine_z[spot,:] = jrasrallonly101z[:-2]
                 nreserve_combine_z[spot,:] = jrasrreserveonly101z[:-2]
                 nnone_combine_z[spot,:] = jrasrnoneonly101z[:-2]
-                ## increase the spot - count of trials                
+                ## increase the spot - count of trials
                 spot += 1
 
 
