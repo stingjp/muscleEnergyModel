@@ -174,12 +174,145 @@ def computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, which
     trimjra = osim.TimeSeriesTable('jr_analysis_redo_jra_redo_' + tag + '_ReactionLoads.sto')
     trimjralabels = trimjra.getColumnLabels()
     if whichleg == 'right':
+        tibx = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fx').to_numpy()
         tiby = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fy').to_numpy()
+        tibz = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fz').to_numpy()
     elif whichleg == 'left':
+        tibx = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fx').to_numpy()
         tiby = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fy').to_numpy()
+        tibz = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fz').to_numpy()
     elif whichleg == 'both':
+        tibxr = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fx').to_numpy()
+        tibxl = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fx').to_numpy()
         tibyr = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fy').to_numpy()
         tibyl = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fy').to_numpy()
+        tibzr = trimjra.getDependentColumn('ankle_r_on_talus_r_in_talus_r_fz').to_numpy()
+        tibzl = trimjra.getDependentColumn('ankle_l_on_talus_l_in_talus_l_fz').to_numpy()
+        # tiby = np.array([tibyr, tibyl])
+
+        # # do a little peak finding, then get the index, and orient the index to match the peak in the right
+        # # then add the two together.
+        # # Find the peak value and index for tibyl
+        # peak_tibyl = np.min(tibyl)
+        # peak_index_tibyl = np.argmin(tibyl)
+
+        # # Find the peak value and index for tibyr
+        # peak_tibyr = np.min(tibyr)
+        # peak_index_tibyr = np.argmin(tibyr)
+
+        # # Rotate tibyl to match the peak index of tibyr
+        # tibyl_rotated = np.roll(tibyl, peak_index_tibyr - peak_index_tibyl)
+        # tibxl_rotated = np.roll(tibxl, peak_index_tibyr - peak_index_tibyl)
+        # tibzl_rotated = np.roll(tibzl, peak_index_tibyr - peak_index_tibyl)
+        
+        ### use the vertical knee as the best signal to align the two sides.
+        vertright = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+        vertleft = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+
+        peak_vertleft = np.min(vertleft)
+        peak_index_vertleft = np.argmin(vertleft)
+        peak_vertright = np.min(vertright)
+        peak_index_vertright = np.argmin(vertright)
+        # use these for rotations on tib data
+        tibyl_rotated = np.roll(tibyl, peak_index_vertright - peak_index_vertleft)
+        tibxl_rotated = np.roll(tibxl, peak_index_vertright - peak_index_vertleft)
+        tibzl_rotated = np.roll(tibzl, peak_index_vertright - peak_index_vertleft)
+
+        # print('Peak index tibyl: ' + str(peak_index_tibyl))
+        # print('Peak index tibyr: ' + str(peak_index_tibyr))
+        # print('Peak value tibyl: ' + str(peak_tibyl))
+        # print('Peak value tibyr: ' + str(peak_tibyr))
+        # pdb.set_trace()
+        # plt.plot(tibyr, label='tibyr')
+        # plt.plot(tibyl, label='tibyl')
+        # plt.plot(tibyl_rotated, label='tibyl_rotated')
+        # plt.legend()
+        # plt.show()
+        # pdb.set_trace()
+        # plt.figure()
+        # plt.plot(tibxr, label='tibxr')
+        # plt.plot(tibxl, label='tibxl')
+        # plt.plot(tibxl_rotated, label='tibxl_rotated')
+        # plt.legend()
+        # plt.show()
+        # pdb.set_trace()
+        # plt.figure()
+        # plt.plot(tibzr, label='tibzr')
+        # plt.plot(tibzl, label='tibzl')
+        # plt.plot(-tibzl_rotated, label='tibzl_rotated')
+        # plt.legend()
+        # plt.show()
+        # pdb.set_trace()
+
+        # Combine the right and left data
+        tibx = (tibxr+tibxl_rotated)/2
+        tiby = (tibyr+tibyl_rotated)/2
+        tibz = (tibzr-tibzl_rotated)/2 # z is negated since it is in the opposite side of the model. 
+
+    # pdb.set_trace()
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(np.array(trimjra.getIndependentColumn()), tiby)
+    return tibx, tiby, tibz
+# this is the same script ^ but for the prescribed mocoinverse solution
+def computeKneeContactRedoPoly(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool):
+    print('Joint reaction analysis for ' + tag)
+
+    # intersegmental forces - method 2
+    # try the analysis
+    jr_tool = osim.AnalyzeTool()
+    jr_tool.setName('jr_analysis_redo_poly')
+    # jr_tool.setModelFilename(os.path.join(trialdir, 'post_simple_model_all_the_probes_muscletrack.osim'))
+    
+    # I don't think this is going to work. 
+    # jr_tool.setStatesStorage(statesStorage)
+    # jr_tool.setStatesFileName('testfibsolution.sto')
+    trimmingstates = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+    jr_tool.setStatesStorage(trimmingstates)    
+    
+    # jr_tool.setExternalLoadsFileName('grf_walk.xml')
+    # jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'muscletrack_controls_100con.sto')))
+    jr_tool.updControllerSet().cloneAndAppend(osim.PrescribedController(os.path.join(trialdir, 'trimmingControls_redo_poly_' + tag + '.sto')))
+    
+    jra = osim.JointReaction()
+    jra.setName('jra_redo_poly' + tag)
+    wherestr = osim.ArrayStr(); wherestr.append('child')
+    jra.setInFrame(wherestr)
+    
+    jr_tool.updAnalysisSet().cloneAndAppend(jra)
+    jr_tool.setInitialTime(initTime)
+    jr_tool.setFinalTime(finalTime)
+    jr_tool.setResultsDir(trialdir)
+    
+    # jr_tool.setModelFilename('jratestingmodel.osim')
+    trimmodel.addAnalysis(jra)
+    jr_tool.setModel(trimmodel)
+
+    ## uncomment to rerun the analysis
+    jr_tool.printToXML(os.path.join(trialdir, 'jr_setup_redo_poly.xml'))
+    # time.sleep(0.5)
+    # jr_tool = osim.AnalyzeTool(os.path.join(trialdir, 'jr_setup.xml'))
+    
+    # commented out since I have all the results currently processed
+    # unmcomment in order to actually reproduce the files with new results. 
+    
+    if runtool:
+        jr_tool.run()
+        time.sleep(0.5)
+    else:
+        print('\n TOOL NOT RUNNING - JUST COLLECTING OLD RESULTS')
+    
+    # '''
+    # figure out how to do an intersegmental with proper value of forces showing up.
+    trimjra = osim.TimeSeriesTable('jr_analysis_redo_poly_jra_redo_' + tag + '_ReactionLoads.sto')
+    trimjralabels = trimjra.getColumnLabels()
+    if whichleg == 'right':
+        tiby = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+    elif whichleg == 'left':
+        tiby = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
+    elif whichleg == 'both':
+        tibyr = trimjra.getDependentColumn('walker_knee_r_on_tibia_r_in_tibia_r_fy').to_numpy()
+        tibyl = trimjra.getDependentColumn('walker_knee_l_on_tibia_l_in_tibia_l_fy').to_numpy()
         # tiby = np.array([tibyr, tibyl])
 
         # do a little peak finding, then get the index, and orient the index to match the peak in the right
@@ -640,35 +773,35 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             # timings - these don't matter since we are not rerunning, just need filler for the function
             initTime = 0.0
             finalTime = 1.0
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'all' in musclesWanted_split:
             # load the model
             trimmodel = osim.Model('trimmingmodel2_redo_' + tag + '.osim')
             # timings - these don't matter since we are not rerunning, just need filler for the function
             initTime = 0.0
             finalTime = 1.0
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'reserve' in musclesWanted_split:
             # load the model
             trimmodel = osim.Model('trimmingmodel2_redo_' + tag + '.osim')
             # timings - these don't matter since we are not rerunning, just need filler for the function
             initTime = 0.0
             finalTime = 1.0
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'none' in musclesWanted_split:
             # load the model
             trimmodel = osim.Model('trimmingmodel2_redo_' + tag + '.osim')
             # timings - these don't matter since we are not rerunning, just need filler for the function
             initTime = 0.0
             finalTime = 1.0
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         else:
             # load the model
             trimmodel = osim.Model('trimmingmodel2_redo_' + tag + '.osim')
             # timings - these don't matter since we are not rerunning, just need filler for the function
             initTime = 0.0
             finalTime = 1.0
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
 
     else:
         print('\n RUNNING TOOL')
@@ -738,7 +871,7 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'all' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -784,7 +917,7 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
         
             ###
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         elif 'reserve' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -850,7 +983,7 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)  
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)  
         elif 'none' in musclesWanted_split:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -914,7 +1047,7 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
             
             # call the analyze tool to actually do the analysis and get the values. 
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
         else:
             statesStorage = osim.Storage('muscletrack_redo_states_py.sto')
             statesTable = osim.TimeSeriesTable('muscletrack_redo_states_py.sto')
@@ -1024,7 +1157,404 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.addComponent(pomo)
             trimmodel.initSystem()
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
-            jray = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeHipContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+
+    return jrax, jray, jraz
+# method for computing the individual muscle contributions to knee contact force
+def getKneeContactributionsRedoPoly(trialdir, musclesWanted_split, tag, whichleg, runtool):
+    if not runtool:
+        print('\n NOT RUNNING TOOL - JUST COLLECTING OLD RESULTS')
+        if musclesWanted_split == []:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'all' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'reserve' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'none' in musclesWanted_split:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        else:
+            # load the model
+            trimmodel = osim.Model('trimmingmodel2_redo_poly_' + tag + '.osim')
+            # timings - these don't matter since we are not rerunning, just need filler for the function
+            initTime = 0.0
+            finalTime = 1.0
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+
+    else:
+        print('\n RUNNING TOOL')
+
+        # os.chdir(trialdir)
+        # solution = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+        # model = osim.Model('post_simple_model_all_the_probes_muscletrack.osim')
+        # # attempting with just setting muscles to not apply force
+        # muscles = model.getMuscles()
+        # for m in range(muscles.getSize()):
+        #     musc = muscles.get(m)
+        #     muscname = musc.getName()
+        #     if muscname not in musclesWanted_split:
+        #         musc.setMaxIsometricForce(0.0)
+        #     # else:
+        #     #     print(muscname)
+        
+        # model.initSystem()
+        if musclesWanted_split == []: # this is the inter or intersegmental condition
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                if 'reserve' not in con and 'lumbar' not in con:
+                    controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'all' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            # in this case, we want all the muscles in the model
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+            
+            for stat in stateslabels:
+                if 'speed' in stat:
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # in this case we want all the controls, not getting rid of any muscles
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            
+            # model keeping all the muscles again for this one
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+        
+            ###
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        elif 'reserve' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                if 'lumbar' not in con:
+                    controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it (or reserves?)
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()  
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                # print(fo.getName())
+                if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName():
+                    getrid = True
+                    trimforces.remove(f-count)
+                    count += 1
+            
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)  
+        elif 'none' in musclesWanted_split:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels: 
+                if 'forceset' in stat:
+                    statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat: 
+                    statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it (or reserves?)
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor = osim.ModelProcessor('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodelprocessor.append(osim.ModOpRemoveMuscles())
+            trimmodel = trimmodelprocessor.process()
+            trimmodel.initSystem()
+            
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                if 'HOBL' not in fo.getName():
+                    getrid = True
+                    trimforces.remove(f-count)
+                    count += 1
+            
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            # pomostorage = osim.Storage('trimmingStates2_inter.sto')
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            
+            # call the analyze tool to actually do the analysis and get the values. 
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+        else:
+            statesStorage = osim.Storage('muscletrack_redo_states_poly_py.sto')
+            statesTable = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            stateslabels = statesTable.getColumnLabels()
+            statesTableTrim = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            statesTableTrim2 = osim.TimeSeriesTable('muscletrack_redo_states_poly_py.sto')
+            
+            # musclesWanted_split = ['1'2'3'4']
+            # get a trimmed set of states that is just the joint angles speeds, and whatever muscles you want. 
+            for stat in stateslabels:
+                if 'forceset' in stat:
+                    # print(stat)
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in stat:
+                            # want this one
+                            # print('want this one')
+                            # print(stat)
+                            getrid = False
+                    if getrid:
+                        statesTableTrim.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim, 'trimmingStates_redo_poly_' + tag + '.sto')
+
+            for stat in stateslabels:
+                if 'forceset' in stat or 'speed' in stat:
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in stat:
+                            # want to keep this one
+                            # print(stat)
+                            getrid = False
+                    if getrid:
+                        statesTableTrim2.removeColumn(stat)
+            osim.STOFileAdapter.write(statesTableTrim2, 'trimmingStates2_redo_poly_' + tag + '.sto')
+
+
+            # get a version of the controls that matches. 
+            controlsTable = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            controlslabels = controlsTable.getColumnLabels()
+            controlsTableTrim = osim.TimeSeriesTable('muscletrack_redo_controls_poly_py.sto')
+            
+            # get a version of the controls that is trimmed down. 
+            for con in controlslabels:
+                # print(con)
+                if'lumbar' not in con:
+                    getrid = True
+                    for want in musclesWanted_split:
+                        if want in con:
+                            # want this
+                            # print('want this one')
+                            # print(con)
+                            getrid = False
+                    if getrid:
+                        controlsTableTrim.removeColumn(con)
+            osim.STOFileAdapter.write(controlsTableTrim, 'trimmingControls_redo_poly_' + tag + '.sto')
+            
+            # get a version of the model with no muscles in it
+            # muscmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            trimmodel = osim.Model('post_simple_model_all_the_probes_muscletrack_redo.osim')
+            # get rid of muscles that we don't want
+            trimmuscles = trimmodel.getMuscles()
+            numMuscles = trimmuscles.getSize()
+            count = 0
+            for m in range(numMuscles):
+                musc = trimmuscles.get(m-count)
+                # print(musc.getName())
+                getrid = True
+                for mu in musclesWanted_split:
+                    # print(mu)
+                    if mu == musc.getName():
+                        # print(musc.getName())
+                        # print(mu)
+                        getrid = False
+                if getrid:
+                    trimmuscles.remove(musc)
+                    count +=1
+                    
+            # now have to do it for the forceset too?
+            trimforces = trimmodel.getForceSet()
+            numForces = trimforces.getSize()  
+            count = 0
+            for f in range(numForces):
+                fo = trimforces.get(f-count)
+                # print(fo.getName())
+                if 'lumbar' not in fo.getName() and 'HOBL' not in fo.getName():
+                    getrid = True
+                    for mu in musclesWanted_split:
+                        if mu == fo.getName():
+                            getrid = False
+                    if getrid:
+                        trimforces.remove(f-count)
+                        count += 1
+            
+            # model should only have muscles that we want now. 
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel_redo_poly_' + tag + '.osim')
+            
+            
+            initTime = np.array(statesTable.getIndependentColumn())[0]
+            finalTime = np.array(statesTable.getIndependentColumn())[-1]
+            
+            # now try the positionMotion
+            pomostorage = osim.Storage('trimmingStates_redo_poly_' + tag + '.sto')
+            pomotraj = osim.StatesTrajectory.createFromStatesStorage(trimmodel, pomostorage)
+            pomo = osim.PositionMotion.createFromStatesTrajectory(trimmodel, pomotraj)
+            # pdb.set_trace()
+            trimmodel.addComponent(pomo)
+            trimmodel.initSystem()
+            trimmodel.printToXML('trimmingmodel2_redo_poly_' + tag + '.osim')
+            jray = computeKneeContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
 
     return jray
 # method for computing the individual muscle contributions to knee contact force
@@ -1390,7 +1920,464 @@ def getAnkleContactributionsPrescribe(trialdir, musclesWanted_split, tag):
         jray = computeAnkleContactPrescribe(trimmodel, initTime, finalTime, trialdir, tag)
     
     return jray
+# plotting method that works for each component of the ankle contact force
+def plotAnkleContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datacombined):
+    # start by separating the data...
+    ninterseg_combine = datacombined['ninterseg_combine']
+    einterseg_combine = datacombined['einterseg_combine']
+    nplantar_combine = datacombined['nplantar_combine']
+    eplantar_combine = datacombined['eplantar_combine']
+    ndorsi_combine = datacombined['ndorsi_combine']
+    edorsi_combine = datacombined['edorsi_combine']
+    ngas_combine = datacombined['ngas_combine']
+    egas_combine = datacombined['egas_combine']
+    nall_combine = datacombined['nall_combine']
+    eall_combine = datacombined['eall_combine']
 
+
+    ###########################################################################
+    # plotting for the joint contacts - natural and exotendon
+    if len(welksubjects) == 1:
+        ncolors = ['#fee0b6', '#fdae6b', '#fd8d3c', '#e66101']
+        ecolors = ['#c7eae5', '#80cdc1', '#35978f', '#01665e']
+    
+
+    ###########################################################################
+    # figure: segmenting all the muscles between exo and nat 
+    ## really nice figure for seeing what is going on, but likely not going to 
+    ## be in the paper...
+    fig9, ax9 = plt.subplots(2, 4, figsize=(14, 6))# , dpi=300)
+    ax9 = ax9.flatten()
+    # intersegmental forces average
+    for i, curve in enumerate(ninterseg_combine):
+         ax9[0].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(einterseg_combine):
+        ax9[0].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    ax9[0].set_xlabel('% Gait cycle')
+    ax9[0].set_ylabel('Force (BW)')
+    ax9[0].set_title('intersegmental')
+    # ax9[0].legend()
+
+    # flexors forces
+    for i, curve in enumerate(nplantar_combine):
+        ax9[1].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(eplantar_combine):
+        ax9[1].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[1].plot(n_timespercent101, nplantar_combine, label='natural', color=ncolor)
+    # ax9[1].plot(e_timespercent101, eplantar_combine, label='exotendon', color=ecolor)
+    ax9[1].set_xlabel('% Gait cycle')
+    # ax9[1].set_ylabel('Force (BW)')
+    # ax9[1].legend()
+    ax9[1].set_title('plantarflexors')
+
+    # adductor forces
+    for i, curve in enumerate(ndorsi_combine):
+        ax9[2].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(edorsi_combine):
+        ax9[2].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[2].plot(n_timespercent101, ngas_combine, label='natural', color=ncolor)
+    # ax9[2].plot(e_timespercent101, egas_combine, label='exotendon', color=ecolor)
+    ax9[2].set_xlabel('% Gait cycle')
+    # ax9[2].set_ylabel('Force (BW)')
+    # ax9[2].legend()
+    ax9[2].set_title('dorsiflexors')
+
+    # abductors forces
+    for i, curve in enumerate(ngas_combine):
+        ax9[3].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(egas_combine):
+        ax9[3].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[3].plot(n_timespercent101, nhams_combine, label='natural', color=ncolor)
+    # ax9[3].plot(e_timespercent101, ehams_combine, label='exotendon', color=ecolor)
+    ax9[3].set_xlabel('% Gait cycle')
+    # ax9[3].set_ylabel('Force (BW)')
+    # ax9[3].legend()
+    ax9[3].set_title('gastroc')
+
+
+    # all forces from whole analysis
+    for i, curve in enumerate(nall_combine):
+        ax9[6].plot(n_timespercent101, curve, label='natural'+str(i), color=ncolors[i] if len(welksubjects) == 1 else ncolor)
+    for i, curve in enumerate(eall_combine):
+        ax9[6].plot(e_timespercent101, curve, label='exotendon'+str(i), color=ecolors[i] if len(welksubjects) == 1 else ecolor)
+    # ax9[6].plot(n_timespercent101, nall_combine, label='natural', color=ncolor)
+    # ax9[6].plot(e_timespercent101, eall_combine, label='exotendon', color=ecolor)
+    ax9[6].set_xlabel('% Gait cycle')
+    # ax9[6].set_ylabel('Force (BW)')
+    ax9[6].set_title('Total ' + tagcomponent + ' contact')
+    # ax9[6].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    # Hide the last subplot and use it to display the legend   
+    ax9[7].axis('off')
+    handles, labels = ax9[6].get_legend_handles_labels()
+    if len(welksubjects) == 1:
+        ax9[7].legend(handles, labels, loc='center', fontsize=14)
+
+    fig9.tight_layout()
+    plt.savefig(analyzedir + '\\hip_contact1_' + whichleg + '_' + tagcomponent + '.png')
+
+    ###########################################################################
+    # figure: segmenting all the muscles between exo and nat 
+    ## really nice figure for seeing what is going on, but likely not going to 
+    ## be in the paper...
+    fig10, ax10 = plt.subplots(1,8, figsize=(18,3), dpi=500)
+    fontz = 16
+    font_properties = {'fontsize': 16, 'fontfamily': 'serif', 'fontname': 'Times New Roman'}
+    # tick_font_properties = {'fontfamily': 'serif', 'fontname': 'Times New Roman'}
+    
+    # all forces from whole analysis
+    ax10[0].fill_between(n_timespercent101, np.mean(nall_combine, 0) - np.std(nall_combine, 0), np.mean(nall_combine, 0) + np.std(nall_combine, 0), color=ncolor, alpha=0.2)
+    ax10[0].fill_between(e_timespercent101, np.mean(eall_combine, 0) - np.std(eall_combine, 0), np.mean(eall_combine, 0) + np.std(eall_combine, 0), color=ecolor, alpha=0.2)
+    ax10[0].plot(n_timespercent101, np.mean(nall_combine,0), label='natural', color=ncolor)
+    ax10[0].plot(e_timespercent101, np.mean(eall_combine,0), label='exotendon', color=ecolor)
+    ax10[0].set_xlabel('% Gait cycle', **font_properties)
+    ax10[0].set_ylabel('Force (BW)', **font_properties)
+    # ax10[0].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    ax10[0].set_title('Total\n' + tagcomponent + ' ankle Contact', **font_properties)
+    ax10[0].tick_params(axis='both', which='major', labelsize=fontz)
+    
+    # flexor forces
+    ax10[1].fill_between(n_timespercent101, np.mean(nplantar_combine, 0) - np.std(nplantar_combine, 0), np.mean(nplantar_combine, 0) + np.std(nplantar_combine, 0), color=ncolor, alpha=0.2)#, label='Natural St. Dev.')
+    ax10[1].fill_between(e_timespercent101, np.mean(eplantar_combine, 0) - np.std(eplantar_combine, 0), np.mean(eplantar_combine, 0) + np.std(eplantar_combine, 0), color=ecolor, alpha=0.2)#, label='Exotendon St. Dev.')
+    ax10[1].plot(n_timespercent101, np.mean(nplantar_combine, 0), label='Natural (Mean \u00B1 Std.)', color=ncolor)
+    ax10[1].plot(e_timespercent101, np.mean(eplantar_combine, 0), label='Exotendon (Mean \u00B1 Std.)', color=ecolor)
+    ax10[1].set_xlabel('% Gait cycle', **font_properties)
+    ax10[1].tick_params(axis='both', which='major', labelsize=fontz)
+    # ax10[1].set_ylabel('Force (BW)')
+    # ax10[1].legend()
+    ax10[1].set_title('Contribution of\nPlantarflexors', **font_properties)
+
+    # adductor forces
+    ax10[2].fill_between(n_timespercent101, np.mean(ndorsi_combine, 0) - np.std(ndorsi_combine, 0), np.mean(ndorsi_combine, 0) + np.std(ndorsi_combine, 0), color=ncolor, alpha=0.2)
+    ax10[2].fill_between(e_timespercent101, np.mean(edorsi_combine, 0) - np.std(edorsi_combine, 0), np.mean(edorsi_combine, 0) + np.std(edorsi_combine, 0), color=ecolor, alpha=0.2)
+    ax10[2].plot(n_timespercent101, np.mean(ndorsi_combine, 0), label='natural', color=ncolor)
+    ax10[2].plot(e_timespercent101, np.mean(edorsi_combine, 0), label='exotendon', color=ecolor)
+    ax10[2].set_xlabel('% Gait cycle', **font_properties)
+    ax10[2].tick_params(axis='both', which='major', labelsize=fontz)
+    # ax10[2].set_ylabel('Force (BW)')
+    # ax10[2].legend()
+    ax10[2].set_title('Contribution of\nDorsiflexors', **font_properties)
+
+    # abductors forces
+    ax10[3].fill_between(n_timespercent101, np.mean(ngas_combine, 0) - np.std(ngas_combine, 0), np.mean(ngas_combine, 0) + np.std(ngas_combine, 0), color=ncolor, alpha=0.2)
+    ax10[3].fill_between(e_timespercent101, np.mean(egas_combine, 0) - np.std(egas_combine, 0), np.mean(egas_combine, 0) + np.std(egas_combine, 0), color=ecolor, alpha=0.2)
+    ax10[3].plot(n_timespercent101, np.mean(ngas_combine, 0), label='natural', color=ncolor)
+    ax10[3].plot(e_timespercent101, np.mean(egas_combine, 0), label='exotendon', color=ecolor)
+    ax10[3].set_xlabel('% Gait cycle', **font_properties)
+    ax10[3].tick_params(axis='both', which='major', labelsize=fontz)
+    # ax10[3].set_ylabel('Force (BW)')
+    # ax10[3].legend()
+    ax10[3].set_title('Contribution of\nGastroc', **font_properties)
+
+    
+
+    # intersegmental forces average
+    ax10[6].fill_between(n_timespercent101, np.mean(ninterseg_combine, 0) - np.std(ninterseg_combine, 0), np.mean(ninterseg_combine, 0) + np.std(ninterseg_combine, 0), color=ncolor, alpha=0.2)
+    ax10[6].fill_between(e_timespercent101, np.mean(einterseg_combine, 0) - np.std(einterseg_combine, 0), np.mean(einterseg_combine, 0) + np.std(einterseg_combine, 0), color=ecolor, alpha=0.2)
+    ax10[6].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural', color=ncolor)
+    ax10[6].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exotendon', color=ecolor)
+    ax10[6].set_xlabel('% Gait cycle', **font_properties)
+    # ax10[6].set_ylabel('Force (BW)', **font_properties)
+    ax10[6].set_title('Contribution of\nIntersegmental Forces', **font_properties)
+    ax10[6].tick_params(axis='both', which='major', labelsize=fontz)
+
+    # Hide the last subplot and use it to display the legend
+    ax10[7].axis('off')
+    handles, labels = ax10[1].get_legend_handles_labels()
+    # ax10[6].legend(handles, labels, loc='center', fontsize=fontz)
+    fig10.tight_layout(pad=2.0, w_pad=0.5, h_pad=1.0)
+    plt.savefig(analyzedir + '\\ankle_contact2_' + whichleg + '_' + tagcomponent + '.png')
+
+    ###########################################################################
+    ### figure: differences between conditions for each and all
+    #### this is a simplified look at the same as above. We can see nice stuff, 
+    #### but likely not going to be in the paper. 
+    fig11, ax11 = plt.subplots(1,8, figsize=(14,3))#, dpi=300)
+    # intersegmental forces average
+    ax11[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0))
+    ax11[0].set_xlabel('% Gait cycle')
+    ax11[0].set_ylabel('Force (BW)')
+    ax11[0].set_title('intersegmental')
+    # ax11[0].legend()
+
+    # flexor forces
+    ax11[1].plot(n_timespercent101, np.mean(eplantar_combine, 0) - np.mean(nplantar_combine, 0))
+    ax11[1].set_xlabel('% Gait cycle')
+    # ax11[1].set_ylabel('Force (BW)')
+    # ax11[1].legend()
+    ax11[1].set_title('plantar')
+
+    # adductor forces
+    ax11[2].plot(n_timespercent101, np.mean(edorsi_combine, 0) - np.mean(ndorsi_combine, 0))
+    ax11[2].set_xlabel('% Gait cycle')
+    # ax11[2].set_ylabel('Force (BW)')
+    # ax11[2].legend()
+    ax11[2].set_title('dorsi')
+
+    # abductors forces
+    ax11[3].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0))
+    ax11[3].set_xlabel('% Gait cycle')
+    # ax11[3].set_ylabel('Force (BW)')
+    # ax11[3].legend()
+    ax11[3].set_title('gas')
+
+    
+    # all forces from whole analysis
+    ax11[6].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Exotendon diff from Natural')
+    ax11[6].set_xlabel('% Gait cycle')
+    # ax11[6].set_ylabel('Force (BW)')
+    # ax11[6].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    ax11[6].set_title('Total ' + tagcomponent + ' contact')
+
+    # Hide the last subplot and use it to display the legend
+    ax11[7].axis('off')
+    handles, labels = ax11[6].get_legend_handles_labels()
+    ax11[7].legend(handles, labels, loc='center', fontsize=10)
+    fig11.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_contact3_' + whichleg + '_' + tagcomponent + '.png')
+
+
+    ###########################################################################
+    ### figure: changes in force segmented together on plot
+    #### Possible paper figure for R3. 
+    colors4 = ['#648FFF', '#785EF0', '#DC267F', '#FE6100', '#FFB000', '#009E73']
+    fig12, ax12 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
+    ax12[0].axhline(0, color='black', linewidth=1)
+    # intersegmental forces average
+    ax12[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='Intersegmental', color='black', linewidth=3)
+    # plantarflexor forces
+    ax12[0].plot(n_timespercent101, np.mean(eplantar_combine, 0) - np.mean(nplantar_combine, 0), label='plantarflexors', color=colors4[0], linewidth=3)
+    # dorsiflexor forces
+    ax12[0].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='Dorsiflexors', color=colors4[1], linewidth=3)
+    # gastroc forces
+    ax12[0].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='Gastroc', color=colors4[2], linewidth=3)
+    # reserve forces
+    # ax12[0].plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves', color=colors4[4])
+    # added all forces
+    # ax12[0].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
+    # all forces from whole analysis
+    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total ' + tagcomponent + ' contact', linestyle='dashed', color='black', linewidth=3)
+    ax12[0].set_xlabel('% Gait cycle', fontsize=16)
+    ax12[0].set_ylabel('Vertical ankle contact difference (BW)', fontsize=16)
+    ax12[0].set_title('Exotendon change in contact force', fontsize=16)
+    ax12[0].tick_params(axis='both', which='major', labelsize=16)
+    # hide the second subplots and use it for the legend
+    ax12[1].axis('off')
+    handles, labels = ax12[0].get_legend_handles_labels()
+    ax12[1].legend(handles, labels, loc='center', fontsize=16)
+    fig12.tight_layout()
+    fig12.savefig(analyzedir + '\\ankle_contact4_' + whichleg + '_' + tagcomponent + '.png')
+
+    # TODO: figure out why the difference in total and all added together. 
+    # okay so not in how I am adding/averaging. has to be something in how the analysis is done between them.... am I missing something??
+    
+    fig13, ax13 = plt.subplots(1,3, figsize=(14,5))#, dpi=300)
+    # intersegmental forces average - natural
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine, 0), label='natural_interseg')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine + nplantar_combine, 0), label='natural_interseg + plantar')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+nplantar_combine+ndorsi_combine, 0), label='natural_interseg+plantar+dorsi')
+    ax13[0].plot(n_timespercent101, np.mean(ninterseg_combine+nplantar_combine+ndorsi_combine+ngas_combine, 0), label='natural_interseg+plantar+dorsi+gas')
+    ax13[0].plot(n_timespercent101, np.mean(nall_combine, 0), label='nat_all', linestyle='dotted')
+    ax13[0].set_xlabel('% Gait cycle')
+    ax13[0].set_ylabel('Force (BW)')
+    ax13[0].set_title('natural')
+    # ax13[0].legend()
+    # intersegmental forces average - exotendon
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine, 0), label='exo_interseg')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+eplantar_combine, 0), label='exo_interseg + plantar')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+eplantar_combine+edorsi_combine, 0), label='exo_interseg+plantar+dorsi')
+    ax13[1].plot(e_timespercent101, np.mean(einterseg_combine+eplantar_combine+edorsi_combine+egas_combine, 0), label='exo_interseg+plantar+dorsi+gas')
+    ax13[1].plot(e_timespercent101, np.mean(eall_combine, 0), label='exo_all', linestyle='dotted')
+    ax13[1].set_xlabel('% Gait cycle')
+    ax13[1].set_ylabel('Force (BW)')
+    ax13[1].set_title('exotendon')
+    # ax13[1].legend()
+
+    # Hide the last subplot and use it to display the legend
+    ax13[2].axis('off')
+    handles, labels = ax13[1].get_legend_handles_labels()
+    ax13[2].legend(handles, labels, loc='center', fontsize=14)
+    fig13.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_contact5_' + whichleg + '_' + tagcomponent + '.png')
+
+    ###########################################################################
+    ### Figure: total pop average for right leg between nat and exo
+    #### Figure in the paper R1... 
+    figcon6, axcon6 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
+    axcon6[0].fill_between(n_timespercent101, np.mean(nall_combine,0)-np.std(nall_combine,0), np.mean(nall_combine,0)+np.std(nall_combine,0), color=ncolorlight, alpha=0.75)
+    axcon6[0].fill_between(e_timespercent101, np.mean(eall_combine,0)-np.std(eall_combine,0), np.mean(eall_combine,0)+np.std(eall_combine,0), color=ecolorlight, alpha=0.75)
+    axcon6[0].plot(n_timespercent101, np.mean(nall_combine,0), color=ncolor, label='Natural (Mean \u00B1 Std.)', linewidth=3)
+    axcon6[0].plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='Exotendon (Mean \u00B1 Std.)', linewidth=3)
+    axcon6[0].set_xlabel('% Gait cycle', fontsize=16)
+    axcon6[0].set_ylabel(tagcomponent + ' ankle contact force (BW)', fontsize=16)
+    axcon6[0].set_title('Total ' + tagcomponent + ' ankle contact force', fontsize=16)
+    axcon6[0].tick_params(axis='both', which='major', labelsize=16)
+    # hide the second subplots and use it for the legend
+    axcon6[1].axis('off')
+    handles, labels = axcon6[0].get_legend_handles_labels()
+    axcon6[1].legend(handles, labels, loc='center', fontsize=16)
+    figcon6.tight_layout()
+    figcon6.savefig(analyzedir + '\\ankle_contact6_' + whichleg + '_' + tagcomponent + '.png')
+
+
+    ###########################################################################
+    # output the data in an excel sheet
+    # Create a dictionary to hold all the data
+    data_dict = {
+        'ninterseg_combine': ninterseg_combine,
+        'einterseg_combine': einterseg_combine,
+        'nplantar_combine': nplantar_combine,
+        'eplantar_combine': eplantar_combine,
+        'ndorsi_combine': ndorsi_combine,
+        'edorsi_combine': edorsi_combine,
+        'ngas_combine': ngas_combine,
+        'egas_combine': egas_combine,
+        'nall_combine': nall_combine,
+        'eall_combine': eall_combine,
+        'nreserve_comnine': nreserve_combine,
+        'ereserve_combine': ereserve_combine,
+        'nnone_combine': nnone_combine,
+        'enone_combine': enone_combine
+    }
+    
+        # 'muscleacts_nat': muscleacts_nat,
+        # 'muscleacts_exo': muscleacts_exo,
+        # 'moments_nat': moments_nat,
+        # 'moments_exo': moments_exo,
+        # 'IDmoments_nat': IDmoments_nat,
+        # 'IDmoments_exo': IDmoments_exo,
+        # 'activeforces_nat': activeforces_nat,
+        # 'activeforces_exo': activeforces_exo,
+        # 'passiveforces_nat': passiveforces_nat,
+        # 'passiveforces_exo': passiveforces_exo,
+        # 'totalforces_nat': totalforces_nat,
+        # 'totalforces_exo': totalforces_exo
+    
+    os.chdir(analyzedir)
+    # Create a Pandas Excel writer using XlsxWriter as the engine
+    with pd.ExcelWriter('analysis_results'+'_'+whichleg+'_ankle_'+tagcomponent+'.xlsx', engine='xlsxwriter') as writer:
+        for key, value in data_dict.items():
+            print(key)
+            if isinstance(value, dict):
+                print('found a dict')
+                pdb.set_trace()
+                for sub_key, sub_value in value.items():
+                    df = pd.DataFrame(sub_value)
+                    df.to_excel(writer, sheet_name=f'{key}_{sub_key}')
+            else:
+                df = pd.DataFrame(value)
+                df.to_excel(writer, sheet_name=key)
+
+
+    pdb.set_trace()
+    plt.show()
+    print('\n\nbeyond this is the breakdown paper figures.')
+    # sys.exit()
+    
+    # ###########################################################################
+    # # stats for the data
+    # # here is the stats for R1 - differences in the peak vertical JCF
+    # mean_nall_combine = np.mean(nall_combine,0)
+    # std_nall_combine = np.std(nall_combine,0)
+    # mean_eall_combine = np.mean(eall_combine,0)
+    # std_eall_combine = np.std(eall_combine,0)
+
+    # # get the peaks first and then do the stats on them...
+    # peaks_nall_combine = np.max(nall_combine,1)
+    # idx_peaks_nall_combine = nall_combine.argmax(1)
+    # peaks_eall_combine = np.max(eall_combine,1)
+    # idx_peaks_eall_combine = eall_combine.argmax(1)
+
+    # mean_peaks_nall_combine = np.mean(peaks_nall_combine)
+    # mean_peaks_eall_combine = np.mean(peaks_eall_combine)
+    # std_peaks_nall_combine = np.std(peaks_nall_combine)
+    # std_peaks_eall_combine = np.std(peaks_eall_combine)
+
+    # # differences in peaks
+    # diff_peaks_all_combine = peaks_nall_combine - peaks_eall_combine
+    # mean_diff_peaks_all_combine = np.mean(peaks_nall_combine - peaks_eall_combine)
+    # std_diff_peaks_all_combine = np.std(peaks_nall_combine - peaks_eall_combine)
+
+    # # shapiro test for normal on the peaks differences
+    # res = scipy.stats.shapiro(diff_peaks_all_combine)
+    
+    # # t - test for peaks differences is in the excel sheet...
+    
+    # # percent change in peak
+    # perc_diff_peaks_all_combine = (peaks_eall_combine - peaks_nall_combine) / peaks_nall_combine * 100
+    # mean_perc_diff_peaks_all_combine = np.mean(perc_diff_peaks_all_combine)
+    # std_perc_diff_peaks_all_combine = np.std(perc_diff_peaks_all_combine)
+    
+
+    # ###########################################################################
+    # more polished figures
+
+    ### Figure: total pop average for right leg for nat - segmented shaded
+    plt.figure(dpi=300)
+    plt.plot(n_timespercent101, np.mean(ninterseg_combine,0), label='intersegmental', color=ecolor)
+    plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), color=ecolorlight)
+    plt.plot(n_timespercent101, np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), label='inter + plantar', color=ncolor3)
+    plt.fill_between(n_timespercent101, np.mean(ninterseg_combine,0), np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), color=ncolor2)
+
+    plt.plot(n_timespercent101, np.mean(ndorsi_combine,0) + np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), label='inter + plantar + dorsi', color=ncolor5)
+    plt.fill_between(n_timespercent101, np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), np.mean(ndorsi_combine,0) + np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), color=ncolor4)
+
+    plt.plot(n_timespercent101, np.mean(ngas_combine,0) + np.mean(ndorsi_combine,0) + np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), label='inter + plantar + dorsi + gas', color=ncolor7)
+    plt.fill_between(n_timespercent101, np.mean(ndorsi_combine,0) + np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), np.mean(ngas_combine,0) + np.mean(ndorsi_combine,0) + np.mean(nplantar_combine,0) + np.mean(ninterseg_combine,0), color=ncolor6)
+
+    plt.legend()
+    plt.ylabel(tagcomponent + ' ankle contact force (BW)', fontsize=16)
+    plt.xlabel('% Gait cycle', fontsize=16)
+    plt.title(tagcomponent + ' ankle contact force - Natural', fontsize=16)    
+    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_contact7_Natural_' + whichleg + '_' + tagcomponent + '.png')
+    plt.show()
+    
+    
+    ###########################################################################
+    ### Figure: total pop average for right leg for exo - segmented shaded
+    plt.figure(dpi=300)
+    plt.plot(e_timespercent101, np.mean(einterseg_combine,0), label='intersegmental', color=ecolor)
+    plt.fill_between(e_timespercent101, np.mean(einterseg_combine,0), color=ecolorlight)
+
+    plt.plot(e_timespercent101, np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), label='inter + plantar', color=ncolor3)
+    plt.fill_between(e_timespercent101, np.mean(einterseg_combine,0), np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), color=ncolor2)
+
+    plt.plot(e_timespercent101, np.mean(edorsi_combine,0) + np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), label='inter + plantar + dorsi', color=ncolor5)
+    plt.fill_between(e_timespercent101, np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), np.mean(edorsi_combine,0) + np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), color=ncolor4)
+
+    plt.plot(e_timespercent101, np.mean(egas_combine,0) + np.mean(edorsi_combine,0) + np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), label='inter + plantar + dorsi + gas', color=ncolor7)
+    plt.fill_between(e_timespercent101, np.mean(edorsi_combine,0) + np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0), np.mean(egas_combine,0) + np.mean(edorsi_combine,0) + np.mean(eplantar_combine,0) + np.mean(einterseg_combine,0),color=ncolor6)
+
+    plt.legend()
+    plt.ylabel(tagcomponent + ' ankle contact force (BW)', fontsize=16)
+    plt.xlabel('% Gait cycle', fontsize=16)
+    plt.title(tagcomponent + ' ankle contact force - Exotendon', fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_contact8_exo_' + whichleg + '_' + tagcomponent + '.png')
+    plt.show()
+
+
+    ###########################################################################
+    # stats for the individual muscle segmented contributions.... check out the excel sheet
+    peaks_plantar_natural = np.max(nplantar_combine,1)
+    peaks_dorsi_natural = np.max(ndorsi_combine,1)
+    peaks_gas_natural = np.max(ngas_combine,1)
+    peaks_inter_natural = np.max(ninterseg_combine,1)
+    peaks_reserve_natural = np.max(nreserve_combine,1)
+
+    peaks_plantar_exo = np.max(eplantar_combine,1)
+    peaks_dorsi_exo = np.max(edorsi_combine,1)
+    peaks_gas_exo = np.max(egas_combine,1)
+    peaks_inter_exo = np.max(einterseg_combine,1)
+    peaks_reserve_exo = np.max(ereserve_combine,1)
+
+    print('\n\nHere is a good spot to explore the peaks if you want...\n')
+    pdb.set_trace()
+    return
+
+    
 
 if __name__ == '__main__':
     # now to define all the setup that he has and is required
@@ -1406,18 +2393,22 @@ if __name__ == '__main__':
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
+
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
     welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'left'
+    whichleg = 'both'
     oldnotredo = False
-    runtool = True
+    runtool = False
     indresults = False
+    polycalc = False
 
     # get some results structures going
     welknaturalstruct_combine = {}
@@ -1439,7 +2430,6 @@ if __name__ == '__main__':
     passiveforces_exo = {}
     totalforces_nat = {}
     totalforces_exo = {}
-
 
     # all of this was commented out... need to remember what all I was doing...
     # I think a lot of this got moved into functions above...
@@ -1476,7 +2466,6 @@ if __name__ == '__main__':
         #         model = modelProcessor.process()
         #         model.initSystem()
                 
-                
         #         # need the solution
         #         solution = osim.MocoTrajectory(os.path.join(trialdir, 'muscle_statetrack_GRFprescribe_solution_100con.sto'))
         #         statesTable = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_states_100con.sto'))
@@ -1495,7 +2484,6 @@ if __name__ == '__main__':
         #         times = statesTable.getIndependentColumn()
         #         initTime = times[0]
         #         finalTime = times[-1]
-                
                     
         #         # get a table with the combined states and tendon lengths?
         #         combStates = statesTable
@@ -1507,7 +2495,6 @@ if __name__ == '__main__':
         #                 combStates.removeColumn(columnname)
                         
         #         comblabels2 = combStates.getColumnLabels()
-                
                 
         #         # get the names of all the fiberlengths
         #         fiberlabels = fiberLengths.getColumnLabels()
@@ -1521,14 +2508,11 @@ if __name__ == '__main__':
         #         # store the model masses
         #         modelmass = get_model_total_mass(trialdir, 'simple_model_all_the_probes_adjusted.osim')
         #         exostruct_combine[subject] = modelmass                
-                
-                
+
         #         ######################################################
         #         ## trying the state step approach from HPLers
         #         os.chdir(trialdir)
         #         pdb.set_trace()
-
-
                 
         #         # load in the base model
         #         jramodelProcessor = osim.ModelProcessor('simple_model_all_the_probes_adjusted.osim')
@@ -1582,8 +2566,6 @@ if __name__ == '__main__':
                 
         #         # ID prescribed coordinate values??
                 
-                
-                
         #         # Joint reaction setup
         #         jointRxn = osim.JointReaction()
         #         jointRxn.setName('jrxnAnalysis100')
@@ -1599,9 +2581,6 @@ if __name__ == '__main__':
         #         jointRxn.setResultsDir(trialdir)
         #         jointRxn.printToXML('JrxnSetup.xml') ;
         #         time.sleep(0.5)
-                
-                
-
 
         #         pdb.set_trace()                
         #         ############################
@@ -1615,8 +2594,6 @@ if __name__ == '__main__':
         #         # jr = osim.analyzeSpatialVec(model, combStates, controlsTable, ['.*walker_knee.*reaction_on_parent.*'])
         #         time.sleep(0.5)
                 
-                
-                
         #         ## now to actually load in the data and do something with it. 
         #         jrastab = jras.flatten(['_mx', '_my', '_mz', '_fx', '_fy', '_fz'])
         #         jrasrx = jrastab.getDependentColumn('/jointset/walker_knee_r|reaction_on_child_fx').to_numpy()
@@ -1629,8 +2606,6 @@ if __name__ == '__main__':
         #         import matplotlib.pyplot as plt
         #         plt.figure()
         #         plt.plot(jrasry)
-                
-                
                 
         #         ## now transform to the tibia frame from ground
         #         # get the joints
@@ -1716,9 +2691,7 @@ if __name__ == '__main__':
         #         # welkexostruct[trial] = (times, np.abs(fyr), np.abs(fyl))
         #         welkexostruct[trial] = (times, np.abs(newjrasr[:,1]), np.abs(newjrasl[:,1]))
         #         print(trialdir)
-                
-                
-                
+
         # now have to loop through the natural side
         # loop through conditions natural
         for cond in range(len(welknaturalconditions)):
@@ -1732,7 +2705,6 @@ if __name__ == '__main__':
                 
                 os.chdir(trialdir)
                 pdb.set_trace()
-                
                 
                 ### now what do we want to do at each of the trials
 
@@ -2181,6 +3153,7 @@ if __name__ == '__main__':
     # 1) load the model, load a verson of the model, set passives to zero
         # then set all controls but one we want to zero
         # then all activation states to zero that we don't want
+    # data for y: vertical forces
     einterseg_combine = np.zeros((len(welksubjects)*len(trials), 101))
     ninterseg_combine = np.zeros((len(welksubjects)*len(trials), 101))
     egas_combine      = np.zeros((len(welksubjects)*len(trials), 101))
@@ -2196,7 +3169,37 @@ if __name__ == '__main__':
     enone_combine     = np.zeros((len(welksubjects)*len(trials), 101))
     nnone_combine     = np.zeros((len(welksubjects)*len(trials), 101))
     
-    
+    # data for x: anterior-posterior forces
+    einterseg_combine_x = np.zeros((len(welksubjects)*len(trials), 101))
+    ninterseg_combine_x = np.zeros((len(welksubjects)*len(trials), 101))
+    eplantar_combine_x    = np.zeros((len(welksubjects)*len(trials), 101))
+    nplantar_combine_x    = np.zeros((len(welksubjects)*len(trials), 101))
+    edorsi_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    ndorsi_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    egas_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    ngas_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    eall_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    nall_combine_x      = np.zeros((len(welksubjects)*len(trials), 101))
+    ereserve_combine_x  = np.zeros((len(welksubjects)*len(trials), 101))
+    nreserve_combine_x  = np.zeros((len(welksubjects)*len(trials), 101))
+    enone_combine_x     = np.zeros((len(welksubjects)*len(trials), 101))
+    nnone_combine_x     = np.zeros((len(welksubjects)*len(trials), 101))
+
+    # data for z: medial-lateral forces
+    einterseg_combine_z = np.zeros((len(welksubjects)*len(trials), 101))
+    ninterseg_combine_z = np.zeros((len(welksubjects)*len(trials), 101))
+    eplantar_combine_z    = np.zeros((len(welksubjects)*len(trials), 101))
+    nplantar_combine_z    = np.zeros((len(welksubjects)*len(trials), 101))
+    edorsi_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    ndorsi_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    egas_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    ngas_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    eall_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    nall_combine_z      = np.zeros((len(welksubjects)*len(trials), 101))
+    ereserve_combine_z  = np.zeros((len(welksubjects)*len(trials), 101))
+    nreserve_combine_z  = np.zeros((len(welksubjects)*len(trials), 101))
+    enone_combine_z     = np.zeros((len(welksubjects)*len(trials), 101))
+    nnone_combine_z     = np.zeros((len(welksubjects)*len(trials), 101))
     
     # define the muscles that we want in each of the splits
     musclesWanted = {}
@@ -2228,8 +3231,8 @@ if __name__ == '__main__':
     
     # plot the stuff
     # figure out subtracting the intersegmental from each of the others?
-    
     # pdb.set_trace()
+
     # # have the structures, now loop through and figure out how to fill them in
     # # loop the subjects
     # '''
@@ -2257,56 +3260,11 @@ if __name__ == '__main__':
                 naturalstruct_combine[subject] = modelmass
                 
                 ### now what do we want to do at each of the trials
-                # write a method that gives the knee contact forces, 
+                # write a method that gives the ankle contact forces, 
                 # pass in model, and the muscles that you want
                 # pdb.set_trace()
                 os.chdir(trialdir)                
                 
-                # # # quads and intersegmental forces - method 1
-                # jrasrquads01 = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads01')
-                # jrasrquads001 = getKneeContactributions001(trialdir, musclesWanted['quads'], 'quads001')
-                # jrasrquads0001 = getKneeContactributions0001(trialdir, musclesWanted['quads'], 'quads0001')
-                # jrasrquads01_wt1 = getKneeContactributions(trialdir, musclesWanted['quads'], 'quads01_wt01')
-                
-                # # # intersegmental only
-                # jrasrinter01 = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter01')
-                # jrasrinter001 = getKneeContactributions001(trialdir, musclesWanted['inter'], 'inter001')
-                # jrasrinter0001 = getKneeContactributions0001(trialdir, musclesWanted['inter'], 'inter0001')
-                # jrasrinter01_wt1 = getKneeContactributions(trialdir, musclesWanted['inter'], 'inter01_wt1')
-                
-                # plt.figure()
-                # plt.plot(jrasrinter01, color='red', label='convergeTol = .01')
-                # plt.plot(jrasrinter001, color='orange', label='convergeTol = .001')
-                # plt.plot(jrasrinter0001, color='yellow', label='convergeTol = .0001')
-                # plt.plot(jrasrinter01_wt1, color='pink', label='upped effort weight')
-                # plt.legend(loc='lower right')
-                # plt.ylabel('Tibia intersegmental vertical contact (N)')
-                # plt.title(subject + condition + trial)
-                
-                # # # subtract intersegmental from quads
-                # jrasrquadsonly01 = jrasrquads01 - jrasrinter01
-                # jrasrquadsonly001 = jrasrquads001 - jrasrinter001
-                # jrasrquadsonly0001 = jrasrquads0001 - jrasrinter0001
-                # jrasrquadsonly01_wt1 = jrasrquads01_wt1 - jrasrinter01_wt1
-                
-                # plt.figure()
-                # plt.plot(jrasrquadsonly01, color='red', label='convergeTol = .01')
-                # plt.plot(jrasrquadsonly001, color='orange', label='convergeTol = .001')
-                # plt.plot(jrasrquadsonly0001, color='yellow', label='convergeTol = .0001')
-                # plt.plot(jrasrquadsonly01_wt1, color='pink', label='upped effort a bit')
-                # plt.legend(loc='lower right')
-                # plt.ylabel('Tibia quads vertical contact (N)')
-                # plt.title(subject + condition + trial)
-                
-                
-                # test = jrasr0001 - jrasr01
-                # plt.figure(); plt.plot(test)
-
-
-
-
-
-
 
                 try:
                     if oldnotredo:
@@ -2320,18 +3278,18 @@ if __name__ == '__main__':
                         jrasrnone = getAnkleContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else: 
                         ## okay now going to focus on the figures that I actually wanted 
-                        jrasrplantar = getAnkleContactributionsRedo(trialdir, musclesWanted['plantar'], 'plantar', whichleg, runtool)
-                        jrasrdorsi = getAnkleContactributionsRedo(trialdir, musclesWanted['dorsi'], 'dorsi', whichleg, runtool)
-                        jrasrgas = getAnkleContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
-                        jrasrinter = getAnkleContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
-                        jrasrall = getAnkleContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
-                        jrasrinterreserve = getAnkleContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
-                        jrasrnone = getAnkleContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
+                        jrasrplantarx, jrasrplantar, jrasrplantarz = getAnkleContactributionsRedo(trialdir, musclesWanted['plantar'], 'plantar', whichleg, runtool)
+                        jrasrdorsix, jrasrdorsi, jrasrdorsiz = getAnkleContactributionsRedo(trialdir, musclesWanted['dorsi'], 'dorsi', whichleg, runtool)
+                        jrasrgasx, jrasrgas, jrasrgasz = getAnkleContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrinterx, jrasrinter, jrasrinterz = getAnkleContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrallx, jrasrall, jrasrallz = getAnkleContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreservex, jrasrinterreserve, jrasrinterreservez = getAnkleContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnonex, jrasrnone, jrasrnonez = getAnkleContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                 except:
                     print('Error with: ' + trialdir)
                     pdb.set_trace()
                     continue
-                    
+
                 #### do some other data grabs here for the other data that we care about in each trial. 
 
                 # start with muscle activations
@@ -2357,6 +3315,9 @@ if __name__ == '__main__':
                 # plt.legend()
                 # important: interreserve has the reserves removed, where inter includes them still. interreserves is the only one that removes the reserves...
                 
+
+                ### here is where we have to do more work to get the other components.... 
+                ### Y: vertical forces
                 # subtract out the inter segmental
                 jrasrinteronly = jrasrinterreserve
                 jrasrreserveonly = jrasrinter - jrasrinterreserve
@@ -2390,13 +3351,79 @@ if __name__ == '__main__':
                 ereserve_combine[spot,:] = jrasrreserveonly101[:-2]
                 enone_combine[spot,:] = jrasrnoneonly101[:-2]
                 
+
+                ### X: anterior-posterior forces
+                # subtract out the inter segmental
+                jrasrinteronlyx = jrasrinterreservex
+                jrasrreserveonlyx = jrasrinterx - jrasrinterreservex
+                jrasrnoneonlyx = jrasrnonex
+
+                jrasrplantaronlyx = jrasrplantarx - jrasrnonex
+                jrasrdorsionlyx = jrasrdorsix - jrasrnonex
+                jrasrgasonlyx = jrasrgasx - jrasrnonex                
+
+                # get percentages
+                e_timespercent101 = np.arange(0,101,1)
+                e_timesx = np.arange(0,len(jrasrplantaronlyx),1)
+                e_timesinterpx = np.linspace(0,len(e_timesx), 103)
+
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrplantaronly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrplantaronlyx)) / (modelmass * 9.81)
+                jrasrdorsionly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrdorsionlyx)) / (modelmass * 9.81)
+                jrasrgasonly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrgasonlyx)) / (modelmass * 9.81)
+                jrasrinteronly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrinteronlyx)) / (modelmass * 9.81)
+                jrasrallonly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrallx)) / (modelmass * 9.81)
+                jrasrreserveonly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrreserveonlyx)) / (modelmass * 9.81)
+                jrasrnoneonly101x = -1*(np.interp(e_timesinterpx, e_timesx, jrasrnonex)) / (modelmass * 9.81)
+
+                # data for x: anterior-posterior forces
+                einterseg_combine_x[spot, :] = jrasrinteronly101x[:-2]
+                eplantar_combine_x[spot, :] = jrasrplantaronly101x[:-2]
+                edorsi_combine_x[spot,:] = jrasrdorsionly101x[:-2]
+                egas_combine_x[spot,:] = jrasrgasonly101x[:-2]
+                eall_combine_x[spot,:] = jrasrallonly101x[:-2]
+                ereserve_combine_x[spot,:] = jrasrreserveonly101x[:-2]
+                enone_combine_x[spot,:] = jrasrnoneonly101x[:-2]
+                
+
+                ### Z: medial-lateral forces
+                # subtract out the inter segmental
+                jrasrinteronlyz = jrasrinterreservez
+                jrasrreserveonlyz = jrasrinterz - jrasrinterreservez
+                jrasrnoneonlyz = jrasrnonez
+
+                jrasrplantaronlyz = jrasrplantarz - jrasrnonez
+                jrasrdorsionlyz = jrasrdorsiz - jrasrnonez
+                jrasrgasonlyz = jrasrgasz - jrasrnonez                
+
+                # get percentages
+                e_timespercent101 = np.arange(0,101,1)
+                e_timesz = np.arange(0,len(jrasrplantaronlyz),1)
+                e_timesinterpz = np.linspace(0,len(e_timesz), 103)
+
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrplantaronly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrplantaronlyz)) / (modelmass * 9.81)
+                jrasrdorsionly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrdorsionlyz)) / (modelmass * 9.81)
+                jrasrgasonly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrgasonlyz)) / (modelmass * 9.81)
+                jrasrinteronly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrinteronlyz)) / (modelmass * 9.81)
+                jrasrallonly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrallz)) / (modelmass * 9.81)
+                jrasrreserveonly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrreserveonlyz)) / (modelmass * 9.81)
+                jrasrnoneonly101z = -1*(np.interp(e_timesinterpz, e_timesz, jrasrnonez)) / (modelmass * 9.81)
+                
+                # data for z: medial-lateral forces
+                einterseg_combine_z[spot, :] = jrasrinteronly101z[:-2]
+                eplantar_combine_z[spot, :] = jrasrplantaronly101z[:-2]
+                edorsi_combine_z[spot,:] = jrasrdorsionly101z[:-2]
+                egas_combine_z[spot,:] = jrasrgasonly101z[:-2]
+                eall_combine_z[spot,:] = jrasrallonly101z[:-2]
+                ereserve_combine_z[spot,:] = jrasrreserveonly101z[:-2]
+                enone_combine_z[spot,:] = jrasrnoneonly101z[:-2]
+                
                 ## increase the spot - count of trials                
                 spot += 1
-                ## TODO: method for all the muscles ie. don't remove any
 
     # '''        
-    # now the natural conditions
-    # now the natural 
+    # now the natural condition
     spot = 0
     for subj in range(len(welksubjects)):
         subject = welksubjects[subj]
@@ -2420,13 +3447,14 @@ if __name__ == '__main__':
                 naturalstruct_combine[subject] = modelmass
                 
                 ### now what do we want to do at each of the trials
-                # write a method that gives the knee contact forces, 
+                # write a method that gives the ankle contact forces, 
                 # pass in model, and the muscles that you want
                 os.chdir(trialdir)                
                 # pdb.set_trace()
                 
-                try: 
-                    if oldnotredo: 
+                
+                try:
+                    if oldnotredo:
                         ## okay now going to focus on the figures that I actually wanted 
                         jrasrplantar = getAnkleContactributions(trialdir, musclesWanted['plantar'], 'plantar', whichleg, runtool)
                         jrasrdorsi = getAnkleContactributions(trialdir, musclesWanted['dorsi'], 'dorsi', whichleg, runtool)
@@ -2437,13 +3465,13 @@ if __name__ == '__main__':
                         jrasrnone = getAnkleContactributions(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                     else: 
                         ## okay now going to focus on the figures that I actually wanted 
-                        jrasrplantar = getAnkleContactributionsRedo(trialdir, musclesWanted['plantar'], 'plantar', whichleg, runtool)
-                        jrasrdorsi = getAnkleContactributionsRedo(trialdir, musclesWanted['dorsi'], 'dorsi', whichleg, runtool)
-                        jrasrgas = getAnkleContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
-                        jrasrinter = getAnkleContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
-                        jrasrall = getAnkleContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
-                        jrasrinterreserve = getAnkleContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
-                        jrasrnone = getAnkleContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
+                        jrasrplantarx, jrasrplantar, jrasrplantarz = getAnkleContactributionsRedo(trialdir, musclesWanted['plantar'], 'plantar', whichleg, runtool)
+                        jrasrdorsix, jrasrdorsi, jrasrdorsiz = getAnkleContactributionsRedo(trialdir, musclesWanted['dorsi'], 'dorsi', whichleg, runtool)
+                        jrasrgasx, jrasrgas, jrasrgasz = getAnkleContactributionsRedo(trialdir, musclesWanted['gas'], 'gas', whichleg, runtool)
+                        jrasrinterx, jrasrinter, jrasrinterz = getAnkleContactributionsRedo(trialdir, musclesWanted['inter'], 'inter', whichleg, runtool)
+                        jrasrallx, jrasrall, jrasrallz = getAnkleContactributionsRedo(trialdir, musclesWanted['all'], 'all', whichleg, runtool)
+                        jrasrinterreservex, jrasrinterreserve, jrasrinterreservez = getAnkleContactributionsRedo(trialdir, musclesWanted['reserve'], 'reserve', whichleg, runtool)
+                        jrasrnonex, jrasrnone, jrasrnonez = getAnkleContactributionsRedo(trialdir, musclesWanted['none'], 'none', whichleg, runtool)
                 except:
                     print('Error with: ' + trialdir)
                     pdb.set_trace()
@@ -2464,11 +3492,13 @@ if __name__ == '__main__':
 
                 # and make sure to look at the residuals too
 
+                
+                ### here is where we have to do more work to get the other components.... 
+                ### Y: vertical forces
                 # subtract out the inter segmental
                 jrasrinteronly = jrasrinterreserve
                 jrasrreserveonly = jrasrinter - jrasrinterreserve
                 jrasrnoneonly = jrasrnone
-                
                 jrasrplantaronly = jrasrplantar - jrasrnone
                 jrasrdorsionly = jrasrdorsi - jrasrnone
                 jrasrgasonly = jrasrgas - jrasrnone
@@ -2496,8 +3526,273 @@ if __name__ == '__main__':
                 nreserve_combine[spot,:] = jrasrreserveonly101[:-2]
                 nnone_combine[spot,:] = jrasrnoneonly101[:-2]
                 
-                ## increase the spot - count of trials                
+
+                ### X: anterior-posterior forces
+                # subtract out the inter segmental
+                jrasrinteronlyx = jrasrinterreservex
+                jrasrreserveonlyx = jrasrinterx - jrasrinterreservex
+                jrasrnoneonlyx = jrasrnonex
+
+                jrasrplantaronlyx = jrasrplantarx - jrasrnonex
+                jrasrdorsionlyx = jrasrdorsix - jrasrnonex
+                jrasrgasonlyx = jrasrgasx - jrasrnonex                
+
+                # get percentages
+                n_timespercent101 = np.arange(0,101,1)
+                n_timesx = np.arange(0,len(jrasrplantaronlyx),1)
+                n_timesinterpx = np.linspace(0,len(n_timesx), 103)
+
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrplantaronly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrplantaronlyx)) / (modelmass * 9.81)
+                jrasrdorsionly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrdorsionlyx)) / (modelmass * 9.81)
+                jrasrgasonly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrgasonlyx)) / (modelmass * 9.81)
+                jrasrinteronly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrinteronlyx)) / (modelmass * 9.81)
+                jrasrallonly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrallx)) / (modelmass * 9.81)
+                jrasrreserveonly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrreserveonlyx)) / (modelmass * 9.81)
+                jrasrnoneonly101x = -1*(np.interp(n_timesinterpx, n_timesx, jrasrnonex)) / (modelmass * 9.81)
+                
+                # natural combine into the big structure
+                ninterseg_combine_x[spot, :] = jrasrinteronly101x[:-2]
+                nplantar_combine_x[spot, :] = jrasrplantaronly101x[:-2]
+                ndorsi_combine_x[spot,:] = jrasrdorsionly101x[:-2]
+                ngas_combine_x[spot,:] = jrasrgasonly101x[:-2]
+                nall_combine_x[spot,:] = jrasrallonly101x[:-2]
+                nreserve_combine_x[spot,:] = jrasrreserveonly101x[:-2]
+                nnone_combine_x[spot,:] = jrasrnoneonly101x[:-2]
+                
+
+                ### Z: medial-lateral forces
+                # subtract out the inter segmental
+                jrasrinteronlyz = jrasrinterreservez
+                jrasrreserveonlyz = jrasrinterz - jrasrinterreservez
+                jrasrnoneonlyz = jrasrnonez
+
+                jrasrplantaronlyz = jrasrplantarz - jrasrnonez
+                jrasrdorsionlyz = jrasrdorsiz - jrasrnonez
+                jrasrgasonlyz = jrasrgasz - jrasrnonez                
+
+                # get percentages
+                n_timespercent101 = np.arange(0,101,1)
+                n_timesz = np.arange(0,len(jrasrplantaronlyz),1)
+                n_timesinterpz = np.linspace(0,len(n_timesz), 103)
+
+                # get something in BW and interp to 100% gait cycle points. 
+                jrasrplantaronly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrplantaronlyz)) / (modelmass * 9.81)
+                jrasrdorsionly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrdorsionlyz)) / (modelmass * 9.81)
+                jrasrgasonly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrgasonlyz)) / (modelmass * 9.81)
+                jrasrinteronly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrinteronlyz)) / (modelmass * 9.81)
+                jrasrallonly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrallz)) / (modelmass * 9.81)
+                jrasrreserveonly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrreserveonlyz)) / (modelmass * 9.81)
+                jrasrnoneonly101z = -1*(np.interp(n_timesinterpz, n_timesz, jrasrnonez)) / (modelmass * 9.81)
+                
+                # natural combine into the big structure
+                ninterseg_combine_z[spot, :] = jrasrinteronly101z[:-2]
+                nplantar_combine_z[spot, :] = jrasrplantaronly101z[:-2]
+                ndorsi_combine_z[spot,:] = jrasrdorsionly101z[:-2]
+                ngas_combine_z[spot,:] = jrasrgasonly101z[:-2]
+                nall_combine_z[spot,:] = jrasrallonly101z[:-2]
+                nreserve_combine_z[spot,:] = jrasrreserveonly101z[:-2]
+                nnone_combine_z[spot,:] = jrasrnoneonly101z[:-2]
+                ## increase the spot - count of trials
                 spot += 1
+
+
+
+    ########################################################################################
+    # plotting for activations, moments, etc. muscle insights for natural and exotendon
+    ########################################################################################
+
+    if indresults: 
+        # tweak the results directory to print out in an individual folder for subject. 
+        analyzedir = os.path.join(analyzedir, welksubjects[0])
+        print(analyzedir)
+    
+    # create a figure for the muscle activations for natural and exotendon
+    fig1, ax1 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(muscleacts_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(muscleacts_nat[muscle]))
+        xexo = np.linspace(0, 100, len(muscleacts_exo[muscle]))
+        
+        ax1[row, col].plot(xnat, muscleacts_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax1[row, col].plot(xexo, muscleacts_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # not plot the averages for all the natural and all the exo
+        ax1[row,col].plot(xnat, np.mean(muscleacts_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax1[row,col].plot(xexo, np.mean(muscleacts_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')    
+        # formatting
+        ax1[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax1[row, col].set_ylabel('Activation', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax1[row, col].set_title(musclename, fontsize=8)
+    
+    handles, labels = ax1[0, 0].get_legend_handles_labels()
+    # fig1.legend(handles, labels, loc='upper right')
+    fig1.tight_layout()
+    plt.savefig(os.path.join(analyzedir, 'ankle_muscleactivations_' + whichleg + '.png'))
+
+
+    # create a figure for the joint moments for natural and exotendon
+    fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
+    joints = list(moments_nat.keys())
+    for i, joint in enumerate(joints):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(moments_nat[joint]))
+        xexo = np.linspace(0, 100, len(moments_exo[joint]))
+        
+        ax2[row, col].plot(xnat, moments_nat[joint], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax2[row, col].plot(xexo, moments_exo[joint], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the means of all the moments
+        ax2[row, col].plot(xnat, np.mean(moments_nat[joint],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax2[row, col].plot(xexo, np.mean(moments_exo[joint],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax2[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax2[row, col].set_ylabel('Moment (Nm/kg)', fontsize=8)
+        ax2[row, col].set_title(joint, fontsize=8)
+
+    handles, labels = ax2[0, 0].get_legend_handles_labels()
+    # fig2.legend(handles, labels, loc='upper right')
+    fig2.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_jointmoments_' + whichleg + '.png')
+
+
+    # now create a figure for the muscle passive forces for natural and exotendon
+    fig3, ax3 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(passiveforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(passiveforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(passiveforces_exo[muscle]))
+        
+        ax3[row, col].plot(xnat, passiveforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax3[row, col].plot(xexo, passiveforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax3[row, col].plot(xnat, np.mean(passiveforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax3[row, col].plot(xexo, np.mean(passiveforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax3[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax3[row, col].set_ylabel('Passive Force (N)', fontsize=8)
+        # split the strings so that the names are readable
+        musclename = muscle.split('_r')[0][10:]
+        ax3[row, col].set_title(musclename, fontsize=8)
+
+    handles, labels = ax3[0, 0].get_legend_handles_labels()
+    # fig3.legend(handles, labels, loc='upper right')
+    fig3.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_passiveforces_' + whichleg + '.png')
+
+
+    # now the figure but for the muscle active forces in activeforces_nat and activeforces_exo
+    fig4, ax4 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(activeforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(activeforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(activeforces_exo[muscle]))
+        
+        ax4[row, col].plot(xnat, activeforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax4[row, col].plot(xexo, activeforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax4[row, col].plot(xnat, np.mean(activeforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax4[row, col].plot(xexo, np.mean(activeforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax4[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax4[row, col].set_ylabel('Active Force (N)', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax4[row, col].set_title(musclename, fontsize=8)
+
+    handles, labels = ax4[0, 0].get_legend_handles_labels()
+    # fig4.legend(handles, labels, loc='upper right')
+    fig4.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_activeforces_' + whichleg + '.png')
+
+
+    # now the total forces
+    fig5, ax5 = plt.subplots(5, 8, figsize=(20, 12), dpi=500)
+    muscles = list(totalforces_nat.keys())
+    for i, muscle in enumerate(muscles):
+        row = i // 8
+        col = i % 8
+        xnat = np.linspace(0, 100, len(totalforces_nat[muscle]))
+        xexo = np.linspace(0, 100, len(totalforces_exo[muscle]))
+        
+        ax5[row, col].plot(xnat, totalforces_nat[muscle], label='natural', color=ncolor, linestyle='--', alpha=0.2)
+        ax5[row, col].plot(xexo, totalforces_exo[muscle], label='exotendon', color=ecolor, linestyle='--', alpha=0.2)
+        # now the averages
+        ax5[row, col].plot(xnat, np.mean(totalforces_nat[muscle],1), color=ncolor, linewidth=2, label='natural_avg')
+        ax5[row, col].plot(xexo, np.mean(totalforces_exo[muscle],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # formatting
+        ax5[row, col].set_xlabel('% Gait cycle', fontsize=8)
+        ax5[row, col].set_ylabel('Total Force (N)', fontsize=8)
+        # split the string to get the name for the plot
+        musclename = muscle.split('_r')[0][10:]
+        ax5[row, col].set_title(musclename, fontsize=8)
+
+    handles, labels = ax5[0, 0].get_legend_handles_labels()
+    # fig5.legend(handles, labels, loc='upper right')
+    fig5.tight_layout()
+    plt.savefig(analyzedir + '\\ankle_totalforces_' + whichleg + '.png')
+
+    plt.show()
+
+
+    ################################################################################
+    # now the ankle contact forces 
+    ################################################################################
+    print('\n\nNow moving onto the hip contact forces\n')
+
+    # tryin to implement everything below into a plotting function... that way we can just call it for each of the components... ideally.
+    datay = {
+        'ninterseg_combine': ninterseg_combine,
+        'einterseg_combine': einterseg_combine,
+        'nplantar_combine': nplantar_combine,
+        'eplantar_combine': eplantar_combine,
+        'ndorsi_combine': ndorsi_combine,
+        'edorsi_combine': edorsi_combine,
+        'ngas_combine': ngas_combine,
+        'egas_combine': egas_combine,
+        'nall_combine': nall_combine,
+        'eall_combine': eall_combine,
+    }
+    plotAnkleContactForce('Vertical', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datay)
+    
+    datax = {
+        'ninterseg_combine': ninterseg_combine_x,
+        'einterseg_combine': einterseg_combine_x,
+        'nplantar_combine': nplantar_combine_x,
+        'eplantar_combine': eplantar_combine_x,
+        'ndorsi_combine': ndorsi_combine_x,
+        'edorsi_combine': edorsi_combine_x,
+        'ngas_combine': ngas_combine_x,
+        'egas_combine': egas_combine_x,
+        'nall_combine': nall_combine_x,
+        'eall_combine': eall_combine_x,
+    }
+    plotAnkleContactForce('Anterior-Posterior', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datax)
+
+    dataz = {
+        'ninterseg_combine': ninterseg_combine_z,
+        'einterseg_combine': einterseg_combine_z,
+        'nplantar_combine': nplantar_combine_z,
+        'eplantar_combine': eplantar_combine_z,
+        'ndorsi_combine': ndorsi_combine_z,
+        'edorsi_combine': edorsi_combine_z,
+        'ngas_combine': ngas_combine_z,
+        'egas_combine': egas_combine_z,
+        'nall_combine': nall_combine_z,
+        'eall_combine': eall_combine_z,
+    }
+    plotAnkleContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
+
+
+    print('assuming we have working plotting functions, this should be the end of the script.')
+    sys.exit()
 
 
     ###########################################################################
