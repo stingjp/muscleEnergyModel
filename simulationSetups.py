@@ -482,7 +482,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     # set up the moment tracking goal
     # test a moment tracking goal from the id moments
     # Add a joint moment tracking goal to the problem.
-    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 7.0) # type: ignore
+    jointMomentTracking = osim.MocoGeneralizedForceTrackingGoal('joint_moment_tracking', 5.0) # type: ignore
     # low-pass filter the data at 10 Hz. The reference data should use the 
     # same column label format as the output of the Inverse Dynamics Tool.
     jointMomentRef = osim.TableProcessor('./IDactual/inverse_dynamics.sto')
@@ -513,7 +513,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*radius_hand.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*knee.*', 200)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*beta.*', 0)
-    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 200)
+    jointMomentTracking.setWeightForGeneralizedForcePattern('.*ankle.*', 100)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*hip.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*lumbar.*', 0)
     jointMomentTracking.setWeightForGeneralizedForcePattern('.*arm.*', 0)
