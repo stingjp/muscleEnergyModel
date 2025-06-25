@@ -261,7 +261,7 @@ def getIDMoments(trialdir, moments, modelmass):
         # first get the column name
         temp = labels[i]
         # check if the column is a moment
-        if 'moment' in temp:
+        if 'moment' in temp or 'force' in temp:
             tempmom = trialmomfile.getDependentColumn(temp).to_numpy()
             # okay now we have to shorten to the right time frame and get it all situated. 
             # Create a mask for the time values that fall between gait_start and gait_end
