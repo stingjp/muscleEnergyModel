@@ -1157,7 +1157,7 @@ def getAnkleContactributionsRedo(trialdir, musclesWanted_split, tag, whichleg, r
             trimmodel.addComponent(pomo)
             trimmodel.initSystem()
             trimmodel.printToXML('trimmingmodel2_redo_' + tag + '.osim')
-            jrax, jray, jraz = computeHipContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
+            jrax, jray, jraz = computeAnkleContactRedo(trimmodel, initTime, finalTime, trialdir, tag, whichleg, runtool)
 
     return jrax, jray, jraz
 # method for computing the individual muscle contributions to knee contact force
@@ -2013,8 +2013,8 @@ def plotAnkleContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor
         ax9[7].legend(handles, labels, loc='center', fontsize=14)
 
     fig9.tight_layout()
-    plt.savefig(analyzedir + '\\hip_contact1_' + whichleg + '_' + tagcomponent + '.png')
-
+    plt.savefig(analyzedir + '\\ankle_contact1_' + whichleg + '_' + tagcomponent + '.png')
+    
     ###########################################################################
     # figure: segmenting all the muscles between exo and nat 
     ## really nice figure for seeing what is going on, but likely not going to 
@@ -2404,9 +2404,9 @@ if __name__ == '__main__':
     welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'both'
+    whichleg = 'left'
     oldnotredo = False
-    runtool = False
+    runtool = True
     indresults = False
     polycalc = False
 
@@ -3637,6 +3637,7 @@ if __name__ == '__main__':
     # create a figure for the joint moments for natural and exotendon
     fig2, ax2 = plt.subplots(3, 8, figsize=(20, 8), dpi=500)
     joints = list(moments_nat.keys())
+    idjoints = list(IDmoments_nat.keys())
     for i, joint in enumerate(joints):
         row = i // 8
         col = i % 8
@@ -3648,15 +3649,33 @@ if __name__ == '__main__':
         # now the means of all the moments
         ax2[row, col].plot(xnat, np.mean(moments_nat[joint],1), color=ncolor, linewidth=2, label='natural_avg')
         ax2[row, col].plot(xexo, np.mean(moments_exo[joint],1), color=ecolor, linewidth=2, label='exotendon_avg')
+        # now want the ID moments for comparison
+        if joint in IDmoments_nat:
+            # ax2[row, col].plot(xnat, IDmoments_nat[joint], label='ID natural', color='black', linestyle='--', alpha=0.8)
+            # ax2[row, col].plot(xexo, IDmoments_exo[joint], label='ID exotendon', color='grey', linestyle='--', alpha=0.8)
+            ax2[row, col].plot(xnat, np.mean(IDmoments_nat[joint],1), label='ID natural', color='black', linestyle='--', alpha=0.8)
+            ax2[row, col].plot(xexo, np.mean(IDmoments_exo[joint],1), label='ID exotendon', color='grey', linestyle='--', alpha=0.8)
+        elif 'pelvis_tx' in joint:
+            ax2[row, col].plot(xnat, np.mean(IDmoments_nat['pelvis_tx_force'],1), label='ID natural', color='black', linestyle='--', alpha=0.8)
+            ax2[row, col].plot(xexo, np.mean(IDmoments_exo['pelvis_tx_force'],1), label='ID exotendon', color='grey', linestyle='--', alpha=0.8)
+        elif 'pelvis_ty' in joint:
+            ax2[row, col].plot(xnat, np.mean(IDmoments_nat['pelvis_ty_force'],1), label='ID natural', color='black', linestyle='--', alpha=0.8)
+            ax2[row, col].plot(xexo, np.mean(IDmoments_exo['pelvis_ty_force'],1), label='ID exotendon', color='grey', linestyle='--', alpha=0.8)
+        elif 'pelvis_tz' in joint:
+            ax2[row, col].plot(xnat, np.mean(IDmoments_nat['pelvis_tz_force'],1), label='ID natural', color='black', linestyle='--', alpha=0.8)
+            ax2[row, col].plot(xexo, np.mean(IDmoments_exo['pelvis_tz_force'],1), label='ID exotendon', color='grey', linestyle='--', alpha=0.8)
         # formatting
         ax2[row, col].set_xlabel('% Gait cycle', fontsize=8)
         ax2[row, col].set_ylabel('Moment (Nm/kg)', fontsize=8)
         ax2[row, col].set_title(joint, fontsize=8)
-
+    # add a legend to the last subplot
     handles, labels = ax2[0, 0].get_legend_handles_labels()
+    ax2[-1,-1].axis('off')  # Hide the last subplot
+    ax2[-1,-1].legend(handles, labels, loc='center', fontsize=8)
     # fig2.legend(handles, labels, loc='upper right')
+    # ax2[0, 0].legend(loc='upper right', fontsize=8)
     fig2.tight_layout()
-    plt.savefig(analyzedir + '\\ankle_jointmoments_' + whichleg + '.png')
+    plt.savefig(analyzedir + '\\jointmoments_' + whichleg + '.png')
 
 
     # now create a figure for the muscle passive forces for natural and exotendon
@@ -3745,7 +3764,7 @@ if __name__ == '__main__':
     ################################################################################
     # now the ankle contact forces 
     ################################################################################
-    print('\n\nNow moving onto the hip contact forces\n')
+    print('\n\nNow moving onto the ankle contact forces\n')
 
     # tryin to implement everything below into a plotting function... that way we can just call it for each of the components... ideally.
     datay = {
