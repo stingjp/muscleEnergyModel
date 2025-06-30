@@ -19,7 +19,7 @@ from examplePolynomialPathFitter_plotting import (plot_coordinate_samples, plot_
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin, guess100):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -47,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -315,7 +315,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
     return
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK):
     
     # create the tracking problem
     track = osim.MocoTrack()
@@ -599,7 +599,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
         problem.addGoal(contactTracking);
 
 
-
+    # guess100 = True then we want the original 100con as IG
 
     wantguess = True
     # set an initial guess up
@@ -611,17 +611,27 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             if guessmin:
                 try: 
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto')
+                    twoname = 'muscle_statetrack_grfprescribe_solution_redoarms_jointreact_py.sto'
                 except:
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+                    twoname = 'muscle_statetrack_grfprescribe_solution_redoarms_py.sto'
             else:
                 if trackGRF:
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grftrack_solution_redoarms_poly_py.sto')
+                    twoname = 'muscle_statetrack_grftrack_solution_redoarms_poly_py.sto'
                 else:    
-                    # twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
-                    twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto')
+                    if not wantpaths:
+                        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
+                        twoname = 'muscle_statetrack_grfprescribe_solution_redoarms_py.sto'
+                    else: 
+                        twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto')
+                        twoname = 'muscle_statetrack_grfprescribe_solution_redoarms_poly_py.sto'
         else:
             twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_100con.sto')
+            twoname = 'muscle_statetrack_grfprescribe_solution_100con.sto'
         
+        print('twosteptraj: ' + twoname)
+        import pdb; pdb.set_trace()
         # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
         steps = twosteptraj.getNumTimes()
         # solver changes. 
@@ -654,19 +664,62 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
                 print(os.getcwd())
                 pdb.set_trace()
                 return
-        # go through and overwrite the states first
-        randomstatenames = randomguess.getStateNames()
-        # this will cover joint values, speeds, muscle activations, and norm tendon force
-        for s in range(len(randomstatenames)):
-            statename = randomstatenames[s]
-            # temprandom = randomguess.getStateMat(statename);
-            try:
-                temp2step = twosteptraj.getStateMat(statename)
-                randomguess.setState(statename,temp2step)
-            except:
-                print('did not have the state in the 2 step problem solution - keeping random. ')
-            # temp2step = twosteptraj.getStateMat(statename)
-            # randomguess.setState(statename,temp2step)
+        if not guessIK:
+            # go through and overwrite the states first
+            randomstatenames = randomguess.getStateNames()
+            # this will cover joint values, speeds, muscle activations, and norm tendon force
+            for s in range(len(randomstatenames)):
+                statename = randomstatenames[s]
+                # temprandom = randomguess.getStateMat(statename);
+                try:
+                    temp2step = twosteptraj.getStateMat(statename)
+                    randomguess.setState(statename,temp2step)
+                except:
+                    print('did not have the state in the 2 step problem solution - keeping random. ')
+                # temp2step = twosteptraj.getStateMat(statename)
+                # randomguess.setState(statename,temp2step)
+        elif guessIK:
+            # go through and overwrite the states first
+            randomstatenames = randomguess.getStateNames()
+            # this will cover muscle activations, and norm tendon force (all kinematics stuff should be from IK)
+            for s in range(len(randomstatenames)):
+                statename = randomstatenames[s]
+                # temprandom = randomguess.getStateMat(statename);
+                if 'value' not in statename and 'speed' not in statename:
+                    # this is a state that is not a coordinate, so we can overwrite it with the previous solution
+                    try:
+                        temp2step = twosteptraj.getStateMat(statename)
+                        randomguess.setState(statename,temp2step)
+                    except:
+                        print('did not have the state in the 2 step problem solution - keeping random. ')
+                    # temp2step = twosteptraj.getStateMat(statename)
+                    # randomguess.setState(statename,temp2step)
+                else: 
+                    # this is a coordinate state, so we should not overwrite it with the previous solution
+                    # see if we can input the ik data or coordinate values. 
+                    # tempkintable
+                    try:
+                        print(statename)
+                        import pdb; pdb.set_trace()
+                        iknamefull = statename.split('/')[-2]
+                        ikstate = tempkintable.getDependentColumn(iknamefull)
+                        # if ikstate is not None:
+                        #     # print('setting the state from the IK data')
+                        #     randomguess.setState(statename, ikstate)
+                        # else:
+                        #     print('did not have the state in the IK data - keeping random. ')
+                    except: 
+                        print('did not have the state in the IK data - keeping random. ')
+                        # import pdb; pdb.set_trace()
+                        #
+                    pass    
+
+
+
+
+
+
+
         # go through all the controls - excitations
         randomcontrolnames = randomguess.getControlNames()
         for c in range(len(randomcontrolnames)):
