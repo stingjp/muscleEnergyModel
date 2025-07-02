@@ -631,7 +631,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
             twoname = 'muscle_statetrack_grfprescribe_solution_100con.sto'
         
         print('twosteptraj: ' + twoname)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         # twosteptraj = osim.MocoTrajectory('thirdpass_IG.sto')    
         steps = twosteptraj.getNumTimes()
         # solver changes. 
