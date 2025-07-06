@@ -189,7 +189,7 @@ os.chdir(resultsbasedir)
 
 subjects = ['welk002']#,'welk003','welk005', 'welk008', 'welk009','welk010','welk013']
 welkconditions = ['welknatural']#, 'welkexo'] 
-trials = ['trial02','trial03', 'trial04'] 
+trials = ['trial03', 'trial04'] 
 whatfailed = {}
 trackGRF = False
 
@@ -216,7 +216,7 @@ for subj in subjects:
                 os.chdir(trialdir)
                 print('\n')
                 print(trialdir)
-                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF=False, halfcycle=halfcycle, fitpaths=False, wantpaths=False, jointreact=False, guessmin=False, guess100=True, guessIK=False)
+                whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF=False, halfcycle=halfcycle, fitpaths=False, wantpaths=False, jointreact=False, guessmin=False, guess100=True, guessIK=False, guessPrev=True)
                 # simset.analyzeSubject_post(subj, cond, keys)
                 print(trialdir)
 

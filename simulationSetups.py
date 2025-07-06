@@ -19,7 +19,7 @@ from examplePolynomialPathFitter_plotting import (plot_coordinate_samples, plot_
 
 
 # start with the blanket analyze subject function to call other simulations. 
-def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK):
+def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK, guessPrev):
     # set up the paths
     print('working on Subject-condition-trial...')
     repodir = 'C:\\Users\\jonstingel\\code\\muscleModel\\muscleEnergyModel\\'
@@ -47,7 +47,7 @@ def analyzeSubject(subject, condition, trial, whatfailed, trackGRF, halfcycle, f
     # create a list of issues
     Issues = []
     # muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, condname, trialname)
-    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK)
+    whatfailed = muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, condname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK, guessPrev)
     # whatfailed = torqueStateTrackGRFTrack(repodir, subjectname, condname, trialname, whatfailed, trackGRF, halfcycle)
     return whatfailed
 
@@ -315,7 +315,7 @@ def muscleStateTrackGRFPrescribe_secondpass(repodir, subjectname, conditionname,
     return
 
 # muscle driven state tracking simulation = third pass (testing)
-def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK):
+def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, trialname, whatfailed, trackGRF, fitpaths, wantpaths, jointreact, guessmin, guess100, guessIK, guessPrev):
     
     # create the tracking problem
     track = osim.MocoTrack()
@@ -615,6 +615,7 @@ def muscleStateTrackGRFPrescribe_thirdpass(repodir, subjectname, conditionname, 
                 except:
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grfprescribe_solution_redoarms_py.sto')
                     twoname = 'muscle_statetrack_grfprescribe_solution_redoarms_py.sto'
+            
             else:
                 if trackGRF:
                     twosteptraj = osim.MocoTrajectory('muscle_statetrack_grftrack_solution_redoarms_poly_py.sto')
