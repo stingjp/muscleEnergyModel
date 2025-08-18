@@ -2388,14 +2388,18 @@ if __name__ == '__main__':
     # current results directory
     # resultsdir = os.path.join(repodir, '..\\results');
     # analyzedir = os.path.join(repodir, '..\\analysis');
-    # previous (combo) results directory
 
+
+    # combo results intermediate
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
+
+    # combo results intermediate - copy
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
+    # updated and consistent results of best simulation setup
     resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
     analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
 
@@ -2404,7 +2408,7 @@ if __name__ == '__main__':
     welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'left'
+    whichleg = 'both'
     oldnotredo = False
     runtool = True
     indresults = False
@@ -3809,6 +3813,17 @@ if __name__ == '__main__':
     }
     plotAnkleContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
 
+    # here is where I am going to try and combine the x and z into a shear force single value. 
+    datashear = {}
+    for each in datax.keys(): 
+        datashear[each] = np.sqrt((datax[each]**2) + (dataz[each]**2))
+    plotAnkleContactForce('Shear', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datashear)
+
+    # data for the resultant
+    dataresultant = {}
+    for each in datax.keys():
+        dataresultant[each] = np.sqrt((datax[each]**2) + (datay[each]**2) + (dataz[each]**2))
+    plotAnkleContactForce('Resultant', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataresultant)
 
     print('assuming we have working plotting functions, this should be the end of the script.')
     sys.exit()

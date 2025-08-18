@@ -2192,26 +2192,27 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     
     ###########################################################################
     ### figure: changes in force segmented together on plot
-    #### Possible paper figure for R3. 
+    #### Possible paper figure for R3.    
     colors4 = ['#648FFF','#785EF0','#DC267F','#FE6100', '#FFB000']
     fig12, ax12 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
     ax12[0].axhline(0, color='black', linewidth=1)
     # intersegmental forces average
-    ax12[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='Intersegmental', color='black', linewidth=3)
-    # tfl forces
-    ax12[0].plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0), label='Tensor Fasciae Latae', color=colors4[0], linewidth=3)
-    # gastroc forces
-    ax12[0].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='Gastrocnemius', color=colors4[1], linewidth=3)
-    # hamstring forces
-    ax12[0].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='Hamstrings', color=colors4[2], linewidth=3)
+    # ax12[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='Intersegmental', color='black', linewidth=3)
+    # # tfl forces
+    # ax12[0].plot(n_timespercent101, np.mean(etfl_combine, 0) - np.mean(ntfl_combine, 0), label='Tensor Fasciae Latae', color=colors4[0], linewidth=3)
+    # # gastroc forces
+    # ax12[0].plot(n_timespercent101, np.mean(egas_combine, 0) - np.mean(ngas_combine, 0), label='Gastrocnemius', color=colors4[1], linewidth=3)
+    # # hamstring forces
+    # ax12[0].plot(n_timespercent101, np.mean(ehams_combine, 0) - np.mean(nhams_combine, 0), label='Hamstrings', color=colors4[2], linewidth=3)
     # quads forces
     ax12[0].plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0), label='Quadriceps', color=colors4[3], linewidth=3)
-    # reserve forces
-    # ax12[0].plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves', color=colors4[4])
+    # # reserve forces
+    # # ax12[0].plot(n_timespercent101, np.mean(ereserve_combine, 0) - np.mean(nreserve_combine, 0), label='reserves', color=colors4[4])
     # added all forces
     # ax12[0].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
     # all forces from whole analysis
     ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total ' + tagcomponent + ' contact', linestyle='dashed', color='black', linewidth=3)
+
     ax12[0].set_xlabel('% Gait cycle', fontsize=16)
     ax12[0].set_ylabel('Vertical knee contact difference (BW)', fontsize=16)
     ax12[0].set_title('Exotendon change in contact force', fontsize=16)
@@ -2458,28 +2459,32 @@ if __name__ == '__main__':
     repodir = 'C:\\Users\\jonstingel\\code\\musclemodel\\muscleEnergyModel';
     
     # current results directory
-    resultsdir = os.path.join(repodir, '..\\results');
-    analyzedir = os.path.join(repodir, '..\\analysis');
-    # previous (combo) results directory
+    # resultsdir = os.path.join(repodir, '..\\results');
+    # analyzedir = os.path.join(repodir, '..\\analysis');
 
+
+    # combo results intermediate
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults\\analysis\\';
 
+
+    # combo results intermediate - copy
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
-    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
-    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
+    # updated and consistent results of best simulation setup
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk013']#,'welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
     runtool = False
-    indresults = True
+    indresults = False
     polycalc = False
 
     # get some results structures going
@@ -4028,6 +4033,17 @@ if __name__ == '__main__':
     }
     plotKneeContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
 
+    # here is where I am going to try and combine the x and z into a shear force single value. 
+    datashear = {}
+    for each in datax.keys(): 
+        datashear[each] = np.sqrt((datax[each]**2) + (dataz[each]**2))
+    plotKneeContactForce('Shear', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datashear)
+
+    # data for the resultant
+    dataresultant = {}
+    for each in datax.keys():
+        dataresultant[each] = np.sqrt((datax[each]**2) + (datay[each]**2) + (dataz[each]**2))
+    plotKneeContactForce('Resultant', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataresultant)
 
     print('assuming we have working plotting functions, this should be the end of the script.')
     sys.exit()

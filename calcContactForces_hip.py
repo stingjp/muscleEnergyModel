@@ -2493,7 +2493,7 @@ if __name__ == '__main__':
     welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'right'
+    whichleg = 'both'
     oldnotredo = False
     runtool = True
     indresults = False
@@ -3971,6 +3971,17 @@ if __name__ == '__main__':
     }
     plotHipContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
 
+    # here is where I am going to try and combine the x and z into a shear force single value. 
+    datashear = {}
+    for each in datax.keys(): 
+        datashear[each] = np.sqrt((datax[each]**2) + (dataz[each]**2))
+    plotHipContactForce('Shear', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datashear)
+
+    # data for the resultant
+    dataresultant = {}
+    for each in datax.keys():
+        dataresultant[each] = np.sqrt((datax[each]**2) + (datay[each]**2) + (dataz[each]**2))
+    plotHipContactForce('Resultant', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataresultant)
 
     print('assuming we have working plotting functions, this should be the end of the script.')
     sys.exit()
