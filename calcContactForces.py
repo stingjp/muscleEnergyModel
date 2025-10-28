@@ -2009,7 +2009,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     # ax9[5].set_xlabel('% Gait cycle')
     # # ax9[6].set_ylabel('Force (BW)')
     # # ax9[6].legend()
-    # ax9[5].set_title('Total vertical contact')
+    # ax9[5].set_title('Total Vertical Contact')
 
     # all forces from whole analysis
     for i, curve in enumerate(nall_combine):
@@ -2119,7 +2119,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     # ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # # ax10[6].set_ylabel('Force (BW)')
     # # ax10[6].legend()
-    # ax10[5].set_title('Total vertical contact')
+    # ax10[5].set_title('Total Vertical Contact')
 
     # Hide the last subplot and use it to display the legend
     ax10[6].axis('off')
@@ -2173,7 +2173,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     # ax11[5].set_xlabel('% Gait cycle')
     # # ax11[5].set_ylabel('Force (BW)')
     # # ax11[5].legend()
-    # ax11[5].set_title('Total vertical contact')
+    # ax11[5].set_title('Total Vertical Contact')
 
     # all forces from whole analysis
     ax11[5].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Exotendon diff from Natural')
@@ -2211,7 +2211,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     # added all forces
     # ax12[0].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
     # all forces from whole analysis
-    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total ' + tagcomponent + ' contact', linestyle='dashed', color='black', linewidth=3)
+    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total ' + tagcomponent + ' Contact', linestyle='dashed', color='black', linewidth=3)
 
     ax12[0].set_xlabel('% Gait cycle', fontsize=16)
     ax12[0].set_ylabel('Vertical knee contact difference (BW)', fontsize=16)
@@ -4279,7 +4279,7 @@ if __name__ == '__main__':
     # ax9[5].set_xlabel('% Gait cycle')
     # # ax9[6].set_ylabel('Force (BW)')
     # # ax9[6].legend()
-    # ax9[5].set_title('Total vertical contact')
+    # ax9[5].set_title('Total Vertical Contact')
 
     # all forces from whole analysis
     for i, curve in enumerate(nall_combine):
@@ -4290,7 +4290,7 @@ if __name__ == '__main__':
     # ax9[5].plot(e_timespercent101, eall_combine, label='exotendon', color=ecolor)
     ax9[5].set_xlabel('% Gait cycle')
     # ax9[5].set_ylabel('Force (BW)')
-    ax9[5].set_title('Total vertical contact')
+    ax9[5].set_title('Total Vertical Contact')
     # ax9[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     # Hide the last subplot and use it to display the legend   
     ax9[6].axis('off')
@@ -4389,7 +4389,7 @@ if __name__ == '__main__':
     # ax10[5].set_xlabel('% Gait cycle', **font_properties)
     # # ax10[6].set_ylabel('Force (BW)')
     # # ax10[6].legend()
-    # ax10[5].set_title('Total vertical contact')
+    # ax10[5].set_title('Total Vertical Contact')
 
     # Hide the last subplot and use it to display the legend
     ax10[6].axis('off')
@@ -4442,14 +4442,14 @@ if __name__ == '__main__':
     # ax11[5].set_xlabel('% Gait cycle')
     # # ax11[5].set_ylabel('Force (BW)')
     # # ax11[5].legend()
-    # ax11[5].set_title('Total vertical contact')
+    # ax11[5].set_title('Total Vertical Contact')
 
     # all forces from whole analysis
     ax11[5].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Exotendon diff from Natural')
     ax11[5].set_xlabel('% Gait cycle')
     # ax11[5].set_ylabel('Force (BW)')
     # ax11[5].legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    ax11[5].set_title('Total vertical contact')
+    ax11[5].set_title('Total Vertical Contact')
 
     # Hide the last subplot and use it to display the legend
     ax11[6].axis('off')
@@ -4480,7 +4480,7 @@ if __name__ == '__main__':
     # added all forces
     # ax12[0].plot(n_timespercent101, (np.mean(equads_combine,0) + np.mean(ehams_combine,0) + np.mean(egas_combine,0) + np.mean(etfl_combine,0) + np.mean(einterseg_combine,0) + np.mean(ereserve_combine,0)) - (np.mean(nquads_combine,0) + np.mean(nhams_combine,0) + np.mean(ngas_combine,0) + np.mean(ntfl_combine,0) + np.mean(ninterseg_combine,0) + np.mean(nreserve_combine,0)), label='Total')
     # all forces from whole analysis
-    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total vertical contact', linestyle='dashed', color='black', linewidth=3)
+    ax12[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total Vertical Contact', linestyle='dashed', color='black', linewidth=3)
     ax12[0].set_xlabel('% Gait cycle', fontsize=16)
     ax12[0].set_ylabel('Vertical knee contact difference (BW)', fontsize=16)
     ax12[0].set_title('Exotendon change in contact force', fontsize=16)
@@ -4540,7 +4540,7 @@ if __name__ == '__main__':
     axcon6[0].plot(e_timespercent101, np.mean(eall_combine,0), color=ecolor, label='Exotendon (Mean \u00B1 Std.)', linewidth=3)
     axcon6[0].set_xlabel('% Gait cycle', fontsize=16)
     axcon6[0].set_ylabel('Vertical knee contact force (BW)', fontsize=16)
-    axcon6[0].set_title('Total vertical contact force', fontsize=16)
+    axcon6[0].set_title('Total Vertical Contact force', fontsize=16)
     axcon6[0].tick_params(axis='both', which='major', labelsize=16)
     # hide the second subplots and use it for the legend
     axcon6[1].axis('off')

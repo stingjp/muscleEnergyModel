@@ -1,0 +1,77 @@
+Muscle MAP
+
+EMG
+	- Quads
+		○ VL
+		○ VM
+		○ RF
+	- Hip flex
+		○ PS
+	- Hip ABD
+		○ GMED
+	- Hamstrings
+		○ BF
+		○ Semiten
+	- Hip add
+		○ Add
+	- Hip ext
+		○ GMAX
+	- Plantar flex
+		○ Sol
+		○ Gaslat 
+		○ Gasmed
+		○ Peroneus
+	- Dosi
+		○ 
+		○ TA
+		
+		
+
+Muscle Map Activations simulation
+
+	- Quads
+		○ RF
+		○ Vasint
+		○ Vaslat
+		○ vasmed
+	- Hip flex
+		○ Grac
+		○ Iliacus
+		○ psoas
+		○ Sart
+		○ tfl
+	- Hip abd
+		○ GMED 1,2,3
+		○ Gmin 1,2,3
+		○ piri
+	- Hamstrings
+		○ Bflh
+		○ Bfsh
+		○ Semimem
+		○ Semiten
+	- Hip add
+		○ Add brev
+		○ Add long
+		○ Add mag
+			§ Dist
+			§ Isch
+			§ Mid
+			§ prox
+	- Hip ext
+		○ Gmax 1,2,3
+	- Plantar
+		○ Fdl
+		○ Fhl
+		○ Gastroc med
+		○ Gastroc lat
+		○ Soleus
+		○ Peroneus long
+		○ Peroneus  brev
+		○ tibpost
+		
+	- Dorsi
+		○ TA
+		○ Edl
+		○ Ehl
+		
+	
