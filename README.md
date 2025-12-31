@@ -2,7 +2,7 @@
 Experimental data that was collected of runners with and without an exotendon while running at 2.67 m/s. The 3D musculoskeletal simulations utilize an optimal control problem implementation with OpenSim Moco.
 
 ## Publications
-(pending)
+https://pubmed.ncbi.nlm.nih.gov/37745177/
 
 ## SimTK project
 https://simtk.org/projects/exotendon_sims
