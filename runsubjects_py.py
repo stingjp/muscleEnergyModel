@@ -15,6 +15,7 @@ import time
 import simulationSetups as simset
 import pdb
 import argparse
+import pickle
 
 # input arguments
 parser = argparse.ArgumentParser(description='are we siming half cycle?')
@@ -28,8 +29,11 @@ setup_matlab_path = "G:/Shared drives/Exotendon/musclemodel/muscleEnergyModel/"
 print('Going through each subject...')
 ## set up all the paths that we will need
 repodir = os.getcwd()
-resultsbasedir = os.path.join(repodir,'..\\results\\')
-analysisbasedir = os.path.join(repodir,'..\\analysis\\')
+# resultsbasedir = os.path.join(repodir,'..\\results\\')
+# analysisbasedir = os.path.join(repodir,'..\\analysis\\')
+
+resultsbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\results\\")
+analysisbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\analysis\\")
 
 ## set up all the subject conditions and trials that we will need
 subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
@@ -139,7 +143,7 @@ welktrials = {'welk001welknatural':['trial01','trial02','trial03','trial04'],
               'welk008welknaturalslow':['trial01','trial02','trial03','trial04'],
               'welk008welknaturalexo':['trial01','trial02','trial03','trial04'],
               'welk008welkexonatural':['trial01','trial02','trial03','trial04'],
-              'welk008welkexofast':['trial01','trial02','trial03','trial04'],
+              'welk008welkexofast':['trial01','trial02','trial03','trial04'],###
 
               'welk009welknatural':['trial01','trial02','trial03','trial04'],
               'welk009welkexo':['trial01','trial02','trial03','trial04'],
@@ -187,14 +191,16 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk003','welk005', 'welk008', 'welk009','welk013']
-welkconditions = ['welknatural', 'welkexo'] 
+subjects = ['welk003', 'welk005', 'welk008', 'welk009','welk013']
+welkconditions = ['welkexo']#, 'welkexo'] 
 trials = ['trial01', 'trial02', 'trial03', 'trial04'] 
 whatfailed = {}
 trackGRF = False
 
 cumulativeLoads_nat = []
 cumulativeLoads_exo = []
+
+exoTensions = {}
 
 ########################################## 
 ## needs changed from the old script to the new function
@@ -218,12 +224,12 @@ for subj in subjects:
                 print('\n')
                 print(trialdir)
                 # whatfailed = simset.analyzeSubject(subj, cond, keys, whatfailed, trackGRF=False, halfcycle=halfcycle, fitpaths=False, wantpaths=False, jointreact=False, guessmin=False, guess100=True, guessIK=False, guessPrev=True)
-                # simset.analyzeSubject_post(subj, cond, keys)
+                simset.analyzeSubject_post(subj, cond, keys, exoTensions)
                 # here is where we are going to run the cumulative loading analysis for all 
-                if "exo" in cond: 
-                    cumulativeLoads_exo.append(simset.cumulativeLoading(subj, cond, keys))
-                if "nat"in cond:
-                    cumulativeLoads_nat.append(simset.cumulativeLoading(subj, cond, keys))
+                # if "exo" in cond: 
+                #     cumulativeLoads_exo.append(simset.cumulativeLoading(subj, cond, keys))
+                # if "nat"in cond:
+                #     cumulativeLoads_nat.append(simset.cumulativeLoading(subj, cond, keys))
                 print(trialdir)
 
 
@@ -249,6 +255,11 @@ for subj in subjects:
         # TODO: copy and edit for these subjects
 
 
+# save exoTensions to file to analyze later. 
+os.chdir(analysisbasedir)
+pickle_outfile = open('exoTensions_allsubjects_trials.pkl', 'wb')
+pickle.dump(exoTensions, pickle_outfile)
+pickle_outfile.close()
 
 ## TODO:
 ## copy over the experimental data from a csv file to the same format 

@@ -214,6 +214,33 @@ def getJointMoments(trialdir, moments, modelmass):
                 moments[temp] = np.column_stack((moments[temp], tempmom))
     return moments
 
+# function to gather and plot exotendon tension from simulations. 
+def getExotendonTension(subject, trial, trialdir, exoTensions):
+    subjecttrial = subject + '_' + trial
+    
+    # load the right file for the given trial 
+    trialtensionfile = osim.TimeSeriesTable(os.path.join(trialdir, 'muscletrack_redo_exotendon_py.sto'))
+    trialtime = trialtensionfile.getIndependentColumn()
+    time100 = np.linspace(trialtime[0], trialtime[-1], 100).reshape(100,1)
+    # get the column labels
+    labels = trialtensionfile.getColumnLabels()
+    # get the number of columns
+    numCols = trialtensionfile.getNumColumns()
+    # loop through the columns and store the exotendon tensions
+    for i in range(numCols):
+        temp = labels[i]
+        if 'tension' in temp:
+            temptension = trialtensionfile.getDependentColumn(temp).to_numpy()
+            temptension = temptension
+            temptension = temptension.reshape(len(temptension),1)
+            temptension = np.interp(time100.flatten(), trialtime, temptension.flatten())
+            # check if the key exists in the dictionary
+            if subjecttrial not in exoTensions:
+                exoTensions[subjecttrial] = temptension.reshape(len(temptension),1)
+            else: # add the data as a new column in the same key
+                exoTensions[subjecttrial] = np.column_stack((exoTensions[subjecttrial], temptension))
+    return exoTensions
+
 # get the moments from ID in the same way that we get the simulation ones
 def getIDMoments(trialdir, moments, modelmass):
     # load the right file for the given trial
