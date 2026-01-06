@@ -11,7 +11,8 @@ import scipy
 import sys
 import OsimUtilityfunctions as ouf
 import pandas as pd
-
+from scipy.interpolate import interp1d
+from matplotlib.ticker import FormatStrFormatter
 
 # naturalcolor = '#fdb863'
 ncolor = '#e66101'
@@ -31,6 +32,8 @@ ncolor9 = '#7f2704'
 # plt.rcParams['font.family'] = 'Times New Roman'
 # exotendoncolor = '#f1a340'
 ecolor = '#5e3c99'
+ecolormid = '#b2abd2'
+ecolormiddark = '#807dba'
 ecolorlight = '#d8daeb'
 
 # function from Nick Bianco - not used in script, but used as reference for moco
@@ -2211,6 +2214,12 @@ def plotAnkleContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor
     axcon6[0].set_ylabel(tagcomponent + ' ankle contact force (BW)', fontsize=16)
     axcon6[0].set_title('Total ' + tagcomponent + ' ankle contact force', fontsize=16)
     axcon6[0].tick_params(axis='both', which='major', labelsize=16)
+    # axcon6[0].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    axcon6[0].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    if tagcomponent == 'Shear':
+        axcon6[0].set_ylim([0, 4])
+    if tagcomponent == 'Vertical':
+        axcon6[0].set_ylim([0, 10.5])
     # hide the second subplots and use it for the legend
     axcon6[1].axis('off')
     handles, labels = axcon6[0].get_legend_handles_labels()
@@ -2410,7 +2419,7 @@ if __name__ == '__main__':
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
     oldnotredo = False
-    runtool = True
+    runtool = False
     indresults = False
     polycalc = False
 
