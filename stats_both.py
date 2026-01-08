@@ -168,15 +168,15 @@ def format_report(res, *, digits=4):
 
 if __name__ == "__main__":
     # tier 1 - knee compression then shear
-    # diffs = np.array([-0.102287073, 1.781602499, 0.450474826, 0.717245925, 1.292819939, 1.890431661, 0.681113247])  # example (x - y)
-    diffs = np.array([-0.153084042, 0.203847533, -0.132418695, 0.01031966, -0.323410273, 0.267793971, -0.014709844])  # example (x - y)
+    # print('\nKnee compression:'); diffs = np.array([-0.102287073, 1.781602499, 0.450474826, 0.717245925, 1.292819939, 1.890431661, 0.681113247])  # example (x - y)
+    # print('\nKnee shear:'); diffs = np.array([-0.153084042, 0.203847533, -0.132418695, 0.01031966, -0.323410273, 0.267793971, -0.014709844])  # example (x - y)
     # # tier 2 - quads
-    # diffs = np.array([-0.150932521, 1.416347522, 0.578245078, 0.615183912, 1.835710767, 1.113863595, 0.372006246])  # example (x - y)
+    # print('\nQuads compression:'); diffs = np.array([-0.150932521, 1.416347522, 0.578245078, 0.615183912, 1.835710767, 1.113863595, 0.372006246])  # example (x - y)
     # # tier 3 - exploration (hip compression/shear and then ankle compression/shear)
-    # diffs = np.array([-0.589784077, 1.270201452, 0.102214341, 0.53888374, 0.714631287, 0.276242841, -1.02234926])  # example (x - y)
-    # diffs = np.array([-0.089662651, 0.300522123, 0.183639582, 0.344884016, 0.474511264, 0.088238692, -0.536236139])  # example (x - y)
-    # diffs = np.array([0.15269778, 1.854828272, -0.00101458, 0.616307171, -0.526644559, 1.644364595, 1.132647017])  # example (x - y)
-    # diffs = np.array([0.162786588, 0.931908201, 0.078858327, 0.104042828, -0.125004089, 1.360212357, 0.657593848])  # example (x - y)
+    # print('\nHip compression:'); diffs = np.array([-0.589784077, 1.270201452, 0.102214341, 0.53888374, 0.714631287, 0.276242841, -1.02234926])  # example (x - y)
+    # print('\nHip shear:'); diffs = np.array([-0.089662651, 0.300522123, 0.183639582, 0.344884016, 0.474511264, 0.088238692, -0.536236139])  # example (x - y)
+    # print('\nAnkle compression:'); diffs = np.array([0.15269778, 1.854828272, -0.00101458, 0.616307171, -0.526644559, 1.644364595, 1.132647017])  # example (x - y)
+    print('\nAnkle shear:'); diffs = np.array([0.162786588, 0.931908201, 0.078858327, 0.104042828, -0.125004089, 1.360212357, 0.657593848])  # example (x - y)
 
     res = paired_test_auto(
         diffs,
@@ -187,3 +187,72 @@ if __name__ == "__main__":
     )
 
     print(format_report(res))
+
+
+# current results N=7 Tiered approach, and ordered. (note bonferroni correction not applied here)
+"""
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Knee compression:
+n = 7
+Differences: mean = 0.9588, SD = 0.7276, median = 0.7172, IQR = 0.9714
+Shapiro–Wilk normality: W = 0.9438, p = 0.6727 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 3.486, p = 0.01304
+Effect size (Cohen_d_paired): 1.318
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Knee shear:
+n = 7
+Differences: mean = -0.02024, SD = 0.2067, median = -0.01471, IQR = 0.2498
+Shapiro–Wilk normality: W = 0.9626, p = 0.8405 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = -0.2591, p = 0.8042
+Effect size (Cohen_d_paired): -0.09792
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Quads compression:
+n = 7
+Differences: mean = 0.8258, SD = 0.673, median = 0.6152, IQR = 0.79
+Shapiro–Wilk normality: W = 0.9777, p = 0.9478 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 3.247, p = 0.01754
+Effect size (Cohen_d_paired): 1.227
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Hip compression:
+n = 7
+Differences: mean = 0.1843, SD = 0.7807, median = 0.2762, IQR = 0.8705
+Shapiro–Wilk normality: W = 0.9721, p = 0.9135 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 0.6246, p = 0.5552
+Effect size (Cohen_d_paired): 0.2361
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Hip shear:
+n = 7
+Differences: mean = 0.1094, SD = 0.3386, median = 0.1836, IQR = 0.3234
+Shapiro–Wilk normality: W = 0.9108, p = 0.4015 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 0.8551, p = 0.4253
+Effect size (Cohen_d_paired): 0.3232
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Ankle compression:
+n = 7
+Differences: mean = 0.6962, SD = 0.8865, median = 0.6163, IQR = 1.313
+Shapiro–Wilk normality: W = 0.9539, p = 0.765 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 2.078, p = 0.08299
+Effect size (Cohen_d_paired): 0.7853
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel> python .\stats_both.py
+
+Ankle shear:
+n = 7
+Differences: mean = 0.4529, SD = 0.5438, median = 0.1628, IQR = 0.7033
+Shapiro–Wilk normality: W = 0.8977, p = 0.3173 (α = 0.05) -> normal
+Chosen test: paired_t_test (ttest_1samp on diffs) (alternative = 'two-sided')
+Test result: statistic = 2.204, p = 0.06976
+Effect size (Cohen_d_paired): 0.8329
+(moco451) PS C:\Users\jonstingel\code\musclemodel\muscleEnergyModel>
+"""
