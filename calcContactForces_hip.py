@@ -2296,9 +2296,9 @@ def plotHipContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor, 
     # axcon6[0].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
     axcon6[0].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
     if tagcomponent == 'Shear':
-        axcon6[0].set_ylim([0, 4])
+        axcon6[0].set_ylim([0, 4.5])
     if tagcomponent == 'Vertical':
-        axcon6[0].set_ylim([0, 10.5])
+        axcon6[0].set_ylim([0, 11])
     # hide the second subplots and use it for the legend
     axcon6[1].axis('off')
     handles, labels = axcon6[0].get_legend_handles_labels()
@@ -2504,12 +2504,15 @@ if __name__ == '__main__':
     # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\results\\';
     # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy\\analysis\\';
 
-    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
-    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
+    # resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\results\\';
+    # analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy\\analysis\\';
+
+    resultsdir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy - Copy\\results\\';
+    analyzedir = 'C:\\Users\\jonstingel\\code\\musclemodel\\testresults - Copy - Copy - Copy\\analysis\\';
 
     welkexoconditions = ['welkexo']
     welknaturalconditions = ['welknatural']
-    welksubjects = ['welk003','welk005','welk008','welk009','welk013'];
+    welksubjects = ['welk002','welk010','welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
     whichleg = 'both'
@@ -3970,7 +3973,7 @@ if __name__ == '__main__':
         'nall_combine': nall_combine_x,
         'eall_combine': eall_combine_x,
     }
-    plotHipContactForce('Anterior-Posterior', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datax)
+    # plotHipContactForce('Anterior-Posterior', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, datax)
 
     dataz = {
         'ninterseg_combine': ninterseg_combine_z,
@@ -3988,7 +3991,7 @@ if __name__ == '__main__':
         'nall_combine': nall_combine_z,
         'eall_combine': eall_combine_z,
     }
-    plotHipContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
+    # plotHipContactForce('Medial-Lateral', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataz)
 
     # here is where I am going to try and combine the x and z into a shear force single value. 
     datashear = {}
@@ -4000,7 +4003,7 @@ if __name__ == '__main__':
     dataresultant = {}
     for each in datax.keys():
         dataresultant[each] = np.sqrt((datax[each]**2) + (datay[each]**2) + (dataz[each]**2))
-    plotHipContactForce('Resultant', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataresultant)
+    # plotHipContactForce('Resultant', analyzedir, welksubjects, ncolor, ecolor, n_timespercent101, e_timespercent101, dataresultant)
 
     print('assuming we have working plotting functions, this should be the end of the script.')
     sys.exit()
