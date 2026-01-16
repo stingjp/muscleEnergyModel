@@ -32,8 +32,12 @@ repodir = os.getcwd()
 # resultsbasedir = os.path.join(repodir,'..\\results\\')
 # analysisbasedir = os.path.join(repodir,'..\\analysis\\')
 
-resultsbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\results\\")
-analysisbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\analysis\\")
+# results path for final results! (archive for post analysis)
+# resultsbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\results\\")
+# analysisbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy\\analysis\\")
+
+resultsbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy - Copy\\results\\")
+analysisbasedir = os.path.join(repodir, "..\\testresults - Copy - Copy - Copy\\analysis\\")
 
 ## set up all the subject conditions and trials that we will need
 subjects = ['wals024','wals077','wals088','wals112','wals127','wals128',
@@ -191,7 +195,7 @@ os.chdir(resultsbasedir)
 # subjects = ['welk002','welk003','welk005','welk007','welk008','welk009','welk010','welk013']
 # subjects = ['welk005','welk007','welk008']
 
-subjects = ['welk003', 'welk005', 'welk008', 'welk009','welk013']
+subjects = ['welk002','welk010','welk003', 'welk005', 'welk008', 'welk009','welk013']
 welkconditions = ['welkexo']#, 'welkexo'] 
 trials = ['trial01', 'trial02', 'trial03', 'trial04'] 
 whatfailed = {}
