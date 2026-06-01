@@ -13,6 +13,7 @@ import OsimUtilityfunctions as ouf
 import pandas as pd
 from scipy.interpolate import interp1d
 from matplotlib.ticker import FormatStrFormatter
+import pdb
 
 # naturalcolor = '#fdb863'
 ncolor = '#e66101'
@@ -2266,6 +2267,28 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     fig22.savefig(analyzedir + '\\contact14_' + whichleg + '_' + tagcomponent + '.png')
 
 
+    ###########################################################################
+
+    fig32, ax32 = plt.subplots(1, 2, figsize=(12,4.55), dpi=500)
+    ax32[0].axhline(0, color='black', linewidth=1)
+    ax32[0].plot(n_timespercent101, np.mean(eall_combine,0) - np.mean(nall_combine,0), label='Total Compressive force', linestyle='dashed', color='black', linewidth=3)
+    # ax32[0].plot(n_timespercent101, np.mean(einterseg_combine, 0) - np.mean(ninterseg_combine, 0), label='Intersegmental', color=ecolormiddark, linewidth=3)    
+    ax32[0].plot(n_timespercent101, np.mean(equads_combine, 0) - np.mean(nquads_combine, 0), label='Quadriceps', color=ncolor5, linewidth=3) #colors4[3]
+    # ax32[0].plot(n_timespercent101, other_diff, label="Hamstrings, Gastrocnemius\n& Tensor Fasciae Latae", color=ncolor3, linewidth=3) #colors4[0]
+
+    ax32[0].set_xlabel('% Gait cycle', fontsize=16, fontweight='bold')
+    ax32[0].set_ylabel('Compressive knee\n contact force difference (BW)', fontsize=16, fontweight='bold')
+    # ax32[0].set_title('Exotendon change in contact force', fontsize=16)
+    ax32[0].tick_params(axis='both', which='major', labelsize=16)
+    # hide the second subplots and use it for the legend
+    ax32[1].axis('off')
+    handles, labels = ax32[0].get_legend_handles_labels()
+    ax32[1].legend(handles, labels, loc='center', fontsize=16)
+    fig32.tight_layout()
+    fig32.savefig(analyzedir + '\\contact24_' + whichleg + '_' + tagcomponent + '.png')
+
+
+
 
 
     # TODO: figure out why the difference in total and all added together. 
@@ -2379,7 +2402,7 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
                 df.to_excel(writer, sheet_name=key)
 
 
-    pdb.set_trace()
+    import pdb; pdb.set_trace()
     plt.show()
     print('\n\nbeyond this is the breakdown paper figures.')
     # sys.exit()
@@ -2517,6 +2540,42 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     plt.savefig(os.path.join(analyzedir, f'contact7_Natural_{whichleg}_{tagcomponent}.png'))
     plt.show()
 
+    ############################################################################
+    # make presentation building version of above figure. 
+    # plot using the high-resolution (smoothed) vectors
+    plt.figure(dpi=500)
+    # plt.plot(x_fine, y_c1, label='intersegmental', color=ecolor)
+    plt.fill_between(x_fine, y_c1, color=ecolorlight)
+
+    # plt.plot(x_fine, y_c2, label='inter + tfl', color=ncolor3)
+    plt.fill_between(x_fine, y_c1, y_c2, color=ncolor7)
+
+    # plt.plot(x_fine, y_c3, label='inter + tfl + gas', color=ncolor5)
+    plt.fill_between(x_fine, y_c2, y_c3, color=ncolor7)
+
+    # plt.plot(x_fine, y_c4, label='inter + tfl + gas + hams', color=ncolor7)
+    plt.fill_between(x_fine, y_c3, y_c4, color=ncolor7)
+
+    # plt.plot(x_fine, y_c5, label='inter + tfl + gas + hams + quads', color=ncolor9)
+    plt.fill_between(x_fine, y_c4, y_c5, color=ncolor7)
+
+    plt.legend()
+    plt.ylabel('Compressive\n knee contact force (BW)', fontsize=16, fontweight='bold')
+    plt.xlabel('% Gait cycle', fontsize=16, fontweight='bold')
+    # plt.title(tagcomponent + ' knee contact force - Natural', fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.tight_layout()
+
+    # capture current axis limits and persist for later reuse
+    ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    plt.savefig(os.path.join(analyzedir, f'contact71_Natural_{whichleg}_{tagcomponent}.png'))
+    plt.show()
+
+    import pdb; pdb.set_trace()
+
 
     
     # ###########################################################################
@@ -2611,6 +2670,41 @@ def plotKneeContactForce(tagcomponent, analyzedir, welksubjects, ncolor, ecolor,
     plt.savefig(os.path.join(analyzedir, f'contact7_Exotendon_{whichleg}_{tagcomponent}.png'))
     plt.show()
 
+    ############################################################################
+    # make presentation building version of above figure. 
+    # plot using the high-resolution (smoothed) vectors
+    plt.figure(dpi=500)
+    # plt.plot(x_fine, y_c1, label='intersegmental', color=ecolor)
+    plt.fill_between(x_fine_e, y_c1_e, color=ecolorlight)
+
+    # plt.plot(x_fine, y_c2, label='inter + tfl', color=ncolor3)
+    plt.fill_between(x_fine_e, y_c1_e, y_c2_e, color=ncolor7)
+
+    # plt.plot(x_fine, y_c3, label='inter + tfl + gas', color=ncolor5)
+    plt.fill_between(x_fine_e, y_c2_e, y_c3_e, color=ncolor7)
+
+    # plt.plot(x_fine, y_c4, label='inter + tfl + gas + hams', color=ncolor7)
+    plt.fill_between(x_fine_e, y_c3_e, y_c4_e, color=ncolor7)
+
+    # plt.plot(x_fine, y_c5, label='inter + tfl + gas + hams + quads', color=ncolor9)
+    plt.fill_between(x_fine_e, y_c4_e, y_c5_e, color=ncolor7)
+
+    plt.legend()
+    plt.ylabel('Compressive\n knee contact force (BW)', fontsize=16, fontweight='bold')
+    plt.xlabel('% Gait cycle', fontsize=16, fontweight='bold')
+    # plt.title(tagcomponent + ' knee contact force - Natural', fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.tight_layout()
+
+    # capture current axis limits and persist for later reuse
+    ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    plt.savefig(os.path.join(analyzedir, f'contact71_Exotendon_{whichleg}_{tagcomponent}.png'))
+    plt.show()
+
+    import pdb; pdb.set_trace()
 
 
     
@@ -2669,7 +2763,7 @@ if __name__ == '__main__':
     welksubjects = ['welk002','welk010','welk003','welk005','welk008','welk009','welk013'];
     thingstoplot = ['contactForces']
     trials = ['trial01','trial02','trial03','trial04']
-    whichleg = 'left'
+    whichleg = 'both'
     oldnotredo = False
     runtool = False
     indresults = False
